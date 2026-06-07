@@ -47,7 +47,7 @@ app.post('/api/generate', async (req, res) => {
             ],
         });
 
-        res.json({ success: true, text: completion.choices.message.content });
+        res.json({ success: true, text: completion.choices[0].message.content });
 
     } catch (error) {
         console.error("Fehler:", error);
