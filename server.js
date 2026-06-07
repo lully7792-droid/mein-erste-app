@@ -2,12 +2,14 @@ import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import OpenAI from 'openai';
+import cors from 'cors';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
 app.use(express.json());
+app.use(cors());
 app.use(express.static(__dirname));
 
 const openai = new OpenAI({
