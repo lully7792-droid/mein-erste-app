@@ -9,7 +9,9 @@ const port = 3000;
 // Hier aktivieren wir den KI-Baustein
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY
-app.use(express.json());
+});
+
+    app.use(express.json());
 app.use(express.static(path.join(__dirname)));
 
 // Diese Funktion wartet darauf, dass der Makler in der App auf den Button klickt
