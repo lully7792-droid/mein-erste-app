@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const { OpenAI } = require('openai');
 const path = require('path');
@@ -7,9 +8,7 @@ const port = 3000;
 
 // Hier aktivieren wir den KI-Baustein
 const openai = new OpenAI({
-    apiKey: "sk-proj-wT5UuvMc0zg_933oY3xCNM97rau5XzhjgkjojuzJ_-glbvsBaG0MS86_3dbycgnrt_10kP46-ET" 
-});
-
+    apiKey: process.env.OPENAI_API_KEY
 app.use(express.json());
 app.use(express.static(path.join(__dirname)));
 
