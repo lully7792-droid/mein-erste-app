@@ -269,12 +269,11 @@
         <div class="output-box" id="outputBox">
             <div class="output-header">
                 <label style="color: var(--accent);">✔ Generiertes Exposé:</label>
-                <button class="btn-copy" onclick="copyText()">Text kopieren</button>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn-copy" onclick="copyText()">Text kopieren</button>
+                    <button class="btn-copy" style="background: rgba(37, 99, 235, 0.2); border-color: var(--primary);" onclick="downloadWord()">Als Word-Datei herunterladen</button>
+                </div> 
             </div>
-            <div id="result"></div>
-        </div>
-    </div>
-</div>
 
 <script>
     let savedPassword = "";
@@ -342,6 +341,19 @@
     function copyText() {
         navigator.clipboard.writeText(document.getElementById('result').innerText);
         alert('In Zwischenablage kopiert!');
+    }
+    
+    function downloadWord() {
+        const text = document.getElementById('result').innerText;
+        const blob = new Blob([text], { type: 'application/msword' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'Immobilien_Expose.doc';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
     }
 </script>
 </body>
