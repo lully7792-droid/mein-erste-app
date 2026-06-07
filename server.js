@@ -1,43 +1,52 @@
 require('dotenv').config();
 const express = require('express');
-const { OpenAI } = require('openai');
 const path = require('path');
+const OpenAI = require('openai');
 
 const app = express();
-const port = 3000;
+const PORT = process.env.PORT || 3000;
 
 // Hier aktivieren wir den KI-Baustein
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY
 });
 
-    app.use(express.json());
+app.use(express.json());
 app.use(express.static(path.join(__dirname)));
 
-// Diese Funktion wartet darauf, dass der Makler in der App auf den Button klickt
+// Die Schnittstelle, die die Makler-Daten verarbeitet
 app.post('/api/generate', async (req, res) => {
-    const { typ, groese, features, stil } = req.body;
-
     try {
-        // Hier schicken wir den Auftrag live an die OpenAI-KI
-        const response = await openai.chat.completions.create({
-            model: "gpt-4o-mini", // Das ist die schnellste und günstigste KI für Apps
+        const { title, size, rooms, location, features } = req.body;
+
+        // Wir bauen der KI eine glasklare Anweisung, was sie schreiben soll
+        const prompt = `Schreibe ein exklusives, hochprofessionelles und verkaufsstarkes Immobilien-Exposé für folgendes Objekt:
+        - Objekttyp/Titel: ${title}
+        - Wohnfläche: ${size ? size + ' m²' : 'Nicht angegeben'}
+        - Zimmeranzahl: ${rooms ? rooms : 'Nicht angegeben'}
+        - Lage/Stadtteil: ${location}
+        - Besondere Premium-Merkmale: ${features ? features : 'Keine angegeben'}
+
+        Strukturiere das Exposé mit einer packenden Überschrift, einer eleganten Objektbeschreibung und einer übersichtlichen Auflistung der Highlights. Nutze einen luxuriösen und einladenden Ton, der gehobene Käufer anspricht.`;
+
+        const completion = await openai.chat.completions.create({
+            model: "gpt-4o-mini", // Nutzt das extrem schnelle und günstige Gehirn
             messages: [
-                { role: "system", content: "Du bist ein weltklasse Immobilienmakler. Schreibe professionelle, packende Exposé-Texte auf Deutsch." },
-                { role: "user", content: `Schreibe ein exklusives Exposé für folgende Immobilie: Typ: ${typ}, Größe: ${groese}m², Besondere Merkmale: ${features}. Der Schreibstil soll unbedingt wie folgt sein: ${stil || 'luxuriös'}. Der Text soll modern und extrem verkaufsstark sein.` }
+                { role: "system", content: "Du bist ein weltklasse Immobilien-Texter für Luxus-Exposés." },
+                { role: "user", content: prompt }
             ],
         });
 
-        const kiText = response.choices[0].message.content;
-        res.json({ text: kiText });
+        res.json({ success: true, text: completion.choices[0].message.content });
 
     } catch (error) {
-        console.error("Fehler beim KI-Aufruf:", error);
-        res.status(500).json({ error: "Die KI hat gerade Schluckauf. Prüfe deinen API-Key!" });
+        console.error("KI-Fehler:", error);
+        res.json({ success: false, error: error.message });
     }
 });
 
-app.listen(port, () => {
-    console.log(`\n🚀 ERFOLG! Deine App läuft jetzt als echter Server.`);
-    console.log(`🌍 Öffne im Browser die Adresse: http://localhost:${port}\n`);
+// Startet den Server
+app.listen(PORT, () => {
+    console.log(`\n🟢 ERFOLG! Deine Premium-App läuft jetzt.`);
+    console.log(`🟢 Öffne im Browser die Adresse: http://localhost:3000\n`);
 });
