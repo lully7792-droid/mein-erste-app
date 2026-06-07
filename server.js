@@ -52,7 +52,7 @@ app.post('/api/generate', async (expressReq, expressRes) => {
             temperature: 0.7
         });
 
-        const fullResponseText = response.choices.message.content;
+        const fullResponseText = response.choices && response.choices[0] ? response.choices[0].message.content : response.choices.message.content;
         
         let exposeText = fullResponseText;
         let socialMediaText = "Beitrag wird generiert...";
