@@ -10,12 +10,10 @@ const app = express();
 app.use(express.json());
 app.use(express.static(__dirname));
 
-// Hier deinen echten OpenAI Key eintragen, sobald aufgeladen:
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY
 });
 
-// Dein geheimes Passwort für die App
 const SECRET_PASSWORD = "makler-erfolg";
 
 app.post('/api/generate', async (expressReq, expressRes) => {
@@ -41,9 +39,9 @@ app.post('/api/generate', async (expressReq, expressRes) => {
     Strukturiere das Exposé mit einer packenden Überschrift, einem emotionalen Einleitungstext (Objektbeschreibung), einer Übersicht der Highlights und einem klaren Aufruf zur Kontaktaufnahme (Call to Action).
     
     TEXT 2 (Social Media Post):
-    Schreibe einen separaten, extrem packenden Social Media Post für Instagram/LinkedIn. Nutze passende Emojis, hebe die 3 wichtigsten Fakten hervor und füge am Ende relevante Hashtags (z.B. #immobilien, #makler) sowie einen Call to Action (z.B. "Jetzt Exposé anfordern!") hinzu.
+    Schreibe einen separaten, extrem packenden Social Media Post für Instagram/LinkedIn. Nutze passende Emojis, hebe die 3 wichtigsten Fakten hervor und füge am Ende relevante Hashtags sowie einen Call to Action hinzu.
     
-    WICHTIG: Trenne Text 1 und Text 2 in deiner Antwort strikt mit dem Wortzeichen "---SOCIAL_MEDIA_SPLIT---" (ohne Anführungszeichen)! Aber zeige dieses Trennwort nicht im Text an.`;
+    WICHTIG: Trenne Text 1 und Text 2 in deiner Antwort strikt mit dem Wortzeichen "---SOCIAL_MEDIA_SPLIT---"!`;
 
     try {
         const response = await openai.chat.completions.create({
@@ -52,7 +50,7 @@ app.post('/api/generate', async (expressReq, expressRes) => {
             temperature: 0.7
         });
 
-        const fullResponseText = response.choices.message.content;
+        const fullResponseText = response.choices[0].message.content;
         
         let exposeText = fullResponseText;
         let socialMediaText = "Beitrag wird generiert...";
@@ -78,6 +76,5 @@ app.post('/api/generate', async (expressReq, expressRes) => {
 });
 
 app.listen(3000, () => {
-    console.log("🟢 ERFOLG! Deine App läuft jetzt als echter Server.");
-    console.log("🟢 Öffne im Browser die Adresse: http://localhost:3000");
+    console.log("🟢 ERFOLG! Server läuft.");
 });

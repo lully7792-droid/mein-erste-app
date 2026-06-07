@@ -15,89 +15,14 @@
             --text-muted: #9ca3af;
             --accent: #10b981;
         }
-        body {
-            background-color: var(--bg-color);
-            color: var(--text);
-            font-family: 'Segoe UI', Roboto, sans-serif;
-            margin: 0;
-            padding: 40px 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            box-sizing: border-box;
-        }
-        .container {
-            width: 100%;
-            max-width: 700px;
-            background: var(--card-bg);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--border-color);
-            border-radius: 24px;
-            padding: 40px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-        }
-        .app-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 20px;
-            margin-bottom: 28px;
-        }
-        .logo-area {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .logo-icon {
-            background: linear-gradient(135deg, #2563eb 0%, #10b981 100%);
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 14px;
-            color: #fff;
-            box-shadow: 0 0 15px rgba(37, 99, 235, 0.4);
-        }
-        .status-badge {
-            background: rgba(16, 185, 129, 0.1);
-            border: 1px solid rgba(16, 185, 129, 0.2);
-            color: var(--accent);
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .status-dot {
-            width: 6px;
-            height: 6px;
-            background-color: var(--accent);
-            border-radius: 50%;
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse {
-            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
-            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
-            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
-        }
-        h1 {
-            font-size: 28px;
-            font-weight: 700;
-            margin-top: 0;
-            margin-bottom: 8px;
-            background: linear-gradient(135deg, #fff 0%, #93c5fd 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .subtitle { color: var(--text-muted); font-size: 15px; margin-bottom: 32px; }
+        body { background-color: var(--bg-color); color: var(--text); font-family: 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 40px 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; box-sizing: border-box; }
+        .container { width: 100%; max-width: 700px; background: var(--card-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid var(--border-color); border-radius: 24px; padding: 40px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3); }
+        .app-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 20px; margin-bottom: 28px; }
+        .logo-area { display: flex; align-items: center; gap: 12px; }
+        .logo-icon { background: linear-gradient(135deg, #2563eb 0%, #10b981 100%); width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; color: #fff; box-shadow: 0 0 15px rgba(37, 99, 235, 0.4); }
+        .status-badge { background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); color: var(--accent); padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+        .status-dot { width: 6px; height: 6px; background-color: var(--accent); border-radius: 50%; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); } 70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); } 100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
         .form-group { margin-bottom: 20px; }
         .flex-group { display: flex; gap: 16px; margin-bottom: 20px; }
         .flex-group .form-group { flex: 1; margin-bottom: 0; }
@@ -111,7 +36,7 @@
         #appSection { display: none; }
         .output-box { margin-top: 32px; border-top: 1px solid var(--border-color); padding-top: 32px; display: none; }
         .output-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .btn-copy { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-color); padding: 6px 12px; font-size: 12px; border-radius: 6px; width: auto; }
+        .btn-copy { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-color); padding: 6px 12px; font-size: 12px; border-radius: 6px; width: auto; cursor: pointer; }
         #result { background: rgba(0, 0, 0, 0.15); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; font-size: 15px; line-height: 1.6; white-space: pre-wrap; }
         .loader { display: none; text-align: center; margin-top: 20px; color: var(--text-muted); }
         .spinner { width: 24px; height: 24px; border: 3px solid rgba(255,255,255,0.1); border-radius: 50%; border-top-color: var(--primary); animation: spin 1s linear infinite; margin: 0 auto 12px auto; }
@@ -124,7 +49,7 @@
         <div class="logo-area">
             <div class="logo-icon">IT</div>
             <div>
-                <h1 style="margin: 0; font-size: 22px;">ImmoText AI Pro</h1>
+                <h1 style="margin: 0; font-size: 22px; font-weight: 700; background: linear-gradient(135deg, #fff 0%, #93c5fd 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">ImmoText AI Pro</h1>
                 <div style="color: var(--text-muted); font-size: 12px;">Enterprise Platform</div>
             </div>
         </div>
@@ -133,6 +58,7 @@
             <span>Secure Connection</span>
         </div>
     </div>
+
     <div id="loginSection">
         <div class="form-group" style="margin-top: 20px;">
             <label for="passwordInput">Enterprise Lizenzschlüssel eingeben</label>
@@ -140,6 +66,7 @@
         </div>
         <button onclick="checkLogin()">Plattform freischalten</button>
     </div>
+
     <div id="appSection">
         <div class="form-group">
             <label for="title">Objekttitel / Typ</label>
@@ -214,6 +141,8 @@
 </div>
 <script>
     let savedPassword = "";
+    let currentSocialMediaText = "";
+
     function checkLogin() {
         const pass = document.getElementById('passwordInput').value;
         if(!pass) { alert('Bitte Passwort eingeben!'); return; }
@@ -221,8 +150,6 @@
         document.getElementById('loginSection').style.display = 'none';
         document.getElementById('appSection').style.display = 'block';
     }
-// Variable, um den Social Media Text für den Kopier-Button zu merken
-    let currentSocialMediaText = "";
 
     async function generateExpose() {
         const title = document.getElementById('title').value;
@@ -256,10 +183,8 @@
                 body: JSON.stringify({ title, size, rooms, price, year, energy, location, tone, features, password: savedPassword })
             });
             const data = await response.json();
-            
             if(data.success) { 
                 resultDiv.innerText = data.text; 
-                // Hier merken wir uns den Social Media Text!
                 currentSocialMediaText = data.socialMedia || "";
             } else { 
                 resultDiv.innerText = "Fehler: " + data.error; 
@@ -275,7 +200,6 @@
             btn.style.display = 'block'; 
         }
     }
-
     function downloadWord() {
         const title = document.getElementById("title").value || "Immobilien-Exposé";
         const size = document.getElementById("size").value || "Nicht angegeben";
@@ -285,7 +209,6 @@
         const energy = document.getElementById("energy").value || "Nicht angegeben";
         const location = document.getElementById("location").value || "Nicht angegeben";
         const text = document.getElementById("result").innerText;
-        
         let formattedHtml = text
             .replace(/^# (.+)$/gm, '<h1 style="color: #1e3a8a; font-family: \'Segoe UI\', Arial, sans-serif; font-size: 24pt; margin-bottom: 12pt; border-bottom: 2px solid #2563eb; padding-bottom: 6pt;">$1</h1>')
             .replace(/^## (.+)$/gm, '<h2 style="color: #2563eb; font-family: \'Segoe UI\', Arial, sans-serif; font-size: 16pt; margin-top: 18pt; margin-bottom: 6pt;">$1</h2>')
@@ -297,20 +220,17 @@
             <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://w3.org">
             <head>
                 <meta charset="utf-8">
-                <title>Exposé</title>
-                <!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View><w:Zoom>100</w:Zoom></w:WordDocument></xml><![endif]-->
                 <style>
                     body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 11pt; line-height: 1.6; color: #334155; }
                     p { margin-bottom: 10pt; }
-                    .data-table { width: 100%; border-collapse: collapse; margin-top: 15pt; margin-bottom: 20pt; font-family: 'Segoe UI', Arial, sans-serif; }
-                    .data-table th { background-color: #1e3a8a; color: #ffffff; padding: 8pt; text-align: left; font-size: 11pt; border: 1px solid #1e3a8a; }
+                    .data-table { width: 100%; border-collapse: collapse; margin-top: 15pt; margin-bottom: 20pt; }
+                    .data-table th { background-color: #1e3a8a; color: #ffffff; padding: 8pt; text-align: left; font-size: 11pt; }
                     .data-table td { padding: 8pt; border: 1px solid #cbd5e1; font-size: 10.5pt; color: #334155; }
-                    .data-table tr:nth-child(even) { background-color: #f8fafc; }
                 </style>
             </head>
             <body>
                 <div style="padding: 20px;">
-                    <h1 style="color: #1e3a8a; font-family: 'Segoe UI', Arial, sans-serif; font-size: 26pt; margin-bottom: 6pt;">PROJEKT-EXPOSÉ</h1>
+                    <h1 style="color: #1e3a8a; font-size: 26pt; margin-bottom: 6pt;">PROJEKT-EXPOSÉ</h1>
                     <p style="font-size: 13pt; color: #64748b; margin-bottom: 20pt;">\${title} in \${location}</p>
                     <table class="data-table">
                         <thead><tr><th colspan="2">Objekt-Eckdaten im Überblick</th></tr></thead>
@@ -319,7 +239,7 @@
                             <tr><td style="font-weight: bold;">Wohnfläche</td><td>\${size} m²</td></tr>
                             <tr><td style="font-weight: bold;">Zimmeranzahl</td><td>\${rooms}</td></tr>
                             <tr><td style="font-weight: bold;">Kaufpreis</td><td>\${price} €</td></tr>
-                            <tr><td style="font-weight: bold;">Baujahr</td><td>\${year}</td></tr>
+                            <tr><td style="font-weight: bold;">Baujahr</td><td>\---\${year}</td></tr>
                             <tr><td style="font-weight: bold;">Energieeffizienzklasse</td><td>\${energy}</td></tr>
                         </tbody>
                     </table>
@@ -329,30 +249,21 @@
             </body>
             </html>
         `;
-
         const blob = new Blob(['\ufeff' + wordDocument], { type: "application/msword" });
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
-        a.href = url; 
-        a.download = "Premium_Immobilien_Expose.doc"; 
-        document.body.appendChild(a); 
-        a.click(); 
-        document.body.removeChild(a); 
-        URL.revokeObjectURL(url);
+        a.href = url; a.download = "Premium_Immobilien_Expose.doc"; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
     }
 
     function copyText() { 
         navigator.clipboard.writeText(document.getElementById('result').innerText); 
-        alert('Exposé-Text in Zwischenablage kopiert! 📋'); 
+        alert('Exposé-Text kopiert! 📋'); 
     }
 
-    function copySocialMedia() {
-        if(!currentSocialMediaText) {
-            alert('Kein Social Media Post vorhanden!');
-            return;
-        }
+    function copySocialMedia() { 
+        if(!currentSocialMediaText) { alert('Kein Post vorhanden!'); return; } 
         navigator.clipboard.writeText(currentSocialMediaText); 
-        alert('Social Media Post inklusive Emojis & Hashtags kopiert! 📱✨'); 
+        alert('Social Media Post kopiert! 📱✨'); 
     }
 </script>
 </body>
