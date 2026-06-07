@@ -183,14 +183,17 @@
                 body: JSON.stringify({ title, size, rooms, price, year, energy, location, tone, features, password: savedPassword })
             });
             const data = await response.json();
+            
             if(data.success) { 
                 resultDiv.innerText = data.text; 
+                // Hier greifen wir den Social-Media-Text ab
                 currentSocialMediaText = data.socialMedia || "";
             } else { 
                 resultDiv.innerText = "Fehler: " + data.error; 
                 currentSocialMediaText = "";
             }
             outputBox.style.display = 'block';
+ 
         } catch (e) {
             resultDiv.innerText = "Verbindungsfehler zum Server.";
             outputBox.style.display = 'block';
