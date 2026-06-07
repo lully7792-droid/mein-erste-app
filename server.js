@@ -1,60 +1,58 @@
-require('dotenv').config();
-const express = require('express');
-const path = require('path');
-const OpenAI = require('openai');
+import express from 'express';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import OpenAI from 'openai';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+app.use(express.json());
+app.use(express.static(__dirname));
 
+// Hier deinen echten OpenAI Key eintragen, sobald aufgeladen:
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY
 });
 
-app.use(express.json());
-app.use(express.static(path.join(__dirname)));
+// Dein geheimes Passwort für die App
+const SECRET_PASSWORD = "makler-erfolg";
 
-// 🔒 DEIN GEHEIMES PASSWORT FÜR KUNDEN
-const ACCES_PASSWORD = "IMMO-ERFOLG-2026";
+app.post('/api/generate', async (expressReq, expressRes) => {
+    const { title, size, rooms, price, year, energy, location, tone, features, password } = expressReq.body;
 
-app.post('/api/generate', async (req, res) => {
+    if (password !== SECRET_PASSWORD) {
+        return expressRes.json({ success: false, error: "Ungültiger Enterprise Lizenzschlüssel!" });
+    }
+
+    const prompt = `Du bist ein精英-Immobilienmakler. Schreibe ein hochprofessionelles, verkaufsstarkes Exposé für folgende Immobilie.
+    Titel/Typ: ${title}
+    Lage: ${location}
+    Wohnfläche: ${size} m²
+    Zimmer: ${rooms}
+    Kaufpreis: ${price} €
+    Baujahr: ${year}
+    Energieklasse: ${energy}
+    Besondere Merkmale: ${features}
+    
+    Der Schreibstil muss absolut ${tone} sein.
+    Strukturiere das Exposé mit einer packenden Überschrift, einem emotionalen Einleitungstext (Objektbeschreibung), einer Übersicht der Highlights und einem klaren Aufruf zur Kontaktaufnahme (Call to Action).`;
+
     try {
-        const { title, size, rooms, price, year, energy, location, tone, features, password } = req.body;
-
-        // 1. Passwortprüfung auf dem Server
-        if (password !== ACCES_PASSWORD) {
-            return res.json({ success: false, error: "Ungültiger Lizenzschlüssel! Zugriff verweigert." });
-        }
-
-        // 2. Wir füttern das Gehirn mit den neuen Profi-Daten
-        const prompt = `Schreibe ein professionelles Immobilien-Exposé mit folgenden Parametern:
-        - Typ: ${title}
-        - Lage: ${location}
-        - Wohnfläche: ${size ? size + ' m²' : 'Nicht angegeben'}
-        - Zimmer: ${rooms ? rooms : 'Nicht angegeben'}
-        - Kaufpreis: ${price ? price + ' €' : 'Nicht angegeben'}
-        - Baujahr: ${year ? year : 'Nicht angegeben'}
-        - Energieeffizienzklasse: ${energy}
-        - Besondere Highlights: ${features ? features : 'Keine angegeben'}
-
-        WICHTIG - Wähle exakt folgenden Tonfall für den Text: Bitte schreibe den Text ${tone}.
-        Strukturiere das Exposé mit einer packenden Überschrift, einem fesselnden Einleitungstext und einer Übersicht der Highlights.`;
-
-        const completion = await openai.chat.completions.create({
+        const response = await openai.chat.completions.create({
             model: "gpt-4o-mini",
-            messages: [
-                { role: "system", content: "Du bist ein meisterhafter Immobilien-Texter für kommerzielle Premium-Exposés." },
-                { role: "user", content: prompt }
-            ],
+            messages: [{ role: "user", content: prompt }],
+            temperature: 0.7
         });
 
-        res.json({ success: true, text: completion.choices[0].message.content });
-
+        expressRes.json({ success: true, text: response.choices[0].message.content });
     } catch (error) {
-        console.error("Fehler:", error);
-        res.json({ success: false, error: error.message });
+        console.error("OpenAI Server-Fehler:", error);
+        expressRes.json({ success: false, error: error.message });
     }
 });
 
-app.listen(PORT, () => {
-    console.log(`\n🟢 Enterprise-Server läuft fehlerfrei auf Port ${PORT}\n`);
+app.listen(3000, () => {
+    console.log("🟢 ERFOLG! Deine App läuft jetzt als echter Server.");
+    console.log("🟢 Öffne im Browser die Adresse: http://localhost:3000");
 });
