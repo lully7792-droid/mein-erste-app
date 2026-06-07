@@ -54,7 +54,8 @@ app.post('/api/generate', async (expressReq, expressRes) => {
 
         const fullResponseText = response.choices[0].message.content;
         
-        // Teilt die Antwort der KI absolut sicher auf
+ 
+        // Teilt die Antwort der KI absolut sicher auf (Nutzt die korrekten Listen-Indizes [0] und [1])
         let exposeText = fullResponseText;
         let socialMediaText = "Post wird generiert...";
 
