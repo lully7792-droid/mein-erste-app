@@ -38,6 +38,56 @@
             padding: 40px;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
         }
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 20px;
+            margin-bottom: 28px;
+        }
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .logo-icon {
+            background: linear-gradient(135deg, #2563eb 0%, #10b981 100%);
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            color: #fff;
+            box-shadow: 0 0 15px rgba(37, 99, 235, 0.4);
+        }
+        .status-badge {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            color: var(--accent);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            background-color: var(--accent);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
         h1 {
             font-size: 28px;
             font-weight: 700;
@@ -70,8 +120,19 @@
 </head>
 <body>
 <div class="container">
-    <h1>ImmoText AI Pro</h1>
-    <div class="subtitle">Enterprise-Plattform für Immobilien-Umsätze</div>
+    <div class="app-header">
+        <div class="logo-area">
+            <div class="logo-icon">IT</div>
+            <div>
+                <h1 style="margin: 0; font-size: 22px;">ImmoText AI Pro</h1>
+                <div style="color: var(--text-muted); font-size: 12px;">Enterprise Platform</div>
+            </div>
+        </div>
+        <div class="status-badge">
+            <div class="status-dot"></div>
+            <span>Secure Connection</span>
+        </div>
+    </div>
     <div id="loginSection">
         <div class="form-group" style="margin-top: 20px;">
             <label for="passwordInput">Enterprise Lizenzschlüssel eingeben</label>
