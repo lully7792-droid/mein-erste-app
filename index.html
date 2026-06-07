@@ -205,6 +205,7 @@
                 <div style="display: flex; gap: 8px;">
                     <button class="btn-copy" onclick="copyText()">Text kopieren</button>
                     <button class="btn-copy" style="background: rgba(37, 99, 235, 0.2); border-color: var(--primary);" onclick="downloadWord()">Als Word-Datei herunterladen</button>
+                    <button class="btn-copy" style="background: rgba(16, 185, 129, 0.2); border-color: var(--accent);" onclick="copySocialMedia()">Social Media Post kopieren 📱</button>
                 </div>
             </div>
             <div id="result"></div>
@@ -220,6 +221,9 @@
         document.getElementById('loginSection').style.display = 'none';
         document.getElementById('appSection').style.display = 'block';
     }
+// Variable, um den Social Media Text für den Kopier-Button zu merken
+    let currentSocialMediaText = "";
+
     async function generateExpose() {
         const title = document.getElementById('title').value;
         const size = document.getElementById('size').value;
@@ -246,7 +250,7 @@
         loader.style.display = 'block';
 
         try {
-            const response = await fetch('https://mein-erste-app.onrender.com/api/generate', {
+            const response = await fetch('https://onrender.com', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ title, size, rooms, price, year, energy, location, tone, features, password: savedPassword })
@@ -255,22 +259,21 @@
             
             if(data.success) { 
                 resultDiv.innerText = data.text; 
+                // Hier merken wir uns den Social Media Text!
+                currentSocialMediaText = data.socialMedia || "";
             } else { 
                 resultDiv.innerText = "Fehler: " + data.error; 
+                currentSocialMediaText = "";
             }
             outputBox.style.display = 'block';
         } catch (e) {
             resultDiv.innerText = "Verbindungsfehler zum Server.";
             outputBox.style.display = 'block';
+            currentSocialMediaText = "";
         } finally { 
             loader.style.display = 'none'; 
             btn.style.display = 'block'; 
         }
-    }
-
-    function copyText() { 
-        navigator.clipboard.writeText(document.getElementById('result').innerText); 
-        alert('In Zwischenablage kopiert!'); 
     }
 
     function downloadWord() {
@@ -336,6 +339,20 @@
         a.click(); 
         document.body.removeChild(a); 
         URL.revokeObjectURL(url);
+    }
+
+    function copyText() { 
+        navigator.clipboard.writeText(document.getElementById('result').innerText); 
+        alert('Exposé-Text in Zwischenablage kopiert! 📋'); 
+    }
+
+    function copySocialMedia() {
+        if(!currentSocialMediaText) {
+            alert('Kein Social Media Post vorhanden!');
+            return;
+        }
+        navigator.clipboard.writeText(currentSocialMediaText); 
+        alert('Social Media Post inklusive Emojis & Hashtags kopiert! 📱✨'); 
     }
 </script>
 </body>

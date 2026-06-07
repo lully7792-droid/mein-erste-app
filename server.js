@@ -25,7 +25,7 @@ app.post('/api/generate', async (expressReq, expressRes) => {
         return expressRes.json({ success: false, error: "Ungültiger Enterprise Lizenzschlüssel!" });
     }
 
-    const prompt = `Du bist ein精英-Immobilienmakler. Schreibe ein hochprofessionelles, verkaufsstarkes Exposé für folgende Immobilie.
+    const prompt = `Du bist ein Elite-Immobilienmakler und Social Media Experte. Schreibe zwei Texte für folgende Immobilie:
     Titel/Typ: ${title}
     Lage: ${location}
     Wohnfläche: ${size} m²
@@ -36,7 +36,14 @@ app.post('/api/generate', async (expressReq, expressRes) => {
     Besondere Merkmale: ${features}
     
     Der Schreibstil muss absolut ${tone} sein.
-    Strukturiere das Exposé mit einer packenden Überschrift, einem emotionalen Einleitungstext (Objektbeschreibung), einer Übersicht der Highlights und einem klaren Aufruf zur Kontaktaufnahme (Call to Action).`;
+    
+    TEXT 1 (Klassisches Exposé):
+    Strukturiere das Exposé mit einer packenden Überschrift, einem emotionalen Einleitungstext (Objektbeschreibung), einer Übersicht der Highlights und einem klaren Aufruf zur Kontaktaufnahme (Call to Action).
+    
+    TEXT 2 (Social Media Post):
+    Schreibe einen separaten, extrem packenden Social Media Post für Instagram/LinkedIn. Nutze passende Emojis, hebe die 3 wichtigsten Fakten hervor und füge am Ende relevante Hashtags (z.B. #immobilien, #makler) sowie einen Call to Action (z.B. "Jetzt Exposé anfordern!") hinzu.
+    
+    WICHTIG: Trenne Text 1 und Text 2 in deiner Antwort strikt mit dem Wortzeichen "---SOCIAL_MEDIA_SPLIT---" (ohne Anführungszeichen)! Aber zeige dieses Trennwort nicht im Text an.`;
 
     try {
         const response = await openai.chat.completions.create({
@@ -45,12 +52,22 @@ app.post('/api/generate', async (expressReq, expressRes) => {
             temperature: 0.7
         });
 
-        expressRes.json({ success: true, text: response.choices[0].message.content });
+        const fullResponseText = response.choices[0].message.content;
+        
+        // Teilt die Antwort der KI in Exposé und Social Media Post auf
+        const parts = fullResponseText.split("---SOCIAL_MEDIA_SPLIT---");
+        const exposeText = parts[0] ? parts[0].trim() : fullResponseText;
+        const socialMediaText = parts[1] ? parts[1].trim() : "Post wird generiert...";
+
+        expressRes.json({ 
+            success: true, 
+            text: exposeText,
+            socialMedia: socialMediaText
+        });
     } catch (error) {
         console.error("OpenAI Server-Fehler:", error);
         expressRes.json({ success: false, error: error.message });
     }
-});
 
 app.listen(3000, () => {
     console.log("🟢 ERFOLG! Deine App läuft jetzt als echter Server.");
