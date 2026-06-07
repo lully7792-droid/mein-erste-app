@@ -52,19 +52,16 @@ app.post('/api/generate', async (expressReq, expressRes) => {
             temperature: 0.7
         });
 
-        const fullResponseText = response.choices[0].message.content;
+        const fullResponseText = response.choices.message.content;
         
- 
-        // Teilt die Antwort der KI absolut sicher auf (Nutzt die korrekten Listen-Indizes [0] und [1])
         let exposeText = fullResponseText;
-        let socialMediaText = "Post wird generiert...";
+        let socialMediaText = "Beitrag wird generiert...";
 
         if (fullResponseText.includes("---SOCIAL_MEDIA_SPLIT---")) {
             const parts = fullResponseText.split("---SOCIAL_MEDIA_SPLIT---");
             exposeText = parts[0] ? parts[0].trim() : fullResponseText;
-            socialMediaText = parts[1] ? parts[1].trim() : "Post wird generiert...";
+            socialMediaText = parts[1] ? parts[1].trim() : "Beitrag wird generiert...";
         } else {
-            // Sicherheitsnetz: Falls kein Split da ist, bekommt beides den Volltext
             exposeText = fullResponseText;
             socialMediaText = fullResponseText;
         }
@@ -78,7 +75,7 @@ app.post('/api/generate', async (expressReq, expressRes) => {
         console.error("OpenAI Server-Fehler:", error);
         expressRes.json({ success: false, error: error.message });
     }
-}); // <-- Hier am Ende des Catch-Blocks schließt die Route jetzt absolut richtig!
+});
 
 app.listen(3000, () => {
     console.log("🟢 ERFOLG! Deine App läuft jetzt als echter Server.");
