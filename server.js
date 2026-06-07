@@ -68,6 +68,7 @@ app.post('/api/generate', async (expressReq, expressRes) => {
         console.error("OpenAI Server-Fehler:", error);
         expressRes.json({ success: false, error: error.message });
     }
+}); // <-- Hier am Ende des Catch-Blocks schließt die Route jetzt absolut richtig!
 
 app.listen(3000, () => {
     console.log("🟢 ERFOLG! Deine App läuft jetzt als echter Server.");
