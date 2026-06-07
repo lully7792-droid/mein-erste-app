@@ -54,10 +54,19 @@ app.post('/api/generate', async (expressReq, expressRes) => {
 
         const fullResponseText = response.choices[0].message.content;
         
-        // Teilt die Antwort der KI in Exposé und Social Media Post auf
-        const parts = fullResponseText.split("---SOCIAL_MEDIA_SPLIT---");
-        const exposeText = parts[0] ? parts[0].trim() : fullResponseText;
-        const socialMediaText = parts[1] ? parts[1].trim() : "Post wird generiert...";
+        // Teilt die Antwort der KI absolut sicher auf
+        let exposeText = fullResponseText;
+        let socialMediaText = "Post wird generiert...";
+
+        if (fullResponseText.includes("---SOCIAL_MEDIA_SPLIT---")) {
+            const parts = fullResponseText.split("---SOCIAL_MEDIA_SPLIT---");
+            exposeText = parts[0] ? parts[0].trim() : fullResponseText;
+            socialMediaText = parts[1] ? parts[1].trim() : "Post wird generiert...";
+        } else {
+            // Sicherheitsnetz: Falls kein Split da ist, bekommt beides den Volltext
+            exposeText = fullResponseText;
+            socialMediaText = fullResponseText;
+        }
 
         expressRes.json({ 
             success: true, 
