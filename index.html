@@ -219,9 +219,10 @@ async function generateExpose() {
         alert("Keine Credits mehr übrig! Bitte lade dein Konto auf.");
         return;
     }
-    
+
     const title = document.getElementById('title').value;
     const price = document.getElementById('price').value;
+    const location = document.getElementById('location').value;
     const year = document.getElementById('year').value;
     const energy = document.getElementById('energy').value;
     const notes = document.getElementById('notes').value;
@@ -241,7 +242,7 @@ async function generateExpose() {
         const response = await fetch('/api/generate-expose', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ title, price, year, energy, notes, password: savedPassword })
+            body: JSON.stringify({ title, price, location, year, energy, notes, password: savedPassword })
         });
         const data = await response.json();
         if (data.success) {

@@ -19,7 +19,7 @@ app.use(express.static(__dirname));
 // ROUTE 1: KI-EXPOSÉ-GENERATOR
 // ==========================================
 app.post('/api/generate-expose', async (req, res) => {
-    const { title, price, year, energy, notes, password } = req.body;
+    const { title, price, location, year, energy, notes, password } = req.body; // 🎯 Holt jetzt auch location!
 
     if (password !== "makler-erfolg") {
         return res.status(401).json({ success: false, error: "Nicht autorisiert" });
@@ -33,7 +33,7 @@ app.post('/api/generate-expose', async (req, res) => {
                     role: "system", 
                     content: "Du bist ein professioneller Immobilienmakler. Schreibe ein ansprechendes, verkaufsstarkes Exposé auf Deutsch basierend auf den bereitgestellten Objektdaten." 
                 },
-                { role: "user", content: `Titel: ${title}, Preis: ${price} EUR, Baujahr: ${year}, Energieausweis: ${energy}, Notizen: ${notes}` }
+                { role: "user", content: `Titel: ${title}, Lage/Ort: ${location || "Nicht angegeben"}, Preis: ${price} EUR, Baujahr: ${year}, Energieausweis: ${energy}, Notizen: ${notes}` } // 🎯 Ort wird an OpenAI übergeben!
             ]
         });
 
