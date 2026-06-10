@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <html lang="de">
+     <!-- PDF-Bibliothek laden -->
+    <script src="https://cloudflare.com"></script>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -228,6 +230,7 @@
                 <h4 style="font-weight: bold; color: var(--primary); margin-bottom: 8px;">Dein generiertes Exposé:</h4>
                 <div id="exposeResultText"></div>
                 <button class="btn-secondary" onclick="copyExpose()">📋 Text kopieren</button>
+                <button class="btn-secondary" style="border-color: var(--accent); color: var(--accent);" onclick="downloadPDF()">📄 Als PDF herunterladen</button>
             </div>
         </div>
 
