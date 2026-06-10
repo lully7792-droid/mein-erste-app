@@ -89,6 +89,9 @@
             <div class="form-group">
                 <label for="price">Kaufpreis (€)</label>
                 <input type="number" id="price" placeholder="z.B. 350000">
+            <div class="form-group">
+                <label for="location">Ort / Lage der Immobilie</label>
+                <input type="text" id="location" placeholder="z.B. Berlin-Mitte oder Wuppertal">
             </div>
             <div class="form-group">
                 <label for="year">Baujahr</label>
@@ -368,7 +371,7 @@ async function generateSocialMedia() {
         const response = await fetch('/api/generate-social', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ title, price, notes, password: savedPassword })
+            body: JSON.stringify({ title, price, location, notes, password: savedPassword })
         });
         const data = await response.json();
         if (data.success) {
