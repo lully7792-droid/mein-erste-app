@@ -122,7 +122,7 @@ app.post('/api/generate-mail', async (req, res) => {
 // ROUTE 4: KI-SOCIAL-MEDIA-GENERATOR
 // ==========================================
 app.post('/api/generate-social', async (req, res) => {
-    const { title, price, notes, password } = req.body;
+    const { title, price, location, notes, password } = req.body;
 
     if (password !== "makler-erfolg") {
         return res.status(401).json({ success: false, error: "Nicht autorisiert" });
@@ -136,7 +136,7 @@ app.post('/api/generate-social', async (req, res) => {
                     role: "system", 
                     content: "Du bist ein genialer Social-Media-Manager für Immobilien. Generiere zwei separate Posts auf Deutsch basierend auf den Objektdaten. Trenne die Posts strikt mit dem Wort '===TRENNUNG==='. Post 1 ist für Instagram (emotional, packend, mit passenden Emojis und Immobilien-Hashtags). Post 2 ist für LinkedIn (professionell, B2B-orientiert, Fokus auf Investment und Fakten, weniger Emojis)." 
                 },
-                { role: "user", content: `Objekt: ${title}, Preis: ${price} EUR, Details: ${notes}` }
+                { role: "user", content: `Objekt: ${title}, Lage/Ort: ${location}, Preis: ${price} EUR, Details: ${notes}` }
             ]
         });
 
