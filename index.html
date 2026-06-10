@@ -1,339 +1,219 @@
 <!DOCTYPE html>
 <html lang="de">
-     <!-- PDF-Bibliothek laden -->
-    <script src="https://cloudflare.com"></script>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ImmoFlow - Makler Dashboard</title>
+    <title>ImmoFlow - Das Makler Dashboard</title>
     <style>
         :root {
-            --bg-main: #0f172a;
-            --bg-card: #1e293b;
-            --primary: #3b82f6;
-            --primary-hover: #2563eb;
+            --bg-color: #111827;
+            --card-bg: #1f2937;
+            --text-color: #f3f4f6;
             --accent: #10b981;
-            --text: #f8fafc;
-            --text-muted: #94a3b8;
-            --border: #334155;
+            --border-color: #374151;
         }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
         body {
-            background-color: var(--bg-main);
-            color: var(--text);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
             padding: 20px;
             display: flex;
             justify-content: center;
         }
-
         .container {
             width: 100%;
             max-width: 800px;
         }
-
-        h1, h2, h3 {
-            margin-bottom: 20px;
-            color: var(--text);
-        }
-
         .card {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
             padding: 24px;
             margin-bottom: 24px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
         }
-
-        .form-group {
-            margin-bottom: 16px;
-        }
-
-        .flex-group {
-            display: flex;
-            gap: 16px;
-            margin-bottom: 16px;
-        }
-
-        .flex-group .form-group {
-            flex: 1;
-            margin-bottom: 0;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 0.875rem;
-            font-weight: 500;
-            color: var(--text-muted);
-        }
-
-        input, select, textarea {
+        h1, h2, h3, h4 { color: #ffffff; margin-top: 0; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input, textarea, select {
             width: 100%;
-            background-color: var(--bg-main);
-            border: 1px solid var(--border);
+            padding: 10px;
             border-radius: 6px;
-            padding: 10px 14px;
-            color: var(--text);
-            font-size: 1rem;
-            transition: border-color 0.2s;
+            border: 1px solid var(--border-color);
+            background: #111827;
+            color: #ffffff;
+            box-sizing: border-box;
         }
-
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-
-        button {
-            background-color: var(--primary);
+        .btn {
+            background-color: var(--accent);
             color: white;
+            padding: 12px 20px;
             border: none;
             border-radius: 6px;
-            padding: 12px 20px;
-            font-size: 1rem;
-            font-weight: 600;
             cursor: pointer;
-            width: 100%;
-            transition: background-color 0.2s;
+            font-weight: bold;
+            font-size: 16px;
         }
-
-        button:hover {
-            background-color: var(--primary-hover);
-        }
-
-        .btn-secondary {
-            background-color: transparent;
-            border: 1px solid var(--border);
-            color: var(--text);
-            margin-top: 8px;
-        }
-
-        .btn-secondary:hover {
-            background-color: rgba(255,255,255,0.05);
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        .result-box {
-            background-color: rgba(15, 23, 42, 0.6);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 16px;
-            margin-top: 16px;
-            white-space: pre-wrap;
-            font-size: 0.95rem;
-            line-height: 1.5;
-        }
+        .btn:disabled { background-color: #4b5563; cursor: not-allowed; }
+        .hidden { display: none; }
+        .description { color: #9ca3af; font-size: 14px; margin-bottom: 15px; }
     </style>
 </head>
 <body>
-
 <div class="container">
-    <h1>🚀 ImmoFlow Dashboard</h1>
 
-    <!-- 1. LOGIN BEREICH -->
+    <!-- LOGIN SECTION -->
     <div id="loginSection" class="card">
-        <h2>🔒 Plattform freischalten</h2>
+        <h2>🔒 ImmoFlow Freischalten</h2>
         <div class="form-group">
-            <label for="passwordInput">Enterprise-Passwort</label>
+            <label for="passwordInput">Plattform-Passwort:</label>
             <input type="password" id="passwordInput" placeholder="Passwort eingeben...">
         </div>
-        <button onclick="checkLogin()">Freischalten</button>
+        <button onclick="checkLogin()" class="btn" style="width:100%;">Plattform freischalten</button>
     </div>
-      <!-- HAUPTAPP (Erst nach Login sichtbar) -->
+
+    <!-- HAUPTAPP (Erst nach Login sichtbar) -->
     <div id="appSection" class="hidden">
-           <!-- NEU: Dashboard-Statistiken -->
-        <div class="flex-group" style="margin-bottom: 24px;">
-            <div class="card" style="flex: 1; margin-bottom: 0; padding: 15px; text-align: center; border-bottom: 3px solid var(--primary);">
-                <div style="font-size: 0.875rem; color: var(--text-muted);">Erstellte Exposés</div>
-                <div id="statsExposeCount" style="font-size: 1.75rem; font-weight: bold; color: var(--text); margin-top: 5px;">0</div>
+        
+        <!-- CREDIT DISPLAY -->
+        <div class="card"        <!-- FEATURE 1: EXPOSÉ GENERATOR -->
+        <div class="card">
+            <h2>✨ KI-Exposé-Generator</h2>
+            <p class="description">Fülle die Objektdaten aus, damit die KI ein verkaufsstarkes Exposé schreibt.</p>
+            
+            <div class="form-group">
+                <label for="title">Objekttitel / Überschrift</label>
+                <input type="text" id="title" placeholder="z.B. Gemütliches 3-Zimmer-Reihenhaus mit Garten">
             </div>
-            <div class="card" style="flex: 1; margin-bottom: 0; padding: 15px; text-align: center; border-bottom: 3px solid var(--accent);">
-                <div style="font-size: 0.875rem; color: var(--text-muted);">Analysierte Fotos</div>
-                <div id="statsImageCount" style="font-size: 1.75rem; font-weight: bold; color: var(--text); margin-top: 5px;">0</div>
+            <div class="form-group">
+                <label for="price">Kaufpreis (€)</label>
+                <input type="number" id="price" placeholder="z.B. 350000">
             </div>
-            <div class="card" style="flex: 1; margin-bottom: 0; padding: 15px; text-align: center; border-bottom: 3px solid #a855f7;">
-                <div style="font-size: 0.875rem; color: var(--text-muted);">Generierte E-Mails</div>
-                <div id="statsEmailCount" style="font-size: 1.75rem; font-weight: bold; color: var(--text); margin-top: 5px;">0</div>
+            <div class="form-group">
+                <label for="year">Baujahr</label>
+                <input type="number" id="year" placeholder="z.B. 1995">
+            </div>
+            <div class="form-group">
+                <label for="energy">Energieausweis-Klasse</label>
+                <select id="energy">
+                    <option value="A+">A+</option>
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                    <option value="D">D</option>
+                    <option value="E">E</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="notes">Besondere Highlights / Notizen</label>
+                <textarea id="notes" placeholder="z.B. Einbauküche inklusive, Fußbodenheizung, renoviert 2022..." style="height:100px;"></textarea>
+            </div>
+            
+            <button onclick="generateExpose()" class="btn" style="width: 100%;">✨ KI-Exposé generieren</button>
+
+            <div id="exposeOutput" class="hidden" style="margin-top: 24px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 6px;">
+                <h3>Dein generiertes Exposé:</h3>
+                <p id="exposeText" style="white-space: pre-wrap;"></p>
+                <button onclick="copyToClipboard('exposeText')" class="btn" style="background: #4b5563; margin-top: 10px; font-size: 14px;">📋 Text kopieren</button>
             </div>
         </div>
-        
-        <!-- NEU: FEATURE 1 - KI-BILDANALYSE -->
-        <div class="card" style="border-left: 4px solid var(--primary);">
-            <h3>📸 KI-Bildanalyse (Ausstattung erkennen)</h3>
-            <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 15px;">Lade ein Raumfoto hoch. Die KI erkennt automatisch Highlights wie Einbauküchen, Bodenbeläge oder moderne Bäder.</p>
+
+        <!-- FEATURE: KI-BILDANALYSE -->
+        <div class="card">
+            <h2>📸 KI-Bildanalyse & Highlights</h2>
+            <p class="description">Lade ein Raum- oder Außenfoto hoch. Die KI extrahiert die stärksten Verkaufsargumente.</p>
             <div class="form-group">
-                <label>Foto auswählen</label>
                 <input type="file" id="imageInput" accept="image/*">
             </div>
-            <button id="analyzeImageBtn" type="button">Bild analysieren & Highlights extrahieren</button>
-            <div id="analysisResult" class="hidden result-box">
-                <h4 style="font-weight: bold; color: var(--accent); margin-bottom: 10px;">Erkannte Highlights:</h4>
-                <div id="analysisText"></div>
-            </div>
-        </div>
-<!-- FEATURE 2: KI-MAIL-GENERATOR -->
-<div class="card" style="margin-top: 24px;">
-    <h2>✉️ KI-Mail-Generator</h2>
-    <p class="description">Kopiere die Kundenanfrage hier hinein, um sofort eine professionelle Antwort-E-Mail zu generieren.</p>
-    
-    <div class="form-group">
-        <label for="clientRequest">Kundenanfrage / Text aus Portal:</label>
-        <textarea id="clientRequest" placeholder="Hier die Nachricht des Interessenten reinkopieren..." style="width: 100%; height: 120px; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-color);"></textarea>
-    </div>
-
-    <button id="generateMailBtn" class="btn" style="width: 100%; margin-top: 12px;">✉️ Antwort-E-Mail generieren</button>
-
-    <div id="mailResult" class="hidden" style="margin-top: 24px; padding: 15px; background: rgba(16, 185, 129, 0.1); border-left: 4px solid var(--accent); border-radius: 4px;">
-        <h3>Generierte Antwort:</h3>
-        <p id="mailText" style="white-space: pre-wrap; margin-top: 10px; font-family: monospace;"></p>
-    </div>
-</div>
-
-        <!-- NEU: FEATURE 2 - KI-E-MAIL-GENERATOR -->
-        <div class="card" style="border-left: 4px solid var(--accent);">
-            <h3>✉️ KI-E-Mail-Generator (Kundenanfragen)</h3>
-            <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 15px;">Kopiere die Anfrage des Kunden hier hinein. Die KI erstellt automatisch eine professionelle Antwort-Mail.</p>
-            <div class="form-group">
-                <label>Kundenanfrage hier hineinkopieren:</label>
-                <textarea id="clientQueryInput" rows="4" placeholder="Guten Tag, ich interessiere mich für das Objekt..."></textarea>
-            </div>
-            <button id="generateEmailBtn" type="button">Antwort-E-Mail generieren</button>
-
-                <h4 style="font-weight: bold; color: var(--primary); margin-bottom: 10px;">Generierte Antwort:</h4>
-                <div id="emailResultText"></div>
+            <button id="analyzeImageBtn" class="btn" style="width: 100%;">Bild analysieren & Highlights extrahieren</button>
+            <div id="analysisResult" class="hidden" style="margin-top: 24px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 6px;">
+                <h3>Bild-Highlights:</h3>
+                <p id="analysisText" style="white-space: pre-wrap;"></p>
+                <button onclick="copyToClipboard('analysisText')" class="btn" style="background: #4b5563; margin-top: 10px; font-size: 14px;">📋 Text kopieren</button>
             </div>
         </div>
 
-        <!-- BESTEHENDE IMMOBILIEN VERWALTUNG -->
+        <!-- FEATURE 2: KI-MAIL-GENERATOR -->
         <div class="card">
-            <h2>🏠 Neue Immobilie anlegen</h2>
+            <h2>✉️ KI-Mail-Generator</h2>
+            <p class="description">Kopiere die Kundenanfrage hier hinein, um sofort eine professionelle Antwort-E-Mail zu generieren.</p>
             <div class="form-group">
-                <label for="title">Objekttitel / Typ</label>
-                <input type="text" id="title" placeholder="z.B. Moderne 3-Zimmer Altbauwohnung">
+                <label for="clientQueryInput">Kundenanfrage / Text aus Portal:</label>
+                <textarea id="clientQueryInput" placeholder="Hier die Nachricht des Interessenten reinkopieren..." style="height: 100px;"></textarea>
             </div>
-
-            <div class="flex-group">
-                <div class="form-group">
-                    <label for="price">Kaufpreis (€)</label>
-                    <input type="number" id="price" placeholder="z.B. 350000">
-                </div>
-                <div class="form-group">
-                    <label for="year">Baujahr</label>
-                    <input type="number" id="year" placeholder="z.B. 1995">
-                </div>
-            </div>
-
-            <div class="flex-group">
-                <div class="form-group">
-                    <label for="energy">Energieklasse</label>
-                    <select id="energy">
-                        <option value="A+">A+</option>
-                        <option value="A">A</option>
-                        <option value="B">B</option>
-                        <option value="C">C</option>
-                        <option value="D">D</option>
-                        <option value="E">E</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="location">Lage / Stadtteil</label>
-                    <input type="text" id="location" placeholder="z.B. Berlin Charlottenburg">
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="premiumFeatures">Premium-Merkmale (Sondereffekte)</label>
-                <textarea id="premiumFeatures" rows="3" placeholder="z.B. Fußbodenheizung, Einbauküche, Balkon, Erstbezug nach Sanierung..."></textarea>
-            </div>
-
-            <button onclick="generateExpose()">✨ KI-Exposé Text generieren</button>
-
-            <div id="exposeResultBox" class="hidden result-box">
-                <h4 style="font-weight: bold; color: var(--primary); margin-bottom: 8px;">Dein generiertes Exposé:</h4>
-                <div id="exposeResultText"></div>
-                <button class="btn-secondary" onclick="copyExpose()">📋 Text kopieren</button>
-                <button class="btn-secondary" style="border-color: var(--accent); color: var(--accent);" onclick="downloadPDF()">📄 Als PDF herunterladen</button>
+            <button id="generateEmailBtn" class="btn" type="button" onclick="generateMail()" style="width: 100%;">Antwort-E-Mail generieren</button>
+            <div id="emailResultBox" class="hidden" style="margin-top: 24px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 6px;">
+                <h3>Generierte Antwort:</h3>
+                <p id="emailResultText" style="white-space: pre-wrap;"></p>
+                <button onclick="copyToClipboard('emailResultText')" class="btn" style="background: #4b5563; margin-top: 10px; font-size: 14px;">📋 Text kopieren</button>
             </div>
         </div>
-
-        <!-- SOCIAL MEDIA MARKETING BEREICH -->
+ style="border-color: var(--accent); background: rgba(16, 185, 129, 0.05);">
+            <h3 id="creditDisplay" style="margin:0; color: var(--accent);">Verbleibende Abfragen: 10</h3>
+        </div>
+        <!-- FEATURE 3: SOCIAL-MEDIA-POST-GENERATOR -->
         <div class="card">
-            <h2>📱 Social Media Postings</h2>
-            <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 16px;">Erzeuge aus den obigen Objektdaten optimierte Postings für Instagram, Facebook und Co.</p>
-            <button onclick="generateSocialMedia()">📢 Marketing Postings erzeugen</button>
-
-            <div id="socialResultBox" class="hidden result-box">
-                <h4 style="font-weight: bold; color: var(--accent); margin-bottom: 8px;">Social Media Vorlagen:</h4>
-                <div id="socialResultText"></div>
-                <button class="btn-secondary" onclick="copySocialMedia()">📋 Postings kopieren</button>
+            <h2>📱 KI-Social-Media-Spezialist</h2>
+            <p class="description">Erstelle aus den Objektdaten sofort optimierte Posts für Instagram und LinkedIn.</p>
+            <button id="generateSocialBtn" class="btn" style="width: 100%;" onclick="generateSocialMedia()">📱 Posts generieren</button>
+            <div id="socialResultBox" class="hidden" style="margin-top: 24px;">
+                <div style="margin-bottom: 15px; padding: 12px; background: rgba(219, 39, 119, 0.1); border-left: 4px solid #db2777; border-radius: 4px;">
+                    <h4>📸 Instagram (mit Hashtags):</h4>
+                    <p id="instaText" style="white-space: pre-wrap; margin-top: 5px;"></p>
+                    <button onclick="copyToClipboard('instaText')" class="btn" style="background: #4b5563; padding: 4px 10px; font-size: 12px; margin-top: 5px;">📋 Kopieren</button>
+                </div>
+                <div style="margin-bottom: 15px; padding: 12px; background: rgba(37, 99, 235, 0.1); border-left: 4px solid #2563eb; border-radius: 4px;">
+                    <h4>💼 LinkedIn (Professionell):</h4>
+                    <p id="linkedinText" style="white-space: pre-wrap; margin-top: 5px;"></p>
+                    <button onclick="copyToClipboard('linkedinText')" class="btn" style="background: #4b5563; padding: 4px 10px; font-size: 12px; margin-top: 5px;">📋 Kopieren</button>
+                </div>
             </div>
         </div>
 
-    </div>
-</div><!-- UPGRADE: KOPIER-BUTTONS FÜR BESTEHENDE BOXEN -->
-<!-- (Tipp: Suche dein vorhandenes 'emailResultBox' und pack den Button direkt unter den Text) -->
-<button onclick="copyToClipboard('emailResultText')" class="btn" style="background: #4b5563; margin-top: 10px; font-size: 14px;">📋 Text kopieren</button>
-
-<!-- FEATURE 3: SOCIAL-MEDIA-POST-GENERATOR -->
-<div class="card" style="margin-top: 24px;">
-    <h2>📱 KI-Social-Media-Spezialist</h2>
-    <p class="description">Erstelle aus den Objektdaten sofort optimierte Posts für Instagram, Facebook und LinkedIn.</p>
-    
-    <button id="generateSocialBtn" class="btn" style="width: 100%; background: var(--accent);" onclick="generateSocialPosts()">📱 Posts generieren</button>
-
-    <div id="socialResultBox" class="hidden" style="margin-top: 24px;">
-        <!-- Instagram -->
-        <div style="margin-bottom: 15px; padding: 12px; background: rgba(219, 39, 119, 0.1); border-left: 4px solid #db2777; border-radius: 4px;">
-            <h4>📸 Instagram (mit Hashtags):</h4>
-            <p id="instaText" style="white-space: pre-wrap; margin-top: 5px;"></p>
-            <button onclick="copyToClipboard('instaText')" class="btn" style="background: #4b5563; padding: 4px 10px; font-size: 12px; margin-top: 5px;">📋 Kopieren</button>
+        <!-- FEATURE 4: HISTORIE / LOCALSTORAGE DATENBANK -->
+        <div class="card">
+            <h2>🗄️ Letzte KI-Generierungen (Gespeichert)</h2>
+            <p class="description">Deine Daten gehen nicht verloren. Hier sind deine letzten Erstellungen auf diesem Gerät:</p>
+            <div id="historyBox" style="max-height: 200px; overflow-y: auto; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 6px;">
+                <p style="color: #9ca3af; font-style: italic;">Noch keine Historie vorhanden...</p>
+            </div>
+            <button onclick="clearHistory()" class="btn" style="background: #ef4444; margin-top: 10px; width: 100%;">🗑️ Historie löschen</button>
         </div>
-        
-        <!-- LinkedIn -->
-        <div style="margin-bottom: 15px; padding: 12px; background: rgba(37, 99, 235, 0.1); border-left: 4px solid #2563eb; border-radius: 4px;">
-            <h4>💼 LinkedIn (Professionell):</h4>
-            <p id="linkedinText" style="white-space: pre-wrap; margin-top: 5px;"></p>
-            <button onclick="copyToClipboard('linkedinText')" class="btn" style="background: #4b5563; padding: 4px 10px; font-size: 12px; margin-top: 5px;">📋 Kopieren</button>
-        </div>
-    </div>
-</div>
 
-<!-- FEATURE 4: HISTORIE / LOCALSTORAGE DATENBANK -->
-<div class="card" style="margin-top: 24px;">
-    <h2>🗄️ Letzte KI-Generierungen (Gespeichert)</h2>
-    <p class="description">Deine Daten gehen nicht verloren. Hier sind deine letzten Erstellungen auf diesem Gerät:</p>
-    <div id="historyBox" style="max-height: 200px; overflow-y: auto; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 6px;">
-        <p style="color: #9ca3af; font-style: italic;">Noch keine Historie vorhanden...</p>
     </div>
-    <button onclick="clearHistory()" class="btn" style="background: #ef4444; margin-top: 10px; width: 100%;">🗑️ Historie löschen</button>
 </div>
 
 <script>
-    
-// Globale Variablen für die App-Logik
 let savedPassword = "";
-let remainingCredits = 10; // Start-Credits für den Makler
+let remainingCredits = 10;
 
-// 1. Die Login-Funktion (Die hat dem Browser komplett gefehlt!)
+function checkLogin() {
+    const passwordInput = document.getElementById('passwordInput').value;
+    if (passwordInput === "makler-erfolg") {
+        savedPassword = passwordInput;
+        document.getElementById('loginSection').style.display = 'none';
+        const app = document.getElementById('appSection');
+        if (app) {
+            app.style.display = 'block';
+            app.classList.remove('hidden');
+        }
+        updateCreditDisplay();
+    } else {
+        alert("Falsches Passwort! Bitte versuche es erneut.");
+    }
+}
 
-
-// 2. Die normale Exposé-Text-Generierung
-async function generateExpose() {
+function updateCreditDisplay() {
+    const creditBox = document.getElementById('creditDisplay');
+    }
+    if (creditBox) {
+        creditBox.innerText = `Verbleibende Abfragen: ${remainingCredits}`;
+    }async function generateExpose() {
     if (remainingCredits <= 0) {
         alert("Keine Credits mehr übrig! Bitte lade dein Konto auf.");
         return;
     }
-
     const title = document.getElementById('title').value;
     const price = document.getElementById('price').value;
     const year = document.getElementById('year').value;
@@ -347,12 +227,6 @@ async function generateExpose() {
 
     const outputDiv = document.getElementById('exposeOutput');
     const outputText = document.getElementById('exposeText');
-    const genBtn = document.querySelector('button[onclick="generateExpose()"]');
-
-    if (genBtn) {
-        genBtn.disabled = true;
-        genBtn.innerText = "Generiere Exposé...";
-    }
     
     outputDiv.classList.remove('hidden');
     outputText.innerText = "KI schreibt das Exposé, bitte warten...";
@@ -363,12 +237,10 @@ async function generateExpose() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ title, price, year, energy, notes, password: savedPassword })
         });
-        
         const data = await response.json();
         if (data.success) {
             outputText.innerText = data.text;
-            
-            // Credit abziehen & Anzeige updaten
+            saveToHistory("Exposé", title);
             remainingCredits--;
             updateCreditDisplay();
         } else {
@@ -376,51 +248,20 @@ async function generateExpose() {
         }
     } catch (error) {
         outputText.innerText = "Server-Fehler bei der Exposé-Erstellung.";
-    } finally {
-        if (genBtn) {
-            genBtn.disabled = false;
-            genBtn.innerText = "✨ KI-Exposé generieren";
-        }
     }
 }
 
-function checkLogin() {
-    const passwordInput = document.getElementById('passwordInput').value;
-    
-
-   if (passwordInput === "makler-erfolg") {
-        savedPassword = passwordInput;
-        document.getElementById('loginSection').style.display = 'none';
-        
-        // Zeigt das Haupt-Dashboard an und löscht die unsichtbare Klasse
-        const app = document.getElementById('appSection');
-        if (app) {
-            app.style.display = 'block';
-            app.classList.remove('hidden');
-        }
-        
-        updateCreditDisplay();
-    } else {
-        alert("Falsches Passwort! Bitte versuche es erneut.");
-    }
-}
-
-// ==========================================
-// FEATURE: KI-BILDANALYSE
-// ==========================================
 async function analyzeImage() {
     const fileInput = document.getElementById('imageInput');
     if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
         alert("Bitte wähle zuerst ein Bild aus.");
         return;
     }
-
     if (remainingCredits <= 0) {
-        alert("Keine Credits mehr übrig! Bitte lade dein Konto auf.");
+        alert("Keine Credits mehr übrig!");
         return;
     }
-
-    const file = fileInput.files[0]; // Holt das ausgewählte Bild
+    const file = fileInput.files[0];
     const btn = document.getElementById('analyzeImageBtn');
     const resultDiv = document.getElementById('analysisResult');
     const resultText = document.getElementById('analysisText');
@@ -442,8 +283,7 @@ async function analyzeImage() {
             const data = await response.json();
             if (data.success) {
                 resultText.innerText = data.analysis;
-                
-                // Credit abziehen
+                saveToHistory("Bildanalyse", "Bild-Upload");
                 remainingCredits--;
                 updateCreditDisplay();
             } else {
@@ -459,21 +299,16 @@ async function analyzeImage() {
     reader.readAsDataURL(file);
 }
 
-// ==========================================
-// FEATURE 2: KI-MAIL-GENERATOR
-// ==========================================
 async function generateMail() {
     const queryInput = document.getElementById('clientQueryInput');
     if (!queryInput || !queryInput.value.trim()) {
         alert("Bitte kopiere zuerst eine Kundenanfrage in das Textfeld.");
         return;
     }
-
     if (remainingCredits <= 0) {
-        alert("Keine Credits mehr übrig! Bitte lade dein Konto auf.");
+        alert("Keine Credits mehr übrig!");
         return;
     }
-
     const btn = document.getElementById('generateEmailBtn');
     const resultBox = document.getElementById('emailResultBox');
     const resultText = document.getElementById('emailResultText');
@@ -492,8 +327,7 @@ async function generateMail() {
         const data = await response.json();
         if (data.success) {
             resultText.innerText = data.mail;
-            
-            // Credit abziehen
+            saveToHistory("Kunden-Mail", "Antwort verfasst");
             remainingCredits--;
             updateCreditDisplay();
         } else {
@@ -507,50 +341,11 @@ async function generateMail() {
     }
 }
 
-// ==========================================
-// CREDIT ANZEIGE AKTUALISIEREN
-// ==========================================
-function updateCreditDisplay() {
-    const creditBox = document.getElementById('creditDisplay');
-    if (creditBox) {
-        creditBox.innerText = `Verbleibende Abfragen: ${remainingCredits}`;
-    }
-}
-
-// Event-Listener aktivieren, sobald die Seite komplett geladen ist
-document.addEventListener('DOMContentLoaded', () => {
-    const btn = document.getElementById('analyzeImageBtn');
-    if (btn) {
-        btn.addEventListener('click', analyzeImage);
-    }
-});
-</script>
-// ==========================================
-// UNIVERSAL-KOPIER-FUNKTION
-// ==========================================
-function copyToClipboard(elementId) {
-    const text = document.getElementById(elementId).innerText;
-    if (!text || text.includes("bitte warten...")) {
-        alert("Es gibt noch keinen Text zum Kopieren!");
-        return;
-    }
-    navigator.clipboard.writeText(text).then(() => {
-        alert("📋 Text erfolgreich kopiert!");
-    }).catch(err => {
-        alert("Fehler beim Kopieren.");
-    });
-}
-
-// ==========================================
-// SOCIAL-MEDIA-POSTS GENERIEREN
-// ==========================================
-async function generateSocialPosts() {
+async function generateSocialMedia() {
     if (remainingCredits <= 0) {
         alert("Keine Credits mehr übrig!");
         return;
     }
-
-    // Holt sich die Daten aus deinen vorhandenen Exposé-Eingabefeldern oben!
     const title = document.getElementById('title').value;
     const price = document.getElementById('price').value;
     const notes = document.getElementById('notes').value;
@@ -579,10 +374,7 @@ async function generateSocialPosts() {
         if (data.success) {
             document.getElementById('instaText').innerText = data.instagram;
             document.getElementById('linkedinText').innerText = data.linkedin;
-            
-            // Speicher das Ergebnis direkt in deiner Historie!
             saveToHistory("Social Posts", title);
-            
             remainingCredits--;
             updateCreditDisplay();
         } else {
@@ -596,9 +388,19 @@ async function generateSocialPosts() {
     }
 }
 
-// ==========================================
-// LOCALSTORAGE HISTORIEN-LOGIK
-// ==========================================
+function copyToClipboard(elementId) {
+    const text = document.getElementById(elementId).innerText;
+    if (!text || text.includes("bitte warten...") || text.includes("KI schreibt...")) {
+        alert("Es gibt noch keinen Text zum Kopieren!");
+        return;
+    }
+    navigator.clipboard.writeText(text).then(() => {
+        alert("📋 Text erfolgreich in Zwischenablage kopiert!");
+    }).catch(err => {
+        alert("Fehler beim Kopieren.");
+    });
+}
+
 function saveToHistory(typ, titel) {
     let history = JSON.parse(localStorage.getItem('immoFlowHistory')) || [];
     const eintrag = {
@@ -606,8 +408,8 @@ function saveToHistory(typ, titel) {
         typ: typ,
         titel: titel
     };
-    history.unshift(eintrag); // Neuen Eintrag ganz oben hinzufügen
-    if(history.length > 10) history.pop(); // Maximal 10 Einträge merken
+    history.unshift(eintrag);
+    if(history.length > 10) history.pop();
     localStorage.setItem('immoFlowHistory', JSON.stringify(history));
     renderHistory();
 }
@@ -633,10 +435,13 @@ function clearHistory() {
     renderHistory();
 }
 
-// Beim Laden der Seite direkt die alte Historie anzeigen lassen
 document.addEventListener('DOMContentLoaded', () => {
     renderHistory();
+    const imgBtn = document.getElementById('analyzeImageBtn');
+    if (imgBtn) {
+        imgBtn.addEventListener('click', analyzeImage);
+    }
 });
-
+</script>
 </body>
 </html>
