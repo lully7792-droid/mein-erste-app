@@ -169,6 +169,13 @@
             <button id="generateEmailBtn" class="btn" type="button" onclick="generateMail()" style="width: 100%;">Antwort-E-Mail generieren</button>
             <div id="emailResultBox" class="hidden" style="margin-top: 24px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 6px;">
                 <h3>Generierte Antwort:</h3>
+        <!-- UPGRADE: AUTOMATISCHE BETREFFZEILEN -->
+        <div id="subjectBox" class="hidden" style="margin-bottom: 15px; padding: 12px; background: rgba(16, 185, 129, 0.1); border-left: 4px solid var(--accent); border-radius: 4px;">
+            <h4>🎯 KI-Betreffzeilen-Vorschläge:</h4>
+            <p id="subjectResultText" style="white-space: pre-wrap; font-style: italic; margin-top: 5px; color: #f3f4f6;"></p>
+            <button onclick="copyToClipboard('subjectResultText')" class="btn" style="background: #4b5563; padding: 4px 10px; font-size: 12px; margin-top: 5px;">📋 Betreff kopieren</button>
+        </div>
+
                 <p id="emailResultText" style="white-space: pre-wrap;"></p>
                 <button onclick="copyToClipboard('emailResultText')" class="btn" style="background: #4b5563; margin-top: 10px; font-size: 14px;">📋 Text kopieren</button>
             </div>
@@ -330,15 +337,24 @@ async function generateMail() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ query: queryInput.value, password: savedPassword })
         });
-        const data = await response.json();
         if (data.success) {
-            resultText.innerText = data.mail;
+            // Zeigt die Betreffzeilen an
+            const subjBox = document.getElementById('subjectBox');
+            if (subjBox) {
+                subjBox.classList.remove('hidden');
+                document.getElementById('subjectResultText').innerText = data.subjects;
+            }
+
+            // Zeigt den E-Mail Text an
+            document.getElementById('emailResultText').innerText = data.mail;
+            
             saveToHistory("Kunden-Mail", "Antwort verfasst");
             remainingCredits--;
             updateCreditDisplay();
         } else {
             resultText.innerText = "Fehler: " + data.error;
         }
+
     } catch (error) {
         resultText.innerText = "Server-Fehler bei der E-Mail-Erstellung.";
     } finally {
