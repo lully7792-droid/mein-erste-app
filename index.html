@@ -334,10 +334,15 @@ function checkLogin() {
     
     if (passwordInput === "makler-erfolg") {
         savedPassword = passwordInput;
-        // Schaltet den Login-Bereich unsichtbar
         document.getElementById('loginSection').style.display = 'none';
-        // Schaltet deine App und das Dashboard perfekt sichtbar!
-        document.getElementById('appSection').style.display = 'block';
+        
+        // 🎯 DAS HIER IST DER RETTER: Zeigt das Element an UND löscht die unsichtbare Klasse!
+        const app = document.getElementById('appSection');
+        if (app) {
+            app.style.display = 'block';
+            app.classList.remove('hidden');
+        }
+        
         updateCreditDisplay();
     } else {
         alert("Falsches Passwort! Bitte versuche es erneut.");
