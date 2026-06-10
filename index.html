@@ -138,24 +138,8 @@
             </div>
         </div>
 
-        <!-- FEATURE 2: KI-MAIL-GENERATOR -->
-        <div class="card">
-            <h2>✉️ KI-Mail-Generator</h2>
-            <p class="description">Kopiere die Kundenanfrage hier hinein, um sofort eine professionelle Antwort-E-Mail zu generieren.</p>
-            <div class="form-group">
-                <label for="clientQueryInput">Kundenanfrage / Text aus Portal:</label>
-                <textarea id="clientQueryInput" placeholder="Hier die Nachricht des Interessenten reinkopieren..." style="height: 100px;"></textarea>
-            </div>
-            <button id="generateEmailBtn" class="btn" type="button" onclick="generateMail()" style="width: 100%;">Antwort-E-Mail generieren</button>
-            <div id="emailResultBox" class="hidden" style="margin-top: 24px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 6px;">
-                <h3>Generierte Antwort:</h3>
-                <p id="emailResultText" style="white-space: pre-wrap;"></p>
-                <button onclick="copyToClipboard('emailResultText')" class="btn" style="background: #4b5563; margin-top: 10px; font-size: 14px;">📋 Text kopieren</button>
-            </div>
-        </div>
- style="border-color: var(--accent); background: rgba(16, 185, 129, 0.05);">
-            <h3 id="creditDisplay" style="margin:0; color: var(--accent);">Verbleibende Abfragen: 10</h3>
-        </div>
+        
+
         <!-- FEATURE 3: SOCIAL-MEDIA-POST-GENERATOR -->
         <div class="card">
             <h2>📱 KI-Social-Media-Spezialist</h2>
@@ -174,6 +158,21 @@
                 </div>
             </div>
         </div>
+        <!-- FEATURE 2: KI-MAIL-GENERATOR -->
+        <div class="card">
+            <h2>✉️ KI-Mail-Generator</h2>
+            <p class="description">Kopiere die Kundenanfrage hier hinein, um sofort eine professionelle Antwort-E-Mail zu generieren.</p>
+            <div class="form-group">
+                <label for="clientQueryInput">Kundenanfrage / Text aus Portal:</label>
+                <textarea id="clientQueryInput" placeholder="Hier die Nachricht des Interessenten reinkopieren..." style="height: 100px;"></textarea>
+            </div>
+            <button id="generateEmailBtn" class="btn" type="button" onclick="generateMail()" style="width: 100%;">Antwort-E-Mail generieren</button>
+            <div id="emailResultBox" class="hidden" style="margin-top: 24px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 6px;">
+                <h3>Generierte Antwort:</h3>
+                <p id="emailResultText" style="white-space: pre-wrap;"></p>
+                <button onclick="copyToClipboard('emailResultText')" class="btn" style="background: #4b5563; margin-top: 10px; font-size: 14px;">📋 Text kopieren</button>
+            </div>
+        </div>
 
         <!-- FEATURE 4: HISTORIE / LOCALSTORAGE DATENBANK -->
         <div class="card">
@@ -185,8 +184,8 @@
             <button onclick="clearHistory()" class="btn" style="background: #ef4444; margin-top: 10px; width: 100%;">🗑️ Historie löschen</button>
         </div>
 
-    </div>
-</div>
+    </div> <!-- 🎯 HIER WIRD DIE APPSECTION ERST GESCHLOSSEN! -->
+</div> <!-- HIER DER CONTAINER -->
 
 <script>
 let savedPassword = "";
@@ -214,13 +213,12 @@ function updateCreditDisplay() {
         creditBox.innerText = `Verbleibende Abfragen: ${remainingCredits}`;
     }
 }
-    
+
 async function generateExpose() {
     if (remainingCredits <= 0) {
         alert("Keine Credits mehr übrig! Bitte lade dein Konto auf.");
         return;
     }
-
     const title = document.getElementById('title').value;
     const price = document.getElementById('price').value;
     const location = document.getElementById('location').value;
@@ -228,8 +226,8 @@ async function generateExpose() {
     const energy = document.getElementById('energy').value;
     const notes = document.getElementById('notes').value;
 
-    if (!title || !price) {
-        alert("Bitte fülle mindestens den Objekttitel und den Kaufpreis aus.");
+    if (!title || !price || !location) {
+        alert("Bitte fülle mindestens den Objekttitel, Kaufpreis und Ort aus.");
         return;
     }
 
@@ -359,8 +357,8 @@ async function generateSocialMedia() {
     const location = document.getElementById('location').value;
     const notes = document.getElementById('notes').value;
 
-    if (!title || !price) {
-        alert("Bitte fülle zuerst Objekttitel und Kaufpreis ganz oben aus.");
+    if (!title || !price || !location) {
+        alert("Bitte fülle zuerst Objekttitel, Kaufpreis und Ort ganz oben aus.");
         return;
     }
 
