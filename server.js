@@ -19,7 +19,7 @@ app.use(express.static(__dirname));
 // ROUTE 1: KI-EXPOSÉ-GENERATOR
 // ==========================================
 app.post('/api/generate-expose', async (req, res) => {
-    const { title, price, location, year, energy, notes, password } = req.body; // 🎯 Holt jetzt auch location!
+    const { title, price, location, year, energy, notes, password } = req.body;
 
     if (password !== "makler-erfolg") {
         return res.status(401).json({ success: false, error: "Nicht autorisiert" });
@@ -33,7 +33,7 @@ app.post('/api/generate-expose', async (req, res) => {
                     role: "system", 
                     content: "Du bist ein professioneller Immobilienmakler. Schreibe ein ansprechendes, verkaufsstarkes Exposé auf Deutsch basierend auf den bereitgestellten Objektdaten." 
                 },
-                { role: "user", content: `Titel: ${title}, Lage/Ort: ${location || "Nicht angegeben"}, Preis: ${price} EUR, Baujahr: ${year}, Energieausweis: ${energy}, Notizen: ${notes}` } // 🎯 Ort wird an OpenAI übergeben!
+                { role: "user", content: `Titel: ${title}, Lage/Ort: ${location || "Nicht angegeben"}, Preis: ${price} EUR, Baujahr: ${year}, Energieausweis: ${energy}, Notizen: ${notes}` }
             ]
         });
 
@@ -134,17 +134,25 @@ app.post('/api/generate-social', async (req, res) => {
             messages: [
                 { 
                     role: "system", 
-                    content: "Du bist ein genialer Social-Media-Manager für Immobilien. Generiere zwei separate Posts auf Deutsch basierend auf den Objektdaten. Trenne die Posts strikt mit dem Wort '===TRENNUNG==='. Post 1 ist für Instagram (emotional, packend, mit passenden Emojis und Immobilien-Hashtags). Post 2 ist für LinkedIn (professionell, B2B-orientiert, Fokus auf Investment und Fakten, weniger Emojis)." 
+                    content: "Du bist ein genialer Social-Media-Manager für Immobilien. Generiere zwei separate Posts auf Deutsch basierend auf den Objektdaten. Trenne die Posts strikt mit dem Wort '===TRENNUNG==='. Post 1 ist für Instagram (emotional, mit passenden Emojis und Immobilien-Hashtags). Post 2 ist für LinkedIn (professionell, B2B-orientiert, Fokus auf Investment und Fakten)." 
                 },
-                { role: "user", content: `Objekt: ${title}, Lage/Ort: ${location}, Preis: ${price} EUR, Details: ${notes}` }
+                { role: "user", content: `Objekt: ${title}, Lage/Ort: ${location || "Nicht angegeben"}, Preis: ${price} EUR, Details: ${notes}` }
             ]
         });
 
         const gesamtText = response.choices.message.content;
-        const teile = gesamtText.split('===TRENNUNG===');
-        
-        const instaPost = teile[0] ? teile[0].trim() : "Fehler bei Instagram-Generierung";
-        const linkedinPost = teile[1] ? teile[1].trim() : "Fehler bei LinkedIn-Generierung";
+        let instaPost = gesamtText;
+        let linkedinPost = gesamtText;
+
+        if (gesamtText.includes('===TRENNUNG===')) {
+            const teile = gesamtText.split('===TRENNUNG===');
+            instaPost = teile[0] ? teile[0].trim() : gesamtText;
+            linkedinPost = teile[1] ? teile[1].trim() : gesamtText;
+        } else {
+            const haelfte = Math.floor(gesamtText.length / 2);
+            instaPost = gesamtText.substring(0, haelfte).trim();
+            linkedinPost = gesamtText.substring(haelfte).trim();
+        }
 
         res.json({ 
             success: true, 
@@ -158,7 +166,7 @@ app.post('/api/generate-social', async (req, res) => {
     }
 });
 
-// Server auf dem zugewiesenen Port oder standardmäßig Port 3000 starten
+// Server starten
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server läuft fehlerfrei auf Port ${PORT}`);
