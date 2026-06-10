@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ImmoText AI Pro — Enterprise Platform</title>
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --text: #f3f4f6;
+            --text-muted: #9ca3af;
+            --accent: #10b981;
+        }
+        body { background-color: var(--bg-color); color: var(--text); font-family: 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 40px 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; box-sizing: border-box; }
+        .container { width: 100%; max-width: 700px; background: var(--card-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid var(--border-color); border-radius: 24px; padding: 40px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3); }
+        .app-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 20px; margin-bottom: 28px; }
+        .logo-area { display: flex; align-items: center; gap: 12px; }
+        .logo-icon { background: linear-gradient(135deg, #2563eb 0%, #10b981 100%); width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; color: #fff; box-shadow: 0 0 15px rgba(37, 99, 235, 0.4); }
+        .status-badge { background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); color: var(--accent); padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+        .status-dot { width: 6px; height: 6px; background-color: var(--accent); border-radius: 50%; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); } 70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); } 100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
+        .form-group { margin-bottom: 20px; }
+        .flex-group { display: flex; gap: 16px; margin-bottom: 20px; }
+        .flex-group .form-group { flex: 1; margin-bottom: 0; }
+        label { display: block; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; color: var(--text-muted); }
+        input, textarea, select { width: 100%; background: rgba(0, 0, 0, 0.25); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px 16px; color: #fff; font-size: 15px; transition: all 0.2s ease; box-sizing: border-box; }
+        input:focus, textarea:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); }
+        select option { background: #0b0f19; color: #fff; }
+        button { width: 100%; background: var(--primary); color: #fff; border: none; border-radius: 12px; padding: 16px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
+        button:hover { background: var(--primary-hover); transform: translateY(-1px); }
+        #loginSection { text-align: center; }
+        #appSection { display: none; }
+        .output-box { margin-top: 32px; border-top: 1px solid var(--border-color); padding-top: 32px; display: none; }
+        .output-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .btn-copy { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-color); padding: 6px 12px; font-size: 12px; border-radius: 6px; width: auto; cursor: pointer; }
+        #result { background: rgba(0, 0, 0, 0.15); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; font-size: 15px; line-height: 1.6; white-space: pre-wrap; }
+        .loader { display: none; text-align: center; margin-top: 20px; color: var(--text-muted); }
+        .spinner { width: 24px; height: 24px; border: 3px solid rgba(255,255,255,0.1); border-radius: 50%; border-top-color: var(--primary); animation: spin 1s linear infinite; margin: 0 auto 12px auto; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="app-header">
+        <div class="logo-area">
+            <div class="logo-icon">IT</div>
+            <div>
+                <h1 style="margin: 0; font-size: 22px; font-weight: 700; background: linear-gradient(135deg, #fff 0%, #93c5fd 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">ImmoText AI Pro</h1>
+                <div style="color: var(--text-muted); font-size: 12px;">Enterprise Platform</div>
+            </div>
+        </div>
+        <div class="status-badge">
+            <div class="status-dot"></div>
+            <span>Secure Connection</span>
+        </div>
+    </div>
+
+    <div id="loginSection">
+        <div class="form-group" style="margin-top: 20px;">
+            <label for="passwordInput">Enterprise Lizenzschlüssel eingeben</label>
+            <input type="password" id="passwordInput" placeholder="Dein geheimes Passwort">
+        </div>
+        <button onclick="checkLogin()">Plattform freischalten</button>
+    </div>
+
+    <div id="appSection">
+        <div class="form-group">
+            <label for="title">Objekttitel / Typ</label>
+            <input type="text" id="title" placeholder="z.B. Luxuriöses Penthouse, Moderner Altbautraum">
+        </div>
+        <div class="flex-group">
+            <div class="form-group">
+                <label for="size">Wohnfläche (m²)</label>
+                <input type="number" id="size" placeholder="120">
+            </div>
+            <div class="form-group">
+                <label for="rooms">Zimmer</label>
+                <input type="number" id="rooms" placeholder="4">
+            </div>
+        </div>
+        <div class="flex-group">
+            <div class="form-group">
+                <label for="price">Kaufpreis (€)</label>
+                <input type="text" id="price" placeholder="z.B. 650.000">
+            </div>
+            <div class="form-group">
+                <label for="year">Baujahr</label>
+                <input type="number" id="year" placeholder="z.B. 2022">
+            </div>
+            <div class="form-group">
+                <label for="energy">Energieklasse</label>
+                <select id="energy">
+                    <option value="Nicht angegeben">Auswählen...</option>
+                    <option value="A+">A+</option>
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                    <option value="D">D</option>
+                </select>
+            </div>
+        </div>
+        <div class="flex-group">
+            <div class="form-group">
+                <label for="location">Lage / Stadtteil</label>
+                <input type="text" id="location" placeholder="z.B. Wuppertal, Hamburg HafenCity">
+            </div>
+            <div class="form-group">
+                <label for="tone">Verkaufs-Stil (Tonfall)</label>
+                <select id="tone">
+                    <option value="luxuriös, elitär und elegant">Luxuriös & Edel</option>
+                    <option value="modern, locker, einladend und frisch">Modern & Locker</option>
+                    <option value="kurz, knackig, emotional und perfekt für Social Media">Social Media Post</option>
+                </select>
+            </div>
+        </div>
+     <div id="appSection">
+        <!-- NEU: Bereich für KI-Bildanalyse -->
+        <div style="background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+            <h3 style="font-size: 1.25rem; font-weight: bold; margin-bottom: 10px; color: var(--accent-color, #fff);">📸 KI-Bildanalyse (Ausstattung erkennen)</h3>
+            <p style="font-size: 0.875rem; color: #aaa; margin-bottom: 15px;">Lade ein Raumfoto hoch. Die KI erkennt automatisch Highlights wie Einbauküchen, Bodenbeläge oder moderne Bäder.</p>
+            
+            <div style="display: flex; flex-direction: column; gap: 15px;">
+                <div>
+                    <label style="display: block; font-size: 0.875rem; margin-bottom: 5px;">Foto auswählen</label>
+                    <input type="file" id="imageInput" accept="image/*" style="width: 100%; font-size: 0.875rem; color: #ccc;">
+                </div>
+                
+                <button id="analyzeImageBtn" type="button" style="width: 100%; background: var(--primary-color, #007bff); color: white; padding: 10px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;">
+                    Bild analysieren & Highlights extrahieren
+                </button>
+
+                <!-- Vorschau & Ergebnis -->
+                <div id="analysisResult" class="hidden" style="margin-top: 15px; padding: 15px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 6px;">
+                    <h4 style="font-weight: bold; color: var(--accent-color, #fff); margin-bottom: 10px;">Erkannte Highlights:</h4>
+                    <div id="analysisText" style="font-size: 0.875rem; color: #ccc; white-space: pre-line;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="title">Objekttitel / Typ</label>
+            <label for="features">Premium-Merkmale (Mit Komma trennen)</label>
+            <textarea id="features" rows="3" placeholder="z.B. Dachterrasse, Einbauküche, Fußbodenheizung"></textarea>
+        </div>
+        <button id="generateBtn" onclick="generateExpose()">Premium KI-Exposé generieren</button>
+        <div class="loader" id="loader">
+            <div class="spinner"></div>
+            <span>Die KI analysiert die Objektdaten...</span>
+        </div>
+        <div class="output-box" id="outputBox">
+            <div class="output-header">
+                <label style="color: var(--accent);">✔ Generiertes Exposé:</label>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn-copy" onclick="copyText()">Text kopieren</button>
+                    <button class="btn-copy" style="background: rgba(37, 99, 235, 0.2); border-color: var(--primary);" onclick="downloadWord()">Als Word-Datei herunterladen</button>
+                    <button class="btn-copy" style="background: rgba(16, 185, 129, 0.2); border-color: var(--accent);" onclick="copySocialMedia()">Social Media Post kopieren 📱</button>
+                </div>
+            </div>
+            <div id="result"></div>
+        </div>
+    </div>
+</div>  <!-- NEU: Bereich für KI-Bildanalyse -->
+        <div style="background: rgba(255,255,255,0.05); border: 1px solid var(--border); padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+            <h3 style="font-size: 1.25rem; font-weight: bold; margin-bottom: 10px; color: var(--text);">📸 KI-Bildanalyse (Ausstattung erkennen)</h3>
+            <p style="font-size: 0.875rem; color: #aaa; margin-bottom: 15px;">Lade ein Raumfoto hoch. Die KI erkennt automatisch Highlights wie Einbauküchen, Bodenbeläge oder moderne Bäder.</p>
+            
+            <div style="display: flex; flex-direction: column; gap: 15px;">
+                <div>
+                    <label style="display: block; font-size: 0.875rem; margin-bottom: 5px;">Foto auswählen</label>
+                    <input type="file" id="imageInput" accept="image/*" style="width: 100%; font-size: 0.875rem; color: #ccc;">
+                </div>
+                
+                <button id="analyzeImageBtn" type="button" style="width: 100%; background: var(--primary); color: white; padding: 10px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;">
+                    Bild analysieren & Highlights extrahieren
+                </button>
+
+                <!-- Vorschau & Ergebnis -->
+                <div id="analysisResult" class="hidden" style="margin-top: 15px; padding: 15px; background: rgba(0,0,0,0.2); border: 1px solid var(--border); border-radius: 6px;">
+                    <h4 style="font-weight: bold; color: var(--accent); margin-bottom: 10px;">Erkannte Highlights:</h4>
+                    <div id="analysisText" style="font-size: 0.875rem; color: var(--text); white-space: pre-line;"></div>
+                </div>
+            </div>
+        </div>
+<script>
+    let savedPassword = "";
+    let currentSocialMediaText = "";
+
+    function checkLogin() {
+        const pass = document.getElementById('passwordInput').value;
+        if(!pass) { alert('Bitte Passwort eingeben!'); return; }
+        savedPassword = pass;
+        document.getElementById('loginSection').style.display = 'none';
+        document.getElementById('appSection').style.display = 'block';
+    }
+
+    async function generateExpose() {
+        const title = document.getElementById('title').value;
+        const size = document.getElementById('size').value;
+        const rooms = document.getElementById('rooms').value;
+        const price = document.getElementById('price').value;
+        const year = document.getElementById('year').value;
+        const energy = document.getElementById('energy').value;
+        const location = document.getElementById('location').value;
+        const tone = document.getElementById('tone').value;
+        const features = document.getElementById('features').value;
+
+        if(!title || !location) { 
+            alert('Bitte mindestens Titel und Lage ausfüllen!'); 
+            return; 
+        }
+
+        const btn = document.getElementById('generateBtn');
+        const loader = document.getElementById('loader');
+        const outputBox = document.getElementById('outputBox');
+        const resultDiv = document.getElementById('result');
+
+        btn.style.display = 'none'; 
+        outputBox.style.display = 'none'; 
+        loader.style.display = 'block';
+
+        try {
+            const response = await fetch('https://mein-erste-app.onrender.com/api/generate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title, size, rooms, price, year, energy, location, tone, features, password: savedPassword })
+            });
+            const data = await response.json();
+            
+            if(data.success) { 
+                resultDiv.innerText = data.text; 
+                // Hier greifen wir den Social-Media-Text ab
+                currentSocialMediaText = data.socialMedia || "";
+            } else { 
+                resultDiv.innerText = "Fehler: " + data.error; 
+                currentSocialMediaText = "";
+            }
+            outputBox.style.display = 'block';
+ 
+        } catch (e) {
+            resultDiv.innerText = "Verbindungsfehler zum Server.";
+            outputBox.style.display = 'block';
+            currentSocialMediaText = "";
+        } finally { 
+            loader.style.display = 'none'; 
+            btn.style.display = 'block'; 
+        }
+    }
+    function downloadWord() {
+        const title = document.getElementById("title").value || "Immobilien-Exposé";
+        const size = document.getElementById("size").value || "Nicht angegeben";
+        const rooms = document.getElementById("rooms").value || "Nicht angegeben";
+        const price = document.getElementById("price").value || "Nicht angegeben";
+        const year = document.getElementById("year").value || "Nicht angegeben";
+        const energy = document.getElementById("energy").value || "Nicht angegeben";
+        const location = document.getElementById("location").value || "Nicht angegeben";
+        const text = document.getElementById("result").innerText;
+        let formattedHtml = text
+            .replace(/^# (.+)$/gm, '<h1 style="color: #1e3a8a; font-family: \'Segoe UI\', Arial, sans-serif; font-size: 24pt; margin-bottom: 12pt; border-bottom: 2px solid #2563eb; padding-bottom: 6pt;">$1</h1>')
+            .replace(/^## (.+)$/gm, '<h2 style="color: #2563eb; font-family: \'Segoe UI\', Arial, sans-serif; font-size: 16pt; margin-top: 18pt; margin-bottom: 6pt;">$1</h2>')
+            .replace(/\*\*(.*?)\*\*/g, '<strong style="color: #0f172a;">$1</strong>')
+            .replace(/^- (.+)$/gm, '<li style="font-family: \'Segoe UI\', Arial, sans-serif; font-size: 11pt; line-height: 1.6; margin-bottom: 4pt; color: #334155;">$1</li>')
+            .replace(/\n/g, '<br>');
+
+        const wordDocument = `
+            <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://w3.org">
+            <head>
+                <meta charset="utf-8">
+                <style>
+                    body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 11pt; line-height: 1.6; color: #334155; }
+                    p { margin-bottom: 10pt; }
+                    .data-table { width: 100%; border-collapse: collapse; margin-top: 15pt; margin-bottom: 20pt; }
+                    .data-table th { background-color: #1e3a8a; color: #ffffff; padding: 8pt; text-align: left; font-size: 11pt; }
+                    .data-table td { padding: 8pt; border: 1px solid #cbd5e1; font-size: 10.5pt; color: #334155; }
+                </style>
+            </head>
+            <body>
+                <div style="padding: 20px;">
+                    <h1 style="color: #1e3a8a; font-size: 26pt; margin-bottom: 6pt;">PROJEKT-EXPOSÉ</h1>
+                    <p style="font-size: 13pt; color: #64748b; margin-bottom: 20pt;">\${title} in \${location}</p>
+                    <table class="data-table">
+                        <thead><tr><th colspan="2">Objekt-Eckdaten im Überblick</th></tr></thead>
+                        <tbody>
+                            <tr><td style="width: 40%; font-weight: bold;">Lage / Ort</td><td>\${location}</td></tr>
+                            <tr><td style="font-weight: bold;">Wohnfläche</td><td>\${size} m²</td></tr>
+                            <tr><td style="font-weight: bold;">Zimmeranzahl</td><td>\${rooms}</td></tr>
+                            <tr><td style="font-weight: bold;">Kaufpreis</td><td>\${price} €</td></tr>
+                            <tr><td style="font-weight: bold;">Baujahr</td><td>\---\${year}</td></tr>
+                            <tr><td style="font-weight: bold;">Energieeffizienzklasse</td><td>\${energy}</td></tr>
+                        </tbody>
+                    </table>
+                    <hr style="border: none; border-top: 1px solid #cbd5e1; margin-bottom: 20pt;">
+                    \${formattedHtml}
+                </div>
+            </body>
+            </html>
+        `;
+        const blob = new Blob(['\ufeff' + wordDocument], { type: "application/msword" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url; a.download = "Premium_Immobilien_Expose.doc"; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+    }
+
+    function copyText() { 
+        navigator.clipboard.writeText(document.getElementById('result').innerText); 
+        alert('Exposé-Text kopiert! 📋'); 
+    }
+
+    function copySocialMedia() { 
+        if(!currentSocialMediaText) { alert('Kein Post vorhanden!'); return; } 
+        navigator.clipboard.writeText(currentSocialMediaText);
+    }
+       async function analyzeImage() {
+    const fileInput = document.getElementById('imageInput');
+    const resultDiv = document.getElementById('analysisResult');
+    const resultText = document.getElementById('analysisText');
+    const password = "makler-erfolg"; 
+
+    if (!fileInput.files || fileInput.files.length === 0) {
+        alert('Bitte wähle zuerst ein Bild aus.');
+        return;
+    }
+
+    const file = fileInput.files[0];
+    const reader = new FileReader();
+
+    // Box anzeigen und Ladetext setzen
+    resultDiv.classList.remove('hidden');
+    resultText.innerHTML = "<em>Die KI analysiert das Bild... Bitte warten...</em>";
+
+    reader.onloadend = async () => {
+        const base64Image = reader.result;
+
+        try {
+            const response = await fetch('/api/analyze-image', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ image: base64Image, password: password })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                resultText.textContent = data.analysis;
+            } else {
+                resultText.textContent = "Fehler: " + data.error;
+            }
+        } catch (err) {
+            resultText.textContent = "Verbindungsfehler zum Server.";
+            console.error(err);
+        }
+    };
+
+    reader.readAsDataURL(file);
+}
+
+// Event-Listener an den Button hängen, sobald die Seite geladen ist
+document.addEventListener('DOMContentLoaded', () => {
+    const btn = document.getElementById('analyzeImageBtn');
+    if (btn) {
+        btn.addEventListener('click', analyzeImage);
+    }
+});
+
+</script>
+</body>
+</html>
