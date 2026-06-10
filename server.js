@@ -7,8 +7,9 @@ app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 
 // OpenAI Verbindung mit dem absolut direkten Schlüssel
-const key1 = "sk-proj-ish6faE2wt01jf043YX1tV6Z4_y62Weh4eT71K";
-const key2 = "AM6SAmmdzsdFy7iIJn_SQhBa66KmzA_tqbT3BlbkFJs5HooC_n1cinHPjXJZ3QFCKRH_UVOTKneKAMGRt";
+const key1 = "k-proj-ish6faE2wt0ljf043YX1tv6Z4_yG2Weh4eT71KAAm6SAmmdz";
+const key2 = "-sdFy7iIJn_SQhBa66KmzA_tqbT3BlbkFJs5HooC_n1CinHPjXJZ3QFCKRH_UVOTKnEKAmGRfLhUo-Xp8oQwKMbNO4-oAZur_VwIBqAAj4YA";
+
 const openai = new OpenAI({ apiKey: key1 + key2 });
 
 app.use(express.static(__dirname));
