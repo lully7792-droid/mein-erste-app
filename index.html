@@ -208,7 +208,7 @@
                 <textarea id="clientQueryInput" rows="4" placeholder="Guten Tag, ich interessiere mich für das Objekt..."></textarea>
             </div>
             <button id="generateEmailBtn" type="button">Antwort-E-Mail generieren</button>
-            <div id="emailResultBox" class="hidden result-box">
+
                 <h4 style="font-weight: bold; color: var(--primary); margin-bottom: 10px;">Generierte Antwort:</h4>
                 <div id="emailResultText"></div>
             </div>
@@ -280,8 +280,46 @@
         </div>
 
     </div>
+</div><!-- UPGRADE: KOPIER-BUTTONS FÜR BESTEHENDE BOXEN -->
+<!-- (Tipp: Suche dein vorhandenes 'emailResultBox' und pack den Button direkt unter den Text) -->
+<button onclick="copyToClipboard('emailResultText')" class="btn" style="background: #4b5563; margin-top: 10px; font-size: 14px;">📋 Text kopieren</button>
+
+<!-- FEATURE 3: SOCIAL-MEDIA-POST-GENERATOR -->
+<div class="card" style="margin-top: 24px;">
+    <h2>📱 KI-Social-Media-Spezialist</h2>
+    <p class="description">Erstelle aus den Objektdaten sofort optimierte Posts für Instagram, Facebook und LinkedIn.</p>
+    
+    <button id="generateSocialBtn" class="btn" style="width: 100%; background: var(--accent);" onclick="generateSocialPosts()">📱 Posts generieren</button>
+
+    <div id="socialResultBox" class="hidden" style="margin-top: 24px;">
+        <!-- Instagram -->
+        <div style="margin-bottom: 15px; padding: 12px; background: rgba(219, 39, 119, 0.1); border-left: 4px solid #db2777; border-radius: 4px;">
+            <h4>📸 Instagram (mit Hashtags):</h4>
+            <p id="instaText" style="white-space: pre-wrap; margin-top: 5px;"></p>
+            <button onclick="copyToClipboard('instaText')" class="btn" style="background: #4b5563; padding: 4px 10px; font-size: 12px; margin-top: 5px;">📋 Kopieren</button>
+        </div>
+        
+        <!-- LinkedIn -->
+        <div style="margin-bottom: 15px; padding: 12px; background: rgba(37, 99, 235, 0.1); border-left: 4px solid #2563eb; border-radius: 4px;">
+            <h4>💼 LinkedIn (Professionell):</h4>
+            <p id="linkedinText" style="white-space: pre-wrap; margin-top: 5px;"></p>
+            <button onclick="copyToClipboard('linkedinText')" class="btn" style="background: #4b5563; padding: 4px 10px; font-size: 12px; margin-top: 5px;">📋 Kopieren</button>
+        </div>
+    </div>
 </div>
+
+<!-- FEATURE 4: HISTORIE / LOCALSTORAGE DATENBANK -->
+<div class="card" style="margin-top: 24px;">
+    <h2>🗄️ Letzte KI-Generierungen (Gespeichert)</h2>
+    <p class="description">Deine Daten gehen nicht verloren. Hier sind deine letzten Erstellungen auf diesem Gerät:</p>
+    <div id="historyBox" style="max-height: 200px; overflow-y: auto; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 6px;">
+        <p style="color: #9ca3af; font-style: italic;">Noch keine Historie vorhanden...</p>
+    </div>
+    <button onclick="clearHistory()" class="btn" style="background: #ef4444; margin-top: 10px; width: 100%;">🗑️ Historie löschen</button>
+</div>
+
 <script>
+    
 // Globale Variablen für die App-Logik
 let savedPassword = "";
 let remainingCredits = 10; // Start-Credits für den Makler
@@ -487,5 +525,118 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 </script>
+// ==========================================
+// UNIVERSAL-KOPIER-FUNKTION
+// ==========================================
+function copyToClipboard(elementId) {
+    const text = document.getElementById(elementId).innerText;
+    if (!text || text.includes("bitte warten...")) {
+        alert("Es gibt noch keinen Text zum Kopieren!");
+        return;
+    }
+    navigator.clipboard.writeText(text).then(() => {
+        alert("📋 Text erfolgreich kopiert!");
+    }).catch(err => {
+        alert("Fehler beim Kopieren.");
+    });
+}
+
+// ==========================================
+// SOCIAL-MEDIA-POSTS GENERIEREN
+// ==========================================
+async function generateSocialPosts() {
+    if (remainingCredits <= 0) {
+        alert("Keine Credits mehr übrig!");
+        return;
+    }
+
+    // Holt sich die Daten aus deinen vorhandenen Exposé-Eingabefeldern oben!
+    const title = document.getElementById('title').value;
+    const price = document.getElementById('price').value;
+    const notes = document.getElementById('notes').value;
+
+    if (!title || !price) {
+        alert("Bitte fülle zuerst Objekttitel und Kaufpreis ganz oben aus.");
+        return;
+    }
+
+    const btn = document.getElementById('generateSocialBtn');
+    const resultBox = document.getElementById('socialResultBox');
+    
+    btn.disabled = true;
+    btn.innerText = "Erstelle Posts...";
+    resultBox.classList.remove('hidden');
+    document.getElementById('instaText').innerText = "KI schreibt...";
+    document.getElementById('linkedinText').innerText = "KI schreibt...";
+
+    try {
+        const response = await fetch('/api/generate-social', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title, price, notes, password: savedPassword })
+        });
+        const data = await response.json();
+        if (data.success) {
+            document.getElementById('instaText').innerText = data.instagram;
+            document.getElementById('linkedinText').innerText = data.linkedin;
+            
+            // Speicher das Ergebnis direkt in deiner Historie!
+            saveToHistory("Social Posts", title);
+            
+            remainingCredits--;
+            updateCreditDisplay();
+        } else {
+            alert("Fehler: " + data.error);
+        }
+    } catch (error) {
+        alert("Server-Fehler bei der Social-Media-Erstellung.");
+    } finally {
+        btn.disabled = false;
+        btn.innerText = "📱 Posts generieren";
+    }
+}
+
+// ==========================================
+// LOCALSTORAGE HISTORIEN-LOGIK
+// ==========================================
+function saveToHistory(typ, titel) {
+    let history = JSON.parse(localStorage.getItem('immoFlowHistory')) || [];
+    const eintrag = {
+        zeit: new Date().toLocaleTimeString(),
+        typ: typ,
+        titel: titel
+    };
+    history.unshift(eintrag); // Neuen Eintrag ganz oben hinzufügen
+    if(history.length > 10) history.pop(); // Maximal 10 Einträge merken
+    localStorage.setItem('immoFlowHistory', JSON.stringify(history));
+    renderHistory();
+}
+
+function renderHistory() {
+    const box = document.getElementById('historyBox');
+    if (!box) return;
+    let history = JSON.parse(localStorage.getItem('immoFlowHistory')) || [];
+    if (history.length === 0) {
+        box.innerHTML = '<p style="color: #9ca3af; font-style: italic;">Noch keine Historie vorhanden...</p>';
+        return;
+    }
+    box.innerHTML = history.map(e => `
+        <div style="padding: 6px; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 13px;">
+            <span style="color: var(--accent); font-weight: bold;">[${e.zeit}]</span> 
+            <strong>${e.typ}:</strong> ${e.titel}
+        </div>
+    `).join('');
+}
+
+function clearHistory() {
+    localStorage.removeItem('immoFlowHistory');
+    renderHistory();
+}
+
+// Beim Laden der Seite direkt die alte Historie anzeigen lassen
+document.addEventListener('DOMContentLoaded', () => {
+    renderHistory();
+});
+
 </body>
 </html>

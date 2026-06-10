@@ -1,84 +1,91 @@
-import express from 'express';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import OpenAI from 'openai';
-import cors from 'cors';
-import 'dotenv/config';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const express = require('express');
+const cors = require('cors');
+const { OpenAI } = require('openai');
+require('dotenv').config();
 
 const app = express();
-app.use(express.json());
 app.use(cors());
-app.use(express.static(__dirname));
+app.use(express.json({ limit: '50mb' }));
 
+// OpenAI API-Verbindung aufbauen
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY
 });
 
-const SECRET_PASSWORD = "makler-erfolg";
+// Statische HTML-Dateien aus dem aktuellen Ordner bereitstellen
+app.use(express.static(__dirname));
 
-app.post('/api/generate', async (expressReq, expressRes) => {
-    const { title, size, rooms, price, year, energy, location, tone, features, password } = expressReq.body;
+// ==========================================
+// ROUTE 1: KI-EXPOSÉ-GENERATOR
+// ==========================================
+app.post('/api/generate-expose', async (req, res) => {
+    const { title, price, year, energy, notes, password } = req.body;
 
-    if (password !== SECRET_PASSWORD) {
-        return expressRes.json({ success: false, error: "Ungültiger Enterprise Lizenzschlüssel!" });
+    if (password !== "makler-erfolg") {
+        return res.status(401).json({ success: false, error: "Nicht autorisiert" });
     }
-
-    const prompt = `Du bist ein Elite-Immobilienmakler und Social Media Experte. Schreibe zwei Texte für folgende Immobilie:
-    Titel/Typ: ${title}
-    Lage: ${location}
-    Wohnfläche: ${size} m²
-    Zimmer: ${rooms}
-    Kaufpreis: ${price} €
-    Baujahr: ${year}
-    Energieklasse: ${energy}
-    Besondere Merkmale: ${features}
-    
-    Der Schreibstil muss absolut ${tone} sein.
-    
-    TEXT 1 (Klassisches Exposé):
-    Strukturiere das Exposé mit einer packenden Überschrift, einem emotionalen Einleitungstext (Objektbeschreibung), einer Übersicht der Highlights und einem klaren Aufruf zur Kontaktaufnahme (Call to Action).
-    
-    TEXT 2 (Social Media Post):
-    Schreibe einen separaten, extrem packenden Social Media Post für Instagram/LinkedIn. Nutze passende Emojis, hebe die 3 wichtigsten Fakten hervor und füge am Ende relevante Hashtags sowie einen Call to Action hinzu.
-    
-    WICHTIG: Trenne Text 1 und Text 2 in deiner Antwort strikt mit dem Wortzeichen "---SOCIAL_MEDIA_SPLIT---"!`;
 
     try {
         const response = await openai.chat.completions.create({
             model: "gpt-4o-mini",
-            messages: [{ role: "user", content: prompt }],
-            temperature: 0.7
+            messages: [
+                { 
+                    role: "system", 
+                    content: "Du bist ein professioneller Immobilienmakler. Schreibe ein ansprechendes, verkaufsstarkes Exposé auf Deutsch basierend auf den bereitgestellten Objektdaten." 
+                },
+                { role: "user", content: `Titel: ${title}, Preis: ${price} EUR, Baujahr: ${year}, Energieausweis: ${energy}, Notizen: ${notes}` }
+            ]
         });
 
-        const fullResponseText = response.choices && response.choices[0] ? response.choices[0].message.content : response.choices.message.content;
-        
-        let exposeText = fullResponseText;
-        let socialMediaText = "Beitrag wird generiert...";
+        const exposeText = response.choices.message.content;
+        res.json({ success: true, text: exposeText });
 
-        if (fullResponseText.includes("---SOCIAL_MEDIA_SPLIT---")) {
-            const parts = fullResponseText.split("---SOCIAL_MEDIA_SPLIT---");
-            exposeText = parts[0] ? parts[0].trim() : fullResponseText;
-            socialMediaText = parts[1] ? parts[1].trim() : "Beitrag wird generiert...";
-        } else {
-            exposeText = fullResponseText;
-            socialMediaText = fullResponseText;
-        }
-
-        expressRes.json({ 
-            success: true, 
-            text: exposeText,
-            socialMedia: socialMediaText
-        });
     } catch (error) {
-        console.error("OpenAI Server-Fehler:", error);
-        expressRes.json({ success: false, error: error.message });
+        console.error("Exposé-Fehler:", error);
+        res.status(500).json({ success: false, error: "Fehler bei der KI-Generierung" });
     }
 });
 
-        // FEATURE 2: ROUTE FÜR KI-MAIL-GENERATOR
+// ==========================================
+// ROUTE 2: KI-BILDANALYSE
+// ==========================================
+app.post('/api/analyze-image', async (req, res) => {
+    const { image, password } = req.body;
+
+    if (password !== "makler-erfolg") {
+        return res.status(401).json({ success: false, error: "Nicht autorisiert" });
+    }
+
+    try {
+        const response = await openai.chat.completions.create({
+            model: "gpt-4o-mini",
+            messages: [
+                {
+                    role: "system",
+                    content: "Du bist ein erfahrener Immobilienmakler. Analysiere das hochgeladene Bild eines Hauses oder Raumes und extrahiere die wichtigsten, verkaufsstärksten Highlights für ein Exposé."
+                },
+                {
+                    role: "user",
+                    content: [
+                        { type: "text", text: "Analysiere dieses Immobilienbild und nenne Highlights:" },
+                        { type: "image_url", image_url: { "url": image } }
+                    ]
+                }
+            ]
+        });
+
+        const analysisText = response.choices.message.content;
+        res.json({ success: true, analysis: analysisText });
+
+    } catch (error) {
+        console.error("Fehler bei Bildanalyse:", error);
+        res.status(500).json({ success: false, error: "Fehler bei der KI-Analyse" });
+    }
+});
+
+// ==========================================
+// ROUTE 3: KI-MAIL-GENERATOR
+// ==========================================
 app.post('/api/generate-mail', async (req, res) => {
     const { query, password } = req.body;
 
@@ -102,7 +109,7 @@ app.post('/api/generate-mail', async (req, res) => {
             ]
         });
 
-        const mailText = response.choices[0].message.content;
+        const mailText = response.choices.message.content;
         res.json({ success: true, mail: mailText });
 
     } catch (error) {
@@ -111,80 +118,48 @@ app.post('/api/generate-mail', async (req, res) => {
     }
 });
 
-        const { clientReply, password } = req.body;
+// ==========================================
+// ROUTE 4: KI-SOCIAL-MEDIA-GENERATOR
+// ==========================================
+app.post('/api/generate-social', async (req, res) => {
+    const { title, price, notes, password } = req.body;
 
-        // Passwort-Schutz prüfen
-        if (password !== SECRET_PASSWORD) {
-            return res.status(401).json({ success: false, error: "Ungültiges Passwort" });
-        }
-
-        if (!clientReply) {
-            return res.status(400).json({ success: false, error: "Keine Anfrage übermittelt" });
-        }
-
-        // OpenAI API aufrufen
-        const response = await openai.chat.completions.create({
-            model: "gpt-4o-mini",
-            messages: [
-                {
-                    role: "system",
-                    content: "Du bist ein hocffprofessioneller, freundlicher Immobilienmakler. Deine Aufgabe ist es, auf Kundenanfragen zu antworten."
-                },
-                {
-                    role: "user",
-                    content: `Hier ist die Anfrage des Kunden:\n\n"${clientReply}"\n\nSchreibe eine professionelle, höfliche und einladende Antwort-E-Mail. Begrüße den Kunden (falls der Name erkennbar ist, nutze ihn). Bestätige das Interesse an der Immobilie und schlage höflich einen zeitnahen Besichtigungstermin vor. Halte den Ton geschäftsmäßig, aber sehr freundlich.`
-                }
-            ],
-        });
-
-        const emailText = response.choices[0].message.content;
-        res.json({ success: true, emailText });
-
-    } catch (error) {
-        console.error("Fehler bei der E-Mail-Generierung:", error);
-        res.status(500).json({ success: false, error: error.message });
+    if (password !== "makler-erfolg") {
+        return res.status(401).json({ success: false, error: "Nicht autorisiert" });
     }
-});
-
-   // NEU: Route für die KI-Bildanalyse
-app.post('/api/analyze-image', async (req, res) => {
 
     try {
-        const { image, password } = req.body;
-
-        // Passwort-Schutz prüfen
-        if (password !== SECRET_PASSWORD) {
-            return res.status(401).json({ success: false, error: "Ungültiges Passwort" });
-        }
-
-        if (!image) {
-            return res.status(400).json({ success: false, error: "Kein Bild übermittelt" });
-        }
-
-        // OpenAI API mit dem Bild aufrufen (Vision-Feature)
         const response = await openai.chat.completions.create({
             model: "gpt-4o-mini",
             messages: [
-                {
-                    role: "user",
-                    content: [
-                        { 
-                            type: "text", 
-                            text: "Analysierte dieses Immobilien-Foto professionell für einen Makler. Welche Räumlichkeit ist zu sehen? Welche Ausstattungsmerkmale fallen positiv auf (z.B. Parkett, Fußbodenheizung, Einbaustrahler, moderne Fliesen, Lichtverhältnisse)? Schreibe eine stichpunktartige Liste der Highlights für ein Exposé." 
-                        },
-                        {
-                            type: "image_url",
-                            image_url: {
-                                "url": image // Hier übergeben wir das Base64-Bild
- }
+                { 
+                    role: "system", 
+                    content: "Du bist ein genialer Social-Media-Manager für Immobilien. Generiere zwei separate Posts auf Deutsch basierend auf den Objektdaten. Trenne die Posts strikt mit dem Wort '===TRENNUNG==='. Post 1 ist für Instagram (emotional, packend, mit passenden Emojis und Immobilien-Hashtags). Post 2 ist für LinkedIn (professionell, B2B-orientiert, Fokus auf Investment und Fakten, weniger Emojis)." 
+                },
+                { role: "user", content: `Objekt: ${title}, Preis: ${price} EUR, Details: ${notes}` }
             ]
         });
 
-        const analysisText = response.choices[0].message.content;
-        res.json({ success: true, analysis: analysisText });
+        const gesamtText = response.choices.message.content;
+        const teile = gesamtText.split('===TRENNUNG===');
+        
+        const instaPost = teile[0] ? teile[0].trim() : "Fehler bei Instagram-Generierung";
+        const linkedinPost = teile[1] ? teile[1].trim() : "Fehler bei LinkedIn-Generierung";
+
+        res.json({ 
+            success: true, 
+            instagram: instaPost, 
+            linkedin: linkedinPost 
+        });
 
     } catch (error) {
-        console.error("Fehler bei Bildanalyse:", error);
-        res.status(500).json({ success: false, error: "Fehler bei der KI-Analyse" });
+        console.error("Social-Media-Fehler:", error);
+        res.status(500).json({ success: false, error: "Fehler bei der Generierung" });
     }
+});
+
+// Server auf dem zugewiesenen Port oder standardmäßig Port 3000 starten
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Server läuft fehlerfrei auf Port ${PORT}`);
 });
