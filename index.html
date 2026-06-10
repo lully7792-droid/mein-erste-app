@@ -265,104 +265,82 @@
     </div>
 </div>
 <script>
+// Globale Variablen für die App-Logik
 let savedPassword = "";
-let currentSocialMediaText = "";
-let exposeCounter = 0;
-let imageCounter = 0;
-let emailCounter = 0;
+let remainingCredits = 10; // Start-Credits für den Makler
 
+// 1. Die Login-Funktion (Die hat dem Browser komplett gefehlt!)
 function checkLogin() {
-    const pass = document.getElementById('passwordInput').value;
-    if(!pass) { alert('Bitte Passwort eingeben!'); return; }
-    savedPassword = pass;
-    document.getElementById('loginSection').style.display = 'none';
-    document.getElementById('appsection').classList.remove('hidden');
+    const passwordInput = document.getElementById('passwordInput').value;
+    
+    if (passwordInput === "makler-erfolg") {
+        savedPassword = passwordInput;
+        document.getElementById('loginSection').classList.add('hidden');
+        document.getElementById('appSection').classList.remove('hidden');
+        updateCreditDisplay();
+    } else {
+        alert("Falsches Passwort! Bitte versuche es erneut.");
+    }
 }
 
+// 2. Die normale Exposé-Text-Generierung
 async function generateExpose() {
+    if (remainingCredits <= 0) {
+        alert("Keine Credits mehr übrig! Bitte lade dein Konto auf.");
+        return;
+    }
+
     const title = document.getElementById('title').value;
     const price = document.getElementById('price').value;
     const year = document.getElementById('year').value;
     const energy = document.getElementById('energy').value;
-    const location = document.getElementById('location').value;
-    const premiumFeatures = document.getElementById('premiumFeatures').value;
-   
-    const resultBox = document.get.ElementById('exposeResultBox');
-    const resultText = document.getElementById('exposeResultText');
-exposeCounter++;
-document.getElementById('statsExposeCount').textContent = exposeCounter;
-    
-    if(!title || !price || !location) {
-        alert('Bitte mindestens Titel, Preis und Lage ausfüllen!');
+    const notes = document.getElementById('notes').value;
+
+    if (!title || !price) {
+        alert("Bitte fülle mindestens den Objekttitel und den Kaufpreis aus.");
         return;
     }
 
-    resultBox.classList.remove('hidden');
-    resultText.innerHTML = "<em>KI generiert das Premium-Exposé... Bitte warten...</em>";
-exposeCounter++;
-document.getElementById('statsExposeCount').textContent = exposeCounter;
+    const outputDiv = document.getElementById('exposeOutput');
+    const outputText = document.getElementById('exposeText');
+    const genBtn = document.querySelector('button[onclick="generateExpose()"]');
+
+    if (genBtn) {
+        genBtn.disabled = true;
+        genBtn.innerText = "Generiere Exposé...";
+    }
+    
+    outputDiv.classList.remove('hidden');
+    outputText.innerText = "KI schreibt das Exposé, bitte warten...";
+
     try {
-        const response = await fetch('/api/generate', {
+        const response = await fetch('/api/generate-expose', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                type: 'expose',
-                password: savedPassword,
-                data: { title, price, year, energy, location, premiumFeatures }
-            })
+            body: JSON.stringify({ title, price, year, energy, notes, password: savedPassword })
         });
+        
         const data = await response.json();
-        if(data.success) {
-            resultText.textContent = data.text;
+        if (data.success) {
+            outputText.innerText = data.text;
+            
+            // Credit abziehen & Anzeige updaten
+            remainingCredits--;
+            updateCreditDisplay();
         } else {
-            resultText.textContent = "Fehler: " + data.error;
+            outputText.innerText = "Fehler: " + data.error;
         }
-    } catch(err) {
-        resultText.textContent = "Verbindungsfehler zum Server.";
-        console.error(err);
+    } catch (error) {
+        outputText.innerText = "Server-Fehler bei der Exposé-Erstellung.";
+    } finally {
+        if (genBtn) {
+            genBtn.disabled = false;
+            genBtn.innerText = "✨ KI-Exposé generieren";
+        }
     }
 }
 
-async function generateSocialMedia() {
-    const title = document.getElementById('title').value;
-    const price = document.getElementById('price').value;
-    const location = document.getElementById('location').value;
-    const premiumFeatures = document.getElementById('premiumFeatures').value;
-    
-    const resultBox = document.getElementById('socialResultBox');
-    const resultText = document.getElementById('socialResultText');
-}
-
-    if(!title || !price || !location) {
-        alert('Bitte fülle zuerst die Objektdaten oben aus!');
-        return;
-    }
-
-    resultBox.classList.remove('hidden');
-    resultText.innerHTML = "<em>KI erstellt Social Media Postings... Bitte warten...</em>";
-
-    try {
-        const response = await fetch('/api/generate', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                type: 'social',
-                password: savedPassword,
-                data: { title, price, location, premiumFeatures }
-            })
-        });
-        const data = await response.json();
-        if(data.success) {
-            resultText.textContent = data.text;
-            currentSocialMediaText = data.text;
-        } else {
-            resultText.textContent = "Fehler: " + data.error;
-        }
-    } catch(err) {
-        resultText.textContent = "Verbindungsfehler zum Server.";
-
-    }
-    
+// 3. Die neue KI-Bildanalyse
 async function analyzeImage() {
     const fileInput = document.getElementById('imageInput');
     if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
@@ -375,7 +353,7 @@ async function analyzeImage() {
         return;
     }
 
-    const file = fileInput.files[0]; // 🎯 Holt das ausgewählte Bild
+    const file = fileInput.files[0]; // Holt das ausgewählte Bild
     const btn = document.getElementById('analyzeImageBtn');
     const resultDiv = document.getElementById('analysisResult');
     const resultText = document.getElementById('analysisText');
@@ -392,13 +370,13 @@ async function analyzeImage() {
             const response = await fetch('/api/analyze-image', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ image: base64Image, password: savedPassword || "makler-erfolg" })
+                body: JSON.stringify({ image: base64Image, password: savedPassword })
             });
             const data = await response.json();
             if (data.success) {
                 resultText.innerText = data.analysis;
                 
-                // 🎯 Zieht hier den Credit sauber ab
+                // Credit sauber abziehen
                 remainingCredits--;
                 updateCreditDisplay();
             } else {
@@ -414,7 +392,7 @@ async function analyzeImage() {
     reader.readAsDataURL(file);
 }
 
-// 🎯 Funktion zur Aktualisierung der Anzeige auf dem Bildschirm
+// 4. Funktion zur Aktualisierung der Anzeige auf dem Bildschirm
 function updateCreditDisplay() {
     const creditBox = document.getElementById('creditDisplay');
     if (creditBox) {
@@ -422,7 +400,7 @@ function updateCreditDisplay() {
     }
 }
 
-// Event-Listener an den Button hängen, sobald die Seite geladen ist
+// Event-Listener an den Bild-Button hängen, sobald die Seite geladen ist
 document.addEventListener('DOMContentLoaded', () => {
     const btn = document.getElementById('analyzeImageBtn');
     if (btn) {
