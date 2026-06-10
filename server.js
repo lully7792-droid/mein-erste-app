@@ -78,9 +78,39 @@ app.post('/api/generate', async (expressReq, expressRes) => {
     }
 });
 
-// NEU: Route für den automatischen E-Mail-Generator
-app.post('/api/generate-email', async (req, res) => {
+        // FEATURE 2: ROUTE FÜR KI-MAIL-GENERATOR
+app.post('/api/generate-mail', async (req, res) => {
+    const { query, password } = req.body;
+
+    if (password !== "makler-erfolg") {
+        return res.status(401).json({ success: false, error: "Nicht autorisiert" });
+    }
+
+    if (!query) {
+        return res.status(400).json({ success: false, error: "Keine Anfrage angegeben" });
+    }
+
     try {
+        const response = await openai.chat.completions.create({
+            model: "gpt-4o-mini",
+            messages: [
+                { 
+                    role: "system", 
+                    content: "Du bist ein professioneller Immobilienmakler. Schreibe eine höfliche, kundenorientierte Antwort-E-Mail auf Deutsch basierend auf der Kundenanfrage." 
+                },
+                { role: "user", content: `Hier ist die Kundenanfrage: ${query}` }
+            ]
+        });
+
+        const mailText = response.choices[0].message.content;
+        res.json({ success: true, mail: mailText });
+
+    } catch (error) {
+        console.error("Fehler beim Mail-Generator:", error);
+        res.status(500).json({ success: false, error: "Fehler bei der KI-Generierung" });
+    }
+});
+
         const { clientReply, password } = req.body;
 
         // Passwort-Schutz prüfen
@@ -118,6 +148,7 @@ app.post('/api/generate-email', async (req, res) => {
 
    // NEU: Route für die KI-Bildanalyse
 app.post('/api/analyze-image', async (req, res) => {
+
     try {
         const { image, password } = req.body;
 
@@ -145,24 +176,15 @@ app.post('/api/analyze-image', async (req, res) => {
                             type: "image_url",
                             image_url: {
                                 "url": image // Hier übergeben wir das Base64-Bild
-                            }
-                        }
-                    ],
-                },
-            ],
-        
+ }
+            ]
         });
 
-        const analysis = response.choices[0].message.content;
-        res.json({ success: true, analysis });
+        const analysisText = response.choices[0].message.content;
+        res.json({ success: true, analysis: analysisText });
 
     } catch (error) {
-        console.error("Fehler bei der Bildanalyse:", error);
-        res.status(500).json({ success: false, error: error.message });
+        console.error("Fehler bei Bildanalyse:", error);
+        res.status(500).json({ success: false, error: "Fehler bei der KI-Analyse" });
     }
-     
-    });
-
-    app.listen(3000, () => {
-        console.log("🚀 Server läuft auf http://localhost:3000");
-    }); 
+});
