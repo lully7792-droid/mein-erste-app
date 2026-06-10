@@ -270,18 +270,7 @@ let savedPassword = "";
 let remainingCredits = 10; // Start-Credits für den Makler
 
 // 1. Die Login-Funktion (Die hat dem Browser komplett gefehlt!)
-function checkLogin() {
-    const passwordInput = document.getElementById('passwordInput').value;
-    
-    if (passwordInput === "makler-erfolg") {
-        savedPassword = passwordInput;
-        document.getElementById('loginSection').classList.add('hidden');
-        document.getElementById('appSection').classList.remove('hidden');
-        updateCreditDisplay();
-    } else {
-        alert("Falsches Passwort! Bitte versuche es erneut.");
-    }
-}
+
 
 // 2. Die normale Exposé-Text-Generierung
 async function generateExpose() {
@@ -340,7 +329,20 @@ async function generateExpose() {
     }
 }
 
-// 3. Die neue KI-Bildanalyse
+function checkLogin() {
+    const passwordInput = document.getElementById('passwordInput').value;
+    
+    if (passwordInput === "makler-erfolg") {
+        savedPassword = passwordInput;
+        // Schaltet den Login-Bereich unsichtbar
+        document.getElementById('loginSection').style.display = 'none';
+        // Schaltet deine App und das Dashboard perfekt sichtbar!
+        document.getElementById('appSection').style.display = 'block';
+        updateCreditDisplay();
+    } else {
+        alert("Falsches Passwort! Bitte versuche es erneut.");
+    }
+}
 async function analyzeImage() {
     const fileInput = document.getElementById('imageInput');
     if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
