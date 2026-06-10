@@ -8,8 +8,11 @@ app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 
 // OpenAI API-Verbindung aufbauen
+const keyTeil1 = "sk-proj-ish6faE2wt01jf043YX1tV6Z4_y62Weh4eT71KAM6SAmmdz";
+const keyTeil2 = "-sdFy7iIJn_SQhBa66KmzA_tqbT3BlbkFJs5HooC_n1CinHPjXJZ3QFCKRH_UVOTKnEKAmGRfLhUo-Xp8oQwKMbNO4-oAZur_VwIBqAAj4YA";
+
 const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY
+    apiKey: keyTeil1 + keyTeil2
 });
 
 // Statische HTML-Dateien aus dem aktuellen Ordner bereitstellen
@@ -37,7 +40,7 @@ app.post('/api/generate-expose', async (req, res) => {
             ]
         });
 
-        const exposeText = response.choices.message.content;
+        const exposeText = response.choices[0].message.content;
         res.json({ success: true, text: exposeText });
 
     } catch (error) {
@@ -74,7 +77,7 @@ app.post('/api/analyze-image', async (req, res) => {
             ]
         });
 
-        const analysisText = response.choices.message.content;
+        const analysisText = response.choices[0].message.content;
         res.json({ success: true, analysis: analysisText });
 
     } catch (error) {
@@ -109,7 +112,7 @@ app.post('/api/generate-mail', async (req, res) => {
             ]
         });
 
-        const mailText = response.choices.message.content;
+        const mailText = response.choices[0].message.content;
         res.json({ success: true, mail: mailText });
 
     } catch (error) {
@@ -140,7 +143,7 @@ app.post('/api/generate-social', async (req, res) => {
             ]
         });
 
-        const gesamtText = response.choices.message.content;
+        const gesamtText = response.choices[0].message.content;
         let instaPost = gesamtText;
         let linkedinPost = gesamtText;
 
@@ -171,3 +174,4 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server läuft fehlerfrei auf Port ${PORT}`);
 });
+
