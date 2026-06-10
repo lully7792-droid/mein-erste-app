@@ -218,10 +218,7 @@
         savedPassword = pass;
         document.getElementById('loginSection').style.display = 'none';
         document.getElementById('appsection').style.display = 'block';
-        document.getElementById('analyzeImageBtn').parentElement.classList.remove('hidden');
-        document.getElementById('generateEmailBtn').parentElement.classList.remove('hidden');
     }
-
     async function generateExpose() {
         const title = document.getElementById('title').value;
         const size = document.getElementById('size').value;
@@ -382,17 +379,12 @@
     reader.readAsDataURL(file);
 }
 
-// Event-Listener an den Button hängen, sobald die Seite geladen ist
-document.addEventListener('DOMContentLoaded', () => {
-    const btn = document.getElementById('analyzeImageBtn');
-    if (btn) {
-        btn.addEventListener('click', analyzeImage);
-    }
     async function generateEmailReply() {
     const queryInput = document.getElementById('clientQueryInput');
     const resultBox = document.getElementById('emailResultBox');
     const resultText = document.getElementById('emailResultText');
     const password = savedPassword || "makler-erfolg";
+    }
 
     if (!queryInput.value.trim()) {
         alert('Bitte kopiere zuerst eine Kundenanfrage in das Textfeld.');
@@ -425,9 +417,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Event-Listener für beide Buttons aktivieren, sobald die Seite geladen ist
 document.addEventListener('DOMContentLoaded', () => {
-    const btn = document.getElementById('analyzeImageBtn');
-    if (btn) {
-        btn.addEventListener('click', analyzeImage);
+    const imgBtn = document.getElementById('analyzeImageBtn');
+    if (imgBtn) {
+        imgBtn.addEventListener('click', analyzeImage);
     }
     
     const emailBtn = document.getElementById('generateEmailBtn');
