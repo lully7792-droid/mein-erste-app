@@ -119,7 +119,7 @@
         </div>
      <div id="appSection">
         <!-- NEU: Bereich für KI-Bildanalyse -->
-        <div style="background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+        <div class="hidden" style="background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); padding: 20px; border-radius: 8px; margin-bottom: 20px;">
             <h3 style="font-size: 1.25rem; font-weight: bold; margin-bottom: 10px; color: var(--accent-color, #fff);">📸 KI-Bildanalyse (Ausstattung erkennen)</h3>
             <p style="font-size: 0.875rem; color: #aaa; margin-bottom: 15px;">Lade ein Raumfoto hoch. Die KI erkennt automatisch Highlights wie Einbauküchen, Bodenbeläge oder moderne Bäder.</p>
             
@@ -142,7 +142,7 @@
         </div>
 
            <!-- NEU: Bereich für KI-E-Mail-Generator -->
-        <div style="background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+        <div class="hidden" style="background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); padding: 20px; border-radius: 8px; margin-bottom: 20px;">
             <h3 style="font-size: 1.25rem; font-weight: bold; margin-bottom: 10px; color: var(--accent-color, #fff);">✉️ KI-E-Mail-Generator (Kundenanfragen)</h3>
             <p style="font-size: 0.875rem; color: #aaa; margin-bottom: 15px;">Kopiere die Anfrage des Kunden hier hinein. Die KI erstellt automatisch eine professionelle Antwort-Mail.</p>
             
@@ -217,7 +217,9 @@
         if(!pass) { alert('Bitte Passwort eingeben!'); return; }
         savedPassword = pass;
         document.getElementById('loginSection').style.display = 'none';
-        document.getElementById('appSection').style.display = 'block';
+        document.getElementById('appsection').style.display = 'block';
+        document.getElementById('analyzeImageBtn').parentElement.classList.remove('hidden');
+        document.getElementById('generateEmailBtn').parentElement.classList.remove('hidden');
     }
 
     async function generateExpose() {
