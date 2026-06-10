@@ -209,14 +209,17 @@ function checkLogin() {
 
 function updateCreditDisplay() {
     const creditBox = document.getElementById('creditDisplay');
-    }
     if (creditBox) {
         creditBox.innerText = `Verbleibende Abfragen: ${remainingCredits}`;
-    }async function generateExpose() {
+    }
+}
+    
+async function generateExpose() {
     if (remainingCredits <= 0) {
         alert("Keine Credits mehr übrig! Bitte lade dein Konto auf.");
         return;
     }
+    
     const title = document.getElementById('title').value;
     const price = document.getElementById('price').value;
     const year = document.getElementById('year').value;
