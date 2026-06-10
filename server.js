@@ -78,6 +78,43 @@ app.post('/api/generate', async (expressReq, expressRes) => {
     }
 });
 
+// NEU: Route für den automatischen E-Mail-Generator
+app.post('/api/generate-email', async (req, res) => {
+    try {
+        const { clientReply, password } = req.body;
+
+        // Passwort-Schutz prüfen
+        if (password !== SECRET_PASSWORD) {
+            return res.status(401).json({ success: false, error: "Ungültiges Passwort" });
+        }
+
+        if (!clientReply) {
+            return res.status(400).json({ success: false, error: "Keine Anfrage übermittelt" });
+        }
+
+        // OpenAI API aufrufen
+        const response = await openai.chat.completions.create({
+            model: "gpt-4o-mini",
+            messages: [
+                {
+                    role: "system",
+                    content: "Du bist ein hocffprofessioneller, freundlicher Immobilienmakler. Deine Aufgabe ist es, auf Kundenanfragen zu antworten."
+                },
+                {
+                    role: "user",
+                    content: `Hier ist die Anfrage des Kunden:\n\n"${clientReply}"\n\nSchreibe eine professionelle, höfliche und einladende Antwort-E-Mail. Begrüße den Kunden (falls der Name erkennbar ist, nutze ihn). Bestätige das Interesse an der Immobilie und schlage höflich einen zeitnahen Besichtigungstermin vor. Halte den Ton geschäftsmäßig, aber sehr freundlich.`
+                }
+            ],
+        });
+
+        const emailText = response.choices[0].message.content;
+        res.json({ success: true, emailText });
+
+    } catch (error) {
+        console.error("Fehler bei der E-Mail-Generierung:", error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
 
    // NEU: Route für die KI-Bildanalyse
 app.post('/api/analyze-image', async (req, res) => {

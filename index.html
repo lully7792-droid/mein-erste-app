@@ -141,6 +141,29 @@
             </div>
         </div>
 
+           <!-- NEU: Bereich für KI-E-Mail-Generator -->
+        <div style="background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+            <h3 style="font-size: 1.25rem; font-weight: bold; margin-bottom: 10px; color: var(--accent-color, #fff);">✉️ KI-E-Mail-Generator (Kundenanfragen)</h3>
+            <p style="font-size: 0.875rem; color: #aaa; margin-bottom: 15px;">Kopiere die Anfrage des Kunden hier hinein. Die KI erstellt automatisch eine professionelle Antwort-Mail.</p>
+            
+            <div style="display: flex; flex-direction: column; gap: 15px;">
+                <div>
+                    <label style="display: block; font-size: 0.875rem; margin-bottom: 5px;">Kundenanfrage hier hineinkopieren:</label>
+                    <textarea id="clientQueryInput" rows="4" style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); color: #fff; padding: 10px; border-radius: 6px; font-size: 0.875rem; resize: vertical;" placeholder="z.B. Guten Tag, ich interessiere mich für das Objekt in Berlin und würde gerne einen Termin vereinbaren..."></textarea>
+                </div>
+                
+                <button id="generateEmailBtn" type="button" style="width: 100%; background: var(--primary-color, #007bff); color: white; padding: 10px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;">
+                    Antwort-E-Mail generieren
+                </button>
+
+                <!-- Ergebnis-Box -->
+                <div id="emailResultBox" class="hidden" style="margin-top: 15px; padding: 15px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 6px;">
+                    <h4 style="font-weight: bold; color: var(--accent-color, #fff); margin-bottom: 10px;">Generierte Antwort:</h4>
+                    <div id="emailResultText" style="font-size: 0.875rem; color: #ccc; white-space: pre-line;"></div>
+                </div>
+            </div>
+        </div>
+
         <div class="form-group">
             <label for="title">Objekttitel / Typ</label>
             <label for="features">Premium-Merkmale (Mit Komma trennen)</label>
@@ -362,6 +385,52 @@ document.addEventListener('DOMContentLoaded', () => {
     const btn = document.getElementById('analyzeImageBtn');
     if (btn) {
         btn.addEventListener('click', analyzeImage);
+    }
+    async function generateEmailReply() {
+    const queryInput = document.getElementById('clientQueryInput');
+    const resultBox = document.getElementById('emailResultBox');
+    const resultText = document.getElementById('emailResultText');
+    const password = savedPassword || "makler-erfolg";
+
+    if (!queryInput.value.trim()) {
+        alert('Bitte kopiere zuerst eine Kundenanfrage in das Textfeld.');
+        return;
+    }
+
+    // Lade-Status anzeigen
+    resultBox.classList.remove('hidden');
+    resultText.innerHTML = "<em>Die KI erstellt die Antwort-Mail... Bitte warten...</em>";
+
+    try {
+        const response = await fetch('/api/generate-email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ clientReply: queryInput.value, password: password })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            resultText.textContent = data.emailText;
+        } else {
+            resultText.textContent = "Fehler: " + data.error;
+        }
+    } catch (err) {
+        resultText.textContent = "Verbindungsfehler zum Server.";
+        console.error(err);
+    
+       }
+
+// Event-Listener für beide Buttons aktivieren, sobald die Seite geladen ist
+document.addEventListener('DOMContentLoaded', () => {
+    const btn = document.getElementById('analyzeImageBtn');
+    if (btn) {
+        btn.addEventListener('click', analyzeImage);
+    }
+    
+    const emailBtn = document.getElementById('generateEmailBtn');
+    if (emailBtn) {
+        emailBtn.addEventListener('click', generateEmailReply);
     }
 });
 
