@@ -151,6 +151,21 @@
     </div>
       <!-- HAUPTAPP (Erst nach Login sichtbar) -->
     <div id="appsection" class="hidden">
+           <!-- NEU: Dashboard-Statistiken -->
+        <div class="flex-group" style="margin-bottom: 24px;">
+            <div class="card" style="flex: 1; margin-bottom: 0; padding: 15px; text-align: center; border-bottom: 3px solid var(--primary);">
+                <div style="font-size: 0.875rem; color: var(--text-muted);">Erstellte Exposés</div>
+                <div id="statsExposeCount" style="font-size: 1.75rem; font-weight: bold; color: var(--text); margin-top: 5px;">0</div>
+            </div>
+            <div class="card" style="flex: 1; margin-bottom: 0; padding: 15px; text-align: center; border-bottom: 3px solid var(--accent);">
+                <div style="font-size: 0.875rem; color: var(--text-muted);">Analysierte Fotos</div>
+                <div id="statsImageCount" style="font-size: 1.75rem; font-weight: bold; color: var(--text); margin-top: 5px;">0</div>
+            </div>
+            <div class="card" style="flex: 1; margin-bottom: 0; padding: 15px; text-align: center; border-bottom: 3px solid #a855f7;">
+                <div style="font-size: 0.875rem; color: var(--text-muted);">Generierte E-Mails</div>
+                <div id="statsEmailCount" style="font-size: 1.75rem; font-weight: bold; color: var(--text); margin-top: 5px;">0</div>
+            </div>
+        </div>
         
         <!-- NEU: FEATURE 1 - KI-BILDANALYSE -->
         <div class="card" style="border-left: 4px solid var(--primary);">
@@ -252,6 +267,9 @@
 <script>
 let savedPassword = "";
 let currentSocialMediaText = "";
+let exposeCounter = 0;
+let imageCounter = 0;
+let emailCounter = 0;
 
 function checkLogin() {
     const pass = document.getElementById('passwordInput').value;
@@ -268,10 +286,12 @@ async function generateExpose() {
     const energy = document.getElementById('energy').value;
     const location = document.getElementById('location').value;
     const premiumFeatures = document.getElementById('premiumFeatures').value;
-    
-    const resultBox = document.getElementById('exposeResultBox');
+   
+    const resultBox = document.get.ElementById('exposeResultBox');
     const resultText = document.getElementById('exposeResultText');
-
+exposeCounter++;
+document.getElementById('statsExposeCount').textContent = exposeCounter;
+    
     if(!title || !price || !location) {
         alert('Bitte mindestens Titel, Preis und Lage ausfüllen!');
         return;
@@ -279,7 +299,8 @@ async function generateExpose() {
 
     resultBox.classList.remove('hidden');
     resultText.innerHTML = "<em>KI generiert das Premium-Exposé... Bitte warten...</em>";
-
+exposeCounter++;
+document.getElementById('statsExposeCount').textContent = exposeCounter;
     try {
         const response = await fetch('/api/generate', {
             method: 'POST',
@@ -310,6 +331,7 @@ async function generateSocialMedia() {
     
     const resultBox = document.getElementById('socialResultBox');
     const resultText = document.getElementById('socialResultText');
+}
 
     if(!title || !price || !location) {
         alert('Bitte fülle zuerst die Objektdaten oben aus!');
@@ -338,110 +360,75 @@ async function generateSocialMedia() {
         }
     } catch(err) {
         resultText.textContent = "Verbindungsfehler zum Server.";
-        console.error(err);
-    }
-}
 
+    }
+    
 async function analyzeImage() {
     const fileInput = document.getElementById('imageInput');
-    const resultDiv = document.getElementById('analysisResult');
-    const resultText = document.getElementById('analysisText');
-    const password = savedPassword || "makler-erfolg";
-
-    if (!fileInput.files || fileInput.files.length === 0) {
-        alert('Bitte wähle zuerst ein Bild aus.');
+    if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+        alert("Bitte wähle zuerst ein Bild aus.");
         return;
     }
 
-    const file = fileInput.files;
-    const reader = new FileReader();
+    if (remainingCredits <= 0) {
+        alert("Keine Credits mehr übrig! Bitte lade dein Konto auf.");
+        return;
+    }
 
+    const file = fileInput.files[0]; // 🎯 Holt das ausgewählte Bild
+    const btn = document.getElementById('analyzeImageBtn');
+    const resultDiv = document.getElementById('analysisResult');
+    const resultText = document.getElementById('analysisText');
+
+    btn.disabled = true;
+    btn.innerText = "Analysiere Bild...";
     resultDiv.classList.remove('hidden');
-    resultText.innerHTML = "<em>Die KI analysiert das Bild... Bitte warten...</em>";
+    resultText.innerText = "Die KI scannt das Bild, bitte warten...";
 
-    reader.onloadend = async () => {
+    const reader = new FileReader();
+    reader.onloadend = async function () {
         const base64Image = reader.result;
-
         try {
             const response = await fetch('/api/analyze-image', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ image: base64Image, password: password })
+                body: JSON.stringify({ image: base64Image, password: savedPassword || "makler-erfolg" })
             });
-
             const data = await response.json();
-
             if (data.success) {
-                resultText.textContent = data.analysis;
+                resultText.innerText = data.analysis;
+                
+                // 🎯 Zieht hier den Credit sauber ab
+                remainingCredits--;
+                updateCreditDisplay();
             } else {
-                resultText.textContent = "Fehler: " + data.error;
+                resultText.innerText = "Fehler: " + data.error;
             }
-        } catch (err) {
-            resultText.textContent = "Verbindungsfehler zum Server.";
-            console.error(err);
+        } catch (error) {
+            resultText.innerText = "Server-Fehler bei der Analyse.";
+        } finally {
+            btn.disabled = false;
+            btn.innerText = "Bild analysieren & Highlights extrahieren";
         }
     };
-
     reader.readAsDataURL(file);
 }
 
-async function generateEmailReply() {
-    const queryInput = document.getElementById('clientQueryInput');
-    const resultBox = document.getElementById('emailResultBox');
-    const resultText = document.getElementById('emailResultText');
-    const password = savedPassword || "makler-erfolg";
-
-    if (!queryInput.value.trim()) {
-        alert('Bitte kopiere zuerst eine Kundenanfrage in das Textfeld.');
-        return;
-    }
-
-    resultBox.classList.remove('hidden');
-    resultText.innerHTML = "<em>Die KI erstellt die Antwort-Mail... Bitte warten...</em>";
-
-    try {
-        const response = await fetch('/api/generate-email', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ clientReply: queryInput.value, password: password })
-        });
-
-        const data = await response.json();
-
-        if (data.success) {
-            resultText.textContent = data.emailText;
-        } else {
-            resultText.textContent = "Fehler: " + data.error;
-        }
-    } catch (err) {
-        resultText.textContent = "Verbindungsfehler zum Server.";
-        console.error(err);
+// 🎯 Funktion zur Aktualisierung der Anzeige auf dem Bildschirm
+function updateCreditDisplay() {
+    const creditBox = document.getElementById('creditDisplay');
+    if (creditBox) {
+        creditBox.innerText = `Verbleibende Abfragen: ${remainingCredits}`;
     }
 }
 
-function copyExpose() {
-    const txt = document.getElementById('exposeResultText').textContent;
-    navigator.clipboard.writeText(txt);
-    alert('Exposé-Text in die Zwischenablage kopiert!');
-}
-
-function copySocialMedia() {
-    navigator.clipboard.writeText(currentSocialMediaText);
-    alert('Social Media Postings kopiert!');
-}
-
+// Event-Listener an den Button hängen, sobald die Seite geladen ist
 document.addEventListener('DOMContentLoaded', () => {
-    const imgBtn = document.getElementById('analyzeImageBtn');
-    if (imgBtn) {
-        imgBtn.addEventListener('click', analyzeImage);
-    }
-    
-    const emailBtn = document.getElementById('generateEmailBtn');
-    if (emailBtn) {
-        emailBtn.addEventListener('click', generateEmailReply);
+    const btn = document.getElementById('analyzeImageBtn');
+    if (btn) {
+        btn.addEventListener('click', analyzeImage);
     }
 });
 </script>
-
 </body>
 </html>
