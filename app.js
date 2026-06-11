@@ -215,23 +215,46 @@ async function generateSocialMedia() {
 
 function exportToWordTable() {
     const text = document.getElementById('exposeText').innerText;
+    const title = document.getElementById('title').value || "Immobilien-Exposé";
+    const price = document.getElementById('price').value || "-";
+    const location = document.getElementById('location').value || "-";
+
     if (!text || text.includes("bitte warten...")) {
         alert("Es gibt noch kein Exposé zum Exportieren!");
         return;
     }
     
+    // 🎯 Hier wird dein Dokument mit sauberer Schrift und Tabelle gegossen:
     const htmlContent = `
         <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://w3.org'>
-        <head><title>Immobilien-Exposé</title><style>
-            table { border-collapse: collapse; width: 100%; font-family: Arial, sans-serif; }
-            th, td { border: 1px solid #000000; padding: 10px; text-align: left; }
-            th { background-color: #f2f2f2; font-weight: bold; }
-        </style></head>
+        <head>
+            <meta charset="utf-8">
+            <title>${title}</title>
+            <style>
+                body { font-family: 'Segoe UI', Arial, Helvetica, sans-serif; color: #333333; line-height: 1.6; }
+                h1 { color: #10b981; font-size: 24px; border-bottom: 2px solid #10b981; padding-bottom: 10px; }
+                table { border-collapse: collapse; width: 100%; margin-top: 20px; font-family: Arial, sans-serif; }
+                th, td { border: 1px solid #cccccc; padding: 12px; text-align: left; vertical-align: top; }
+                th { background-color: #f8fafc; font-weight: bold; color: #1e293b; width: 25%; }
+                .text-box { background-color: #fafafa; padding: 15px; white-space: pre-wrap; }
+            </style>
+        </head>
         <body>
-            <h2>Immobilien-Exposé Generierung</h2>
+            <h1>📋 Immobilien-Exposé: ${title}</h1>
+            
             <table>
-                <tr><th>Kategorie</th><th>Inhalt</th></tr>
-                <tr><td><strong>Exposé-Text</strong></td><td>${text.replace(/\n/g, '<br>')}</td></tr>
+                <tr>
+                    <th>📍 Objekt-Lage:</th>
+                    <td>${location}</td>
+                </tr>
+                <tr>
+                    <th>💰 Kaufpreis:</th>
+                    <td><strong>${price} EUR</strong></td>
+                </tr>
+                <tr>
+                    <th>📄 Beschreibung & Details:</th>
+                    <td class="text-box">${text.replace(/\n/g, '<br>')}</td>
+                </tr>
             </table>
         </body>
         </html>
@@ -241,7 +264,7 @@ function exportToWordTable() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'Immobilien_Expose_Tabelle.doc';
+    a.download = \`Expose_\${title.replace(/\s+/g, '_')}.doc\`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
