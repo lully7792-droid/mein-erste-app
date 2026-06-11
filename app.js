@@ -259,18 +259,6 @@ function exportToWordTable() {
     URL.revokeObjectURL(url);
 }
     
-    const blob = new Blob(['\ufeff' + htmlContent], { type: 'application/msword' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    // 🎯 Hier sauber korrigiert ohne die störenden Schrägstriche:
-    a.download = "Expose_" + title.replace(/\s+/g, '_') + ".doc";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-}
-
 function copyToClipboard(elementId) {
     const element = document.getElementById(elementId);
     if (!element) return;
