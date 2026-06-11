@@ -7,8 +7,10 @@ const app = express();
 const keyTeil1 = "sk-proj-ish6faE2wt0ljf043YX1tv6Z4_yG2Weh4eT71KAAm6SAmmdz";
 const keyTeil2 = "-sdFy7iIJn_SQhBa66KmzA_tqbT3BlbkFJs5HooC_n1CinHPjXJZ3QFCKRH_UVOTKnEKAmGRfLhUo-Xp8oQwKMbNO4-oAZur_VwIBqAAj4YA";
 
+const kompletterKey = (keyTeil1 + keyTeil2).trim();
+
 const openai = new OpenAI({
-    apiKey: keyTeil1 + keyTeil2
+    apiKey: kompletterKey
 });
 // Statische HTML-Dateien aus dem aktuellen Ordner bereitstellen
 app.use(express.static(__dirname));
