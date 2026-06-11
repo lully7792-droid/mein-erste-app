@@ -3,144 +3,168 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ImmoFlow - Das Makler Dashboard</title>
+    <title>ImmoFlow - Makler KI Dashboard</title>
     <style>
         :root {
-            --bg-color: #111827;
-            --card-bg: #1f2937;
-            --text-color: #f3f4f6;
+            --bg-dark: #0f172a;
+            --card-bg: #1e293b;
             --accent: #10b981;
-            --border-color: #374151;
+            --text-light: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
         }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 20px;
+            padding: 40px 20px;
             display: flex;
             justify-content: center;
         }
-        .container {
-            width: 100%;
-            max-width: 800px;
-        }
+        .container { width: 100%; max-width: 800px; }
+        header { text-align: center; margin-bottom: 40px; }
+        h1 { font-size: 2.5rem; color: var(--text-light); margin-bottom: 10px; }
+        .subtitle { color: var(--accent); font-weight: 600; letter-spacing: 1px; }
         .card {
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 24px;
-            margin-bottom: 24px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3);
         }
-        h1, h2, h3, h4 { color: #ffffff; margin-top: 0; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; }
-        input, textarea, select {
+        h2 { font-size: 1.5rem; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+        .description { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 25px; line-height: 1.5; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: 500; font-size: 0.9rem; color: var(--text-light); }
+        input[type="text"], input[type="password"], textarea, select {
             width: 100%;
-            padding: 10px;
-            border-radius: 6px;
+            padding: 12px 16px;
+            background-color: var(--bg-dark);
             border: 1px solid var(--border-color);
-            background: #111827;
-            color: #ffffff;
-            box-sizing: border-box;
+            border-radius: 6px;
+            color: var(--text-light);
+            font-size: 1rem;
+            transition: border-color 0.2s;
         }
+        input:focus, textarea:focus, select:focus { outline: none; border-color: var(--accent); }
         .btn {
             background-color: var(--accent);
-            color: white;
-            padding: 12px 20px;
+            color: #000;
+            font-weight: 600;
             border: none;
+            padding: 14px 24px;
             border-radius: 6px;
             cursor: pointer;
-            font-weight: bold;
-            font-size: 16px;
+            font-size: 1rem;
+            transition: opacity 0.2s;
         }
-        .btn:disabled { background-color: #4b5563; cursor: not-allowed; }
-        .hidden { display: none; }
-        .description { color: #9ca3af; font-size: 14px; margin-bottom: 15px; }
+        .btn:hover { opacity: 0.9; }
+        .btn:disabled { background-color: var(--border-color); color: var(--text-muted); cursor: not-allowed; }
+        .hidden { display: none !important; }
+        .credit-box { text-align: center; margin-top: 15px; font-size: 0.9rem; color: var(--accent); font-weight: bold; }
     </style>
 </head>
 <body>
 <div class="container">
+    <header>
+        <h1>ImmoFlow 🚀</h1>
+        <p class="subtitle">PRODUKTIVITÄTS-BOOSTER FÜR IMMOBILIENMAKLER</p>
+    </header>
 
-    <!-- LOGIN SECTION -->
+    <!-- LOGIN AREA -->
     <div id="loginSection" class="card">
-        <h2>🔒 ImmoFlow Freischalten</h2>
+        <h2>🔒 Bitte einloggen</h2>
+        <p class="description">Gib das Passwort ein, um Zugriff auf die KI-Generatoren freizuschalten.</p>
         <div class="form-group">
-            <label for="passwordInput">Plattform-Passwort:</label>
-            <input type="password" id="passwordInput" placeholder="Passwort eingeben...">
+            <label for="passwordInput">Passwort</label>
+            <input type="password" id="passwordInput" placeholder="Dein Makler-Passwort">
         </div>
-        <button onclick="checkLogin()" class="btn" style="width:100%;">Plattform freischalten</button>
+        <button class="btn" onclick="checkLogin()" style="width: 100%;">Dashboard entsperren</button>
     </div>
 
-    <!-- HAUPTAPP (Erst nach Login sichtbar) -->
+    <!-- MAIN APP AREA (HIDDEN BEFORE LOGIN) -->
     <div id="appSection" class="hidden">
-        
-        <!-- CREDIT DISPLAY -->
-        <div class="card" style="border-color: var(--accent); background: rgba(16, 185, 129, 0.05);">
-            <h3 id="creditDisplay" style="margin:0; color: var(--accent);">Verbleibende abfragen 10</h3>
-        </div>   
+        <div class="card" style="text-align: center; padding: 15px;">
+            <div id="creditDisplay" class="credit-box">Verbleibende Abfragen: 10</div>
+        </div>
+        <!-- FEATURE 1: KI-EXPOSÉ-GENERATOR -->
+        <div class="card">
             <h2>✨ KI-Exposé-Generator</h2>
-            <p class="description">Fülle die Objektdaten aus, damit die KI ein verkaufsstarkes Exposé schreibt.</p>
+            <p class="description">Füttere die KI mit den Eckdaten der Immobilie, um sofort ein professionelles Exposé zu generieren.</p>
             
             <div class="form-group">
                 <label for="title">Objekttitel / Überschrift</label>
-                <input type="text" id="title" placeholder="z.B. Gemütliches 3-Zimmer-Reihenhaus mit Garten">
+                <input type="text" id="title" placeholder="z.B. Charmantes Familiendomizil mit großem Garten">
             </div>
             <div class="form-group">
-                <label for="price">Kaufpreis (€)</label>
-                <input type="number" id="price" placeholder="z.B. 350000">
+                <label for="price">Kaufpreis (in EUR)</label>
+                <input type="text" id="price" placeholder="z.B. 450.000">
+            </div>
             <div class="form-group">
                 <label for="location">Ort / Lage der Immobilie</label>
                 <input type="text" id="location" placeholder="z.B. Berlin-Mitte oder Wuppertal">
             </div>
             <div class="form-group">
                 <label for="year">Baujahr</label>
-                <input type="number" id="year" placeholder="z.B. 1995">
+                <input type="text" id="year" placeholder="z.B. 1995">
             </div>
             <div class="form-group">
                 <label for="energy">Energieausweis-Klasse</label>
                 <select id="energy">
-                    <option value="A+">A+</option>
-                    <option value="A">A</option>
-                    <option value="B">B</option>
-                    <option value="C">C</option>
-                    <option value="D">D</option>
-                    <option value="E">E</option>
+                    <option value="A+">A+</option><option value="A">A</option><option value="B">B</option>
+                    <option value="C">C</option><option value="D">D</option><option value="E">E</option>
+                    <option value="F">F</option><option value="G">G</option><option value="H">H</option>
                 </select>
             </div>
             <div class="form-group">
-                <label for="notes">Besondere Highlights / Notizen</label>
-                <textarea id="notes" placeholder="z.B. Einbauküche inklusive, Fußbodenheizung, renoviert 2022..." style="height:100px;"></textarea>
+                <label for="notes">Besondere Highlights & Notizen</label>
+                <textarea id="notes" placeholder="z.B. Einbauküche inklusive, Fußbodenheizung, Sanierungsbedarf im Bad..." style="height: 120px;"></textarea>
             </div>
             
-            <button onclick="generateExpose()" class="btn" style="width: 100%;">✨ KI-Exposé generieren</button>
-
+            <button id="generateExposeBtn" class="btn" onclick="generateExpose()" style="width: 100%;">✨ KI-Exposé generieren</button>
+            
             <div id="exposeOutput" class="hidden" style="margin-top: 24px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 6px;">
                 <h3>Dein generiertes Exposé:</h3>
-                <p id="exposeText" style="white-space: pre-wrap;"></p>
-                <button onclick="copyToClipboard('exposeText')" class="btn" style="background: #4b5563; margin-top: 10px; font-size: 14px;">📋 Text kopieren</button>
+                <p id="exposeText" style="white-space: pre-wrap; margin-top: 10px;"></p>
+                <button onclick="copyToClipboard('exposeText')" class="btn" style="background: #4b5563; margin-top: 15px; font-size: 14px;">📋 Text kopieren</button>
+                <button onclick="exportToWordTable()" class="btn" style="background: #2563eb; margin-top: 15px; font-size: 14px; margin-left: 10px;">📝 Als Word-Tabelle exportieren</button>
             </div>
         </div>
 
-        <!-- FEATURE: KI-BILDANALYSE -->
+        <!-- FEATURE 2: KI-BILDANALYSE -->
         <div class="card">
-            <h2>📸 KI-Bildanalyse & Highlights</h2>
-            <p class="description">Lade ein Raum- oder Außenfoto hoch. Die KI extrahiert die stärksten Verkaufsargumente.</p>
+            <h2>📸 KI-Objektbild-Analyse</h2>
+            <p class="description">Lade ein Foto der Immobilie hoch. Die KI erkennt Highlights (z.B. Echtholzparkett, bodentiefe Fenster) und formuliert Werbetexte.</p>
             <div class="form-group">
+                <label for="imageInput">Immobilienbild auswählen (JPG/PNG)</label>
                 <input type="file" id="imageInput" accept="image/*">
             </div>
-            <button id="analyzeImageBtn" class="btn" style="width: 100%;">Bild analysieren & Highlights extrahieren</button>
+            <button id="analyzeImageBtn" class="btn" style="width: 100%;">📸 Bild analysieren & Highlights extrahieren</button>
             <div id="analysisResult" class="hidden" style="margin-top: 24px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 6px;">
-                <h3>Bild-Highlights:</h3>
-                <p id="analysisText" style="white-space: pre-wrap;"></p>
-                <button onclick="copyToClipboard('analysisText')" class="btn" style="background: #4b5563; margin-top: 10px; font-size: 14px;">📋 Text kopieren</button>
+                <h3>Gefundene Bild-Highlights:</h3>
+                <p id="analysisText" style="white-space: pre-wrap; margin-top: 10px;"></p>
+                <button onclick="copyToClipboard('analysisText')" class="btn" style="background: #4b5563; margin-top: 15px; font-size: 14px;">📋 Highlights kopieren</button>
+            </div>
+        </div>
+        <!-- FEATURE 3: KI-MAIL-GENERATOR -->
+        <div class="card">
+            <h2>✉️ KI-Mail-Generator</h2>
+            <p class="description">Kopiere die Kundenanfrage hier hinein, um sofort eine professionelle Antwort-E-Mail mitsamt Betreffzeilen zu generieren.</p>
+            <div class="form-group">
+                <label for="clientQueryInput">Kundenanfrage / Text aus Portal:</label>
+                <textarea id="clientQueryInput" placeholder="Hier die Nachricht des Interessenten reinkopieren..." style="height: 100px;"></textarea>
+            </div>
+            <button id="generateEmailBtn" class="btn" type="button" onclick="generateMail()" style="width: 100%;">Antwort-E-Mail generieren</button>
+            <div id="emailResultBox" class="hidden" style="margin-top: 24px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 6px;">
+                <h3>Generierte Antwort:</h3>
+                <div id="emailResultText" style="margin-top: 10px;"></div>
+                <button onclick="copyToClipboard('emailResultText')" class="btn" style="background: #4b5563; margin-top: 15px; font-size: 14px;">📋 Gesamten Text kopieren</button>
             </div>
         </div>
 
-        
-
-        <!-- FEATURE 3: SOCIAL-MEDIA-POST-GENERATOR -->
+        <!-- FEATURE 4: KI-SOCIAL-MEDIA-SPEZIALIST -->
         <div class="card">
             <h2>📱 KI-Social-Media-Spezialist</h2>
             <p class="description">Erstelle aus den Objektdaten sofort optimierte Posts für Instagram und LinkedIn.</p>
@@ -158,30 +182,8 @@
                 </div>
             </div>
         </div>
-        <!-- FEATURE 2: KI-MAIL-GENERATOR -->
-        <div class="card">
-            <h2>✉️ KI-Mail-Generator</h2>
-            <p class="description">Kopiere die Kundenanfrage hier hinein, um sofort eine professionelle Antwort-E-Mail zu generieren.</p>
-            <div class="form-group">
-                <label for="clientQueryInput">Kundenanfrage / Text aus Portal:</label>
-                <textarea id="clientQueryInput" placeholder="Hier die Nachricht des Interessenten reinkopieren..." style="height: 100px;"></textarea>
-            </div>
-            <button id="generateEmailBtn" class="btn" type="button" onclick="generateMail()" style="width: 100%;">Antwort-E-Mail generieren</button>
-            <div id="emailResultBox" class="hidden" style="margin-top: 24px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 6px;">
-                <h3>Generierte Antwort:</h3>
-        <!-- UPGRADE: AUTOMATISCHE BETREFFZEILEN -->
-        <div id="subjectBox" class="hidden" style="margin-bottom: 15px; padding: 12px; background: rgba(16, 185, 129, 0.1); border-left: 4px solid var(--accent); border-radius: 4px;">
-            <h4>🎯 KI-Betreffzeilen-Vorschläge:</h4>
-            <p id="subjectResultText" style="white-space: pre-wrap; font-style: italic; margin-top: 5px; color: #f3f4f6;"></p>
-            <button onclick="copyToClipboard('subjectResultText')" class="btn" style="background: #4b5563; padding: 4px 10px; font-size: 12px; margin-top: 5px;">📋 Betreff kopieren</button>
-        </div>
 
-                <p id="emailResultText" style="white-space: pre-wrap;"></p>
-                <button onclick="copyToClipboard('emailResultText')" class="btn" style="background: #4b5563; margin-top: 10px; font-size: 14px;">📋 Text kopieren</button>
-            </div>
-        </div>
-
-        <!-- FEATURE 4: HISTORIE / LOCALSTORAGE DATENBANK -->
+        <!-- FEATURE 5: HISTORIE -->
         <div class="card">
             <h2>🗄️ Letzte KI-Generierungen (Gespeichert)</h2>
             <p class="description">Deine Daten gehen nicht verloren. Hier sind deine letzten Erstellungen auf diesem Gerät:</p>
@@ -191,8 +193,8 @@
             <button onclick="clearHistory()" class="btn" style="background: #ef4444; margin-top: 10px; width: 100%;">🗑️ Historie löschen</button>
         </div>
 
-    </div> <!-- 🎯 HIER WIRD DIE APPSECTION ERST GESCHLOSSEN! -->
-</div> <!-- HIER DER CONTAINER -->
+    </div> <!-- CLOSES APPSECTION -->
+</div> <!-- CLOSES CONTAINER -->
 
 <script src="app.js"></script>
 </body>
