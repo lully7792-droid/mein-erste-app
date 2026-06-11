@@ -66,6 +66,7 @@ async function generateExpose() {
         outputText.innerText = "Server-Fehler bei der Exposé-Erstellung.";
     }
 }
+
 async function analyzeImage() {
     const fileInput = document.getElementById('imageInput');
     if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
@@ -113,7 +114,6 @@ async function analyzeImage() {
     };
     reader.readAsDataURL(file);
 }
-
 async function generateMail() {
     const queryInput = document.getElementById('clientQueryInput');
     if (!queryInput || !queryInput.value.trim()) {
@@ -164,6 +164,7 @@ async function generateMail() {
         btn.innerText = "Antwort-E-Mail generieren";
     }
 }
+
 async function generateSocialMedia() {
     if (remainingCredits <= 0) {
         alert("Keine Credits mehr übrig!");
