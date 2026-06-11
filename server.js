@@ -1,82 +1,179 @@
-import express from 'express';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import OpenAI from 'openai';
-import cors from 'cors';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const express = require('express');
+const cors = require('cors');
+const { OpenAI } = require('openai');
+require('dotenv').config();
 
 const app = express();
-app.use(express.json());
 app.use(cors());
-app.use(express.static(__dirname));
+app.use(express.json({ limit: '50mb' }));
+
+// OpenAI API-Verbindung aufbauen
+const keyTeil1 = "sk-proj-ish6faE2wt01jf043YX1tV6Z4_y62Weh4eT71KAM6SAmmdz";
+const keyTeil2 = "-sdFy7iIJn_SQhBa66KmzA_tqbT3BlbkFJs5HooC_n1CinHPjXJZ3QFCKRH_UVOTKnEKAmGRfLhUo-Xp8oQwKMbNO4-oAZur_VwIBqAAj4YA";
 
 const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY
+    apiKey: keyTeil1 + keyTeil2
 });
 
-const SECRET_PASSWORD = "makler-erfolg";
+// Statische HTML-Dateien aus dem aktuellen Ordner bereitstellen
+app.use(express.static(__dirname));
 
-app.post('/api/generate', async (expressReq, expressRes) => {
-    const { title, size, rooms, price, year, energy, location, tone, features, password } = expressReq.body;
+// ==========================================
+// ROUTE 1: KI-EXPOSÉ-GENERATOR
+// ==========================================
+app.post('/api/generate-expose', async (req, res) => {
+    const { title, price, location, year, energy, notes, password } = req.body;
 
-    if (password !== SECRET_PASSWORD) {
-        return expressRes.json({ success: false, error: "Ungültiger Enterprise Lizenzschlüssel!" });
+    if (password !== "makler-erfolg") {
+        return res.status(401).json({ success: false, error: "Nicht autorisiert" });
     }
-
-    const prompt = `Du bist ein Elite-Immobilienmakler und Social Media Experte. Schreibe zwei Texte für folgende Immobilie:
-    Titel/Typ: ${title}
-    Lage: ${location}
-    Wohnfläche: ${size} m²
-    Zimmer: ${rooms}
-    Kaufpreis: ${price} €
-    Baujahr: ${year}
-    Energieklasse: ${energy}
-    Besondere Merkmale: ${features}
-    
-    Der Schreibstil muss absolut ${tone} sein.
-    
-    TEXT 1 (Klassisches Exposé):
-    Strukturiere das Exposé mit einer packenden Überschrift, einem emotionalen Einleitungstext (Objektbeschreibung), einer Übersicht der Highlights und einem klaren Aufruf zur Kontaktaufnahme (Call to Action).
-    
-    TEXT 2 (Social Media Post):
-    Schreibe einen separaten, extrem packenden Social Media Post für Instagram/LinkedIn. Nutze passende Emojis, hebe die 3 wichtigsten Fakten hervor und füge am Ende relevante Hashtags sowie einen Call to Action hinzu.
-    
-    WICHTIG: Trenne Text 1 und Text 2 in deiner Antwort strikt mit dem Wortzeichen "---SOCIAL_MEDIA_SPLIT---"!`;
 
     try {
         const response = await openai.chat.completions.create({
             model: "gpt-4o-mini",
-            messages: [{ role: "user", content: prompt }],
-            temperature: 0.7
+            messages: [
+                { 
+                    role: "system", 
+                    content: "Du bist ein professioneller Immobilienmakler. Schreibe ein ansprechendes, verkaufsstarkes Exposé auf Deutsch basierend auf den bereitgestellten Objektdaten." 
+                },
+                { role: "user", content: `Titel: ${title}, Lage/Ort: ${location || "Nicht angegeben"}, Preis: ${price} EUR, Baujahr: ${year}, Energieausweis: ${energy}, Notizen: ${notes}` }
+            ]
         });
 
-        const fullResponseText = response.choices && response.choices[0] ? response.choices[0].message.content : response.choices.message.content;
-        
-        let exposeText = fullResponseText;
-        let socialMediaText = "Beitrag wird generiert...";
+        const exposeText = response.choices[0].message.content;
+        res.json({ success: true, text: exposeText });
 
-        if (fullResponseText.includes("---SOCIAL_MEDIA_SPLIT---")) {
-            const parts = fullResponseText.split("---SOCIAL_MEDIA_SPLIT---");
-            exposeText = parts[0] ? parts[0].trim() : fullResponseText;
-            socialMediaText = parts[1] ? parts[1].trim() : "Beitrag wird generiert...";
-        } else {
-            exposeText = fullResponseText;
-            socialMediaText = fullResponseText;
-        }
-
-        expressRes.json({ 
-            success: true, 
-            text: exposeText,
-            socialMedia: socialMediaText
-        });
     } catch (error) {
-        console.error("OpenAI Server-Fehler:", error);
-        expressRes.json({ success: false, error: error.message });
+        console.error("Exposé-Fehler:", error);
+        res.status(500).json({ success: false, error: "Fehler bei der KI-Generierung" });
     }
 });
 
-app.listen(3000, () => {
-    console.log("🟢 ERFOLG! Server läuft.");
+// ==========================================
+// ROUTE 2: KI-BILDANALYSE
+// ==========================================
+app.post('/api/analyze-image', async (req, res) => {
+    const { image, password } = req.body;
+
+    if (password !== "makler-erfolg") {
+        return res.status(401).json({ success: false, error: "Nicht autorisiert" });
+    }
+
+    try {
+         
+
+    } catch (error) {
+        console.error("Fehler bei Bildanalyse:", error);
+        res.status(500).json({ success: false, error: "Fehler bei der KI-Analyse" });
+    }
+});
+
+// ==========================================
+// ROUTE 3: KI-MAIL-GENERATOR
+// ==========================================
+app.post('/api/generate-mail', async (req, res) => {
+    const { query, password } = req.body;
+
+    if (password !== "makler-erfolg") {
+        return res.status(401).json({ success: false, error: "Nicht autorisiert" });
+    }
+
+    if (!query) {
+        return res.status(400).json({ success: false, error: "Keine Anfrage angegeben" });
+    }
+
+    try {
+         const response = await openai.chat.completions.create({
+            model: "gpt-4o-mini",
+            messages: [
+                { 
+                    role: "system", 
+                    content: "Du bist ein professioneller Immobilienmakler. Schreibe eine höfliche Antwort-E-Mail auf Deutsch basierend auf der Kundenanfrage. Generiere ZUSÄTZLICH ganz oben 3 packende Betreffzeilen-Optionen. Trenne die Betreffzeilen-Optionen und den eigentlichen E-Mail-Text strikt mit dem Wort '===TRENNUNG==='. Schreibe erst die 3 Betreffzeilen, dann das Trennwort, dann die E-Mail." 
+                },
+                { role: "user", content: `Hier ist die Kundenanfrage: ${query}` }
+            ]
+        });
+
+        // 🎯 Hier zerlegen wir die Antwort sauber und fangen Fehler ab
+        let gesamtText = "Fehler bei der Generierung.";
+        if (response && response.choices && response.choices[0] && response.choices[0].message) {
+            gesamtText = response.choices[0].message.content;
+        }
+
+        let betreffText = "1. Wichtige Information zu Ihrer Anfrage\n2. Rückmeldung zu Ihrem Immobilienwunsch\n3. Details zu Ihrer Nachricht";
+        let mailText = gesamtText;
+
+        if (gesamtText.includes('===TRENNUNG===')) {
+            const teile = gesamtText.split('===TRENNUNG===');
+            betreffText = teile[0].trim();
+            mailText = teile[1].trim();
+        }
+
+        res.json({ 
+            success: true, 
+            subjects: betreffText, 
+            mail: mailText 
+        });
+
+        const mailText = response.choices[0].message.content;
+        res.json({ success: true, mail: mailText });
+
+    } catch (error) {
+        console.error("Fehler beim Mail-Generator:", error);
+        res.status(500).json({ success: false, error: "Fehler bei der KI-Generierung" });
+    }
+});
+
+// ==========================================
+// ROUTE 4: KI-SOCIAL-MEDIA-GENERATOR
+// ==========================================
+app.post('/api/generate-social', async (req, res) => {
+    const { title, price, location, notes, password } = req.body;
+
+    if (password !== "makler-erfolg") {
+        return res.status(401).json({ success: false, error: "Nicht autorisiert" });
+    }
+
+    try {
+        const response = await openai.chat.completions.create({
+            model: "gpt-4o-mini",
+            messages: [
+                { 
+                    role: "system", 
+                    content: "Du bist ein genialer Social-Media-Manager für Immobilien. Generiere zwei separate Posts auf Deutsch basierend auf den Objektdaten. Trenne die Posts strikt mit dem Wort '===TRENNUNG==='. Post 1 ist für Instagram (emotional, mit passenden Emojis und Immobilien-Hashtags). Post 2 ist für LinkedIn (professionell, B2B-orientiert, Fokus auf Investment und Fakten)." 
+                },
+                { role: "user", content: `Objekt: ${title}, Lage/Ort: ${location || "Nicht angegeben"}, Preis: ${price} EUR, Details: ${notes}` }
+            ]
+        });
+
+        const gesamtText = response.choices[0].message.content;
+        let instaPost = gesamtText;
+        let linkedinPost = gesamtText;
+
+        if (gesamtText.includes('===TRENNUNG===')) {
+            const teile = gesamtText.split('===TRENNUNG===');
+            instaPost = teile[0] ? teile[0].trim() : gesamtText;
+            linkedinPost = teile[1] ? teile[1].trim() : gesamtText;
+        } else {
+            const haelfte = Math.floor(gesamtText.length / 2);
+            instaPost = gesamtText.substring(0, haelfte).trim();
+            linkedinPost = gesamtText.substring(haelfte).trim();
+        }
+
+        res.json({ 
+            success: true, 
+            instagram: instaPost, 
+            linkedin: linkedinPost 
+        });
+
+    } catch (error) {
+        console.error("Social-Media-Fehler:", error);
+        res.status(500).json({ success: false, error: "Fehler bei der Generierung" });
+    }
+});
+
+// Server starten
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Server läuft fehlerfrei auf Port ${PORT}`);
 });
