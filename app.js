@@ -224,40 +224,40 @@ function exportToWordTable() {
         return;
     }
     
+    // Sauberes Tabellen-Layout für Word mit fester Schriftart
     const htmlContent = `
         <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://w3.org'>
         <head>
             <meta charset="utf-8">
-            <title>${title}</title>
             <style>
-                body { font-family: 'Segoe UI', Arial, Helvetica, sans-serif; color: #333333; line-height: 1.6; }
-                h1 { color: #10b981; font-size: 24px; border-bottom: 2px solid #10b981; padding-bottom: 10px; }
-                table { border-collapse: collapse; width: 100%; margin-top: 20px; font-family: Arial, sans-serif; }
-                th, td { border: 1px solid #cccccc; padding: 12px; text-align: left; vertical-align: top; }
-                th { background-color: #f8fafc; font-weight: bold; color: #1e293b; width: 25%; }
-                .text-box { background-color: #fafafa; padding: 15px; white-space: pre-wrap; }
+                body { font-family: Arial, Helvetica, sans-serif; color: #000000; }
+                table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                th, td { border: 1px solid #333333; padding: 10px; text-align: left; vertical-align: top; }
+                th { background-color: #f2f2f2; font-weight: bold; width: 25%; }
             </style>
         </head>
         <body>
-            <h1>📋 Immobilien-Exposé: ${title}</h1>
-            
+            <h2>Immobilien-Exposé: ${title}</h2>
             <table>
-                <tr>
-                    <th>📍 Objekt-Lage:</th>
-                    <td>${location}</td>
-                </tr>
-                <tr>
-                    <th>💰 Kaufpreis:</th>
-                    <td><strong>${price} EUR</strong></td>
-                </tr>
-                <tr>
-                    <th>📄 Beschreibung & Details:</th>
-                    <td class="text-box">${text.replace(/\n/g, '<br>')}</td>
-                </tr>
+                <tr><th>Objekt:</th><td>${title}</td></tr>
+                <tr><th>Lage:</th><td>${location}</td></tr>
+                <tr><th>Kaufpreis:</th><td>${price} EUR</td></tr>
+                <tr><th>Exposé-Text:</th><td>${text.replace(/\n/g, '<br>')}</td></tr>
             </table>
         </body>
         </html>
     `;
+    
+    const blob = new Blob(['\ufeff' + htmlContent], { type: 'application/msword' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = "Expose_" + title.replace(/\s+/g, '_') + ".doc";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
     
     const blob = new Blob(['\ufeff' + htmlContent], { type: 'application/msword' });
     const url = URL.createObjectURL(blob);
