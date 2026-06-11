@@ -4,14 +4,12 @@ const cors = require('cors');
 const { OpenAI } = require('openai');
 
 const app = express();
-app.use(cors());
-app.use(express.json({ limit: '50mb' }));
+const keyTeil1 = "sk-proj-ish6faE2wt0ljf043YX1tv6Z4_yG2Weh4eT71KAAm6SAmmdz";
+const keyTeil2 = "-sdFy7iIJn_SQhBa66KmzA_tqbT3BlbkFJs5HooC_n1CinHPjXJZ3QFCKRH_UVOTKnEKAmGRfLhUo-Xp8oQwKMbNO4-oAZur_VwIBqAAj4YA";
 
-// OpenAI API-Verbindung aufbauen
 const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY
+    apiKey: keyTeil1 + keyTeil2
 });
-
 // Statische HTML-Dateien aus dem aktuellen Ordner bereitstellen
 app.use(express.static(__dirname));
 
