@@ -20,30 +20,19 @@ app.use(express.static(__dirname));
 // ==========================================
 app.post('/api/generate-expose', async (req, res) => {
     const { title, price, location, year, energy, notes, password } = req.body;
-
-    if (password !== "makler-erfolg") {
-        return res.status(401).json({ success: false, error: "Nicht autorisiert" });
-    }
+    if (password !== "makler-erfolg") return res.status(401).json({ success: false, error: "Nicht autorisiert" });
 
     try {
         const response = await openai.chat.completions.create({
             model: "gpt-4o-mini",
             messages: [
-                { 
-                    role: "system", 
-                    content: "Du bist ein professioneller Immobilienmakler. Schreibe ein ansprechendes, verkaufsstarkes Exposé auf Deutsch basierend auf den bereitgestellten Objektdaten." 
-                },
+                { role: "system", content: "Du bist ein professioneller Immobilienmakler. Schreibe ein ansprechendes, verkaufsstarkes Exposé auf Deutsch basierend auf den bereitgestellten Objektdaten." },
                 { role: "user", content: `Titel: ${title}, Lage/Ort: ${location || "Nicht angegeben"}, Preis: ${price} EUR, Baujahr: ${year}, Energieausweis: ${energy}, Notizen: ${notes}` }
             ]
         });
 
-        let exposeText = "Fehler: Antwort von KI unvollständig.";
-        if (response && response.choices && response.choices[0] && response.choices[0].message) {
-            exposeText = response.choices[0].message.content;
-        }
-
+        const exposeText = response.choices[0].message.content;
         res.json({ success: true, text: exposeText });
-
     } catch (error) {
         console.error("Exposé-Fehler:", error);
         res.status(500).json({ success: false, error: "Fehler bei der KI-Generierung" });
@@ -55,38 +44,21 @@ app.post('/api/generate-expose', async (req, res) => {
 // ==========================================
 app.post('/api/analyze-image', async (req, res) => {
     const { image, password } = req.body;
-
-    if (password !== "makler-erfolg") {
-        return res.status(401).json({ success: false, error: "Nicht autorisiert" });
-    }
+    if (password !== "makler-erfolg") return res.status(401).json({ success: false, error: "Nicht autorisiert" });
 
     try {
         const response = await openai.chat.completions.create({
             model: "gpt-4o-mini",
             messages: [
-                {
-                    role: "system",
-                    content: "Du bist ein erfahrener Immobilienmakler. Analysiere das hochgeladene Bild eines Hauses oder Raumes und extrahiere die wichtigsten, verkaufsstärksten Highlights für ein Exposé."
-                },
-                {
-                    role: "user",
-                    content: [
-                        { type: "text", text: "Analysiere dieses Immobilienbild und nenne Highlights:" },
-                        { type: "image_url", image_url: { "url": image } }
-                    ]
-                }
+                { role: "system", content: "Du bist ein erfahrener Immobilienmakler. Analysiere das Bild und extrahiere Highlights." },
+                { role: "user", content: [{ type: "text", text: "Analysiere dieses Bild:" }, { type: "image_url", image_url: { "url": image } }] }
             ]
         });
 
-        let analysisText = "Fehler bei der Bildanalyse.";
-        if (response && response.choices && response.choices[0] && response.choices[0].message) {
-            analysisText = response.choices[0].message.content;
-        }
-
+        const analysisText = response.choices[0].message.content;
         res.json({ success: true, analysis: analysisText });
-
     } catch (error) {
-        console.error("Fehler bei Bildanalyse:", error);
+        console.error("Bildanalyse-Fehler:", error);
         res.status(500).json({ success: false, error: "Fehler bei der KI-Analyse" });
     }
 });
@@ -96,29 +68,19 @@ app.post('/api/analyze-image', async (req, res) => {
 // ==========================================
 app.post('/api/generate-mail', async (req, res) => {
     const { query, password } = req.body;
-
-    if (password !== "makler-erfolg") {
-        return res.status(401).json({ success: false, error: "Nicht autorisiert" });
-    }
+    if (password !== "makler-erfolg") return res.status(401).json({ success: false, error: "Nicht autorisiert" });
 
     try {
         const response = await openai.chat.completions.create({
             model: "gpt-4o-mini",
             messages: [
-                { 
-                    role: "system", 
-                    content: "Du bist ein professioneller Immobilienmakler. Schreibe eine höfliche Antwort-E-Mail auf Deutsch basierend auf der Kundenanfrage. Generiere ZUSÄTZLICH ganz oben 3 packende Betreffzeilen-Optionen. Trenne die Betreffzeilen-Optionen und den eigentlichen E-Mail-Text strikt mit dem Wort '===TRENNUNG==='. Schreibe erst die 3 Betreffzeilen, dann das Trennwort, dann die E-Mail." 
-                },
-                { role: "user", content: `Hier ist die Kundenanfrage: ${query}` }
+                { role: "system", content: "Du bist ein professioneller Immobilienmakler. Schreibe eine Antwort-E-Mail auf Deutsch. Generiere ganz oben 3 packende Betreffzeilen. Trenne die Betreffzeilen und die E-Mail strikt mit dem Wort '===TRENNUNG==='." },
+                { role: "user", content: `Anfrage: ${query}` }
             ]
         });
 
-        let gesamtText = "Fehler bei der Mailübertragung.";
-        if (response && response.choices && response.choices[0] && response.choices[0].message) {
-            gesamtText = response.choices[0].message.content;
-        }
-
-        let betreffText = "1. Wichtige Information zu Ihrer Anfrage\n2. Rückmeldung zu Ihrem Immobilienwunsch\n3. Details zu Ihrer Nachricht";
+        const gesamtText = response.choices[0].message.content;
+        let betreffText = "1. Ihre Anfrage\n2. Rückmeldung\n3. Details zu Ihrer Nachricht";
         let mailText = gesamtText;
 
         if (gesamtText.includes('===TRENNUNG===')) {
@@ -127,14 +89,9 @@ app.post('/api/generate-mail', async (req, res) => {
             mailText = teile[1].trim();
         }
 
-        res.json({ 
-            success: true, 
-            subjects: betreffText, 
-            mail: mailText 
-        });
-
+        res.json({ success: true, subjects: betreffText, mail: mailText });
     } catch (error) {
-        console.error("Fehler beim Mail-Generator:", error);
+        console.error("Mail-Fehler:", error);
         res.status(500).json({ success: false, error: "Fehler bei der KI-Generierung" });
     }
 });
@@ -144,28 +101,18 @@ app.post('/api/generate-mail', async (req, res) => {
 // ==========================================
 app.post('/api/generate-social', async (req, res) => {
     const { title, price, location, notes, password } = req.body;
-
-    if (password !== "makler-erfolg") {
-        return res.status(401).json({ success: false, error: "Nicht autorisiert" });
-    }
+    if (password !== "makler-erfolg") return res.status(401).json({ success: false, error: "Nicht autorisiert" });
 
     try {
         const response = await openai.chat.completions.create({
             model: "gpt-4o-mini",
             messages: [
-                { 
-                    role: "system", 
-                    content: "Du bist ein genialer Social-Media-Manager für Immobilien. Generiere zwei separate Posts auf Deutsch basierend auf den Objektdaten. Trenne die Posts strikt mit dem Wort '===TRENNUNG==='. Post 1 ist für Instagram (emotional, mit passenden Emojis und Immobilien-Hashtags). Post 2 ist für LinkedIn (professionell, B2B-orientiert, Fokus auf Investment und Fakten)." 
-                },
-                { role: "user", content: `Objekt: ${title}, Lage/Ort: ${location || "Nicht angegeben"}, Preis: ${price} EUR, Details: ${notes}` }
+                { role: "system", content: "Du bist ein Social-Media-Manager für Immobilien. Generiere einen Post für Instagram und einen für LinkedIn. Trenne die Posts strikt mit dem Wort '===TRENNUNG==='." },
+                { role: "user", content: `Objekt: ${title}, Ort: ${location}, Preis: ${price}, Details: ${notes}` }
             ]
         });
 
-        let gesamtText = "Fehler bei der Social-Media-Übertragung.";
-        if (response && response.choices && response.choices[0] && response.choices[0].message) {
-            gesamtText = response.choices[0].message.content;
-        }
-
+        const gesamtText = response.choices[0].message.content;
         let instaPost = gesamtText;
         let linkedinPost = gesamtText;
 
@@ -173,26 +120,14 @@ app.post('/api/generate-social', async (req, res) => {
             const teile = gesamtText.split('===TRENNUNG===');
             instaPost = teile[0].trim();
             linkedinPost = teile[1].trim();
-        } else {
-            const haelfte = Math.floor(gesamtText.length / 2);
-            instaPost = gesamtText.substring(0, haelfte).trim();
-            linkedinPost = gesamtText.substring(haelfte).trim();
         }
 
-        res.json({ 
-            success: true, 
-            instagram: instaPost, 
-            linkedin: linkedinPost 
-        });
-
+        res.json({ success: true, instagram: instaPost, linkedin: linkedinPost });
     } catch (error) {
         console.error("Social-Media-Fehler:", error);
         res.status(500).json({ success: false, error: "Fehler bei der Generierung" });
     }
 });
 
-// Server starten
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Server läuft fehlerfrei auf Port ${PORT}`);
-});
+app.listen(PORT, () => console.log(`Server läuft auf Port ${PORT}`));
