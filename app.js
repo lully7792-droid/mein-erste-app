@@ -224,7 +224,6 @@ function exportToWordTable() {
         return;
     }
     
-    // 🎯 Hier wird dein Dokument mit sauberer Schrift und Tabelle gegossen:
     const htmlContent = `
         <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://w3.org'>
         <head>
@@ -264,7 +263,8 @@ function exportToWordTable() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = \`Expose_\${title.replace(/\s+/g, '_')}.doc\`;
+    // 🎯 Hier sauber korrigiert ohne die störenden Schrägstriche:
+    a.download = "Expose_" + title.replace(/\s+/g, '_') + ".doc";
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
