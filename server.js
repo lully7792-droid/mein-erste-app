@@ -1,18 +1,15 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const { OpenAI } = require('openai');
-require('dotenv').config();
 
 const app = express();
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 
 // OpenAI API-Verbindung aufbauen
-const keyTeil1 = "sk-proj-ish6faE2wt01jf043YX1tV6Z4_y62Weh4eT71KAM6SAmmdz";
-const keyTeil2 = "-sdFy7iIJn_SQhBa66KmzA_tqbT3BlbkFJs5HooC_n1CinHPjXJZ3QFCKRH_UVOTKnEKAmGRfLhUo-Xp8oQwKMbNO4-oAZur_VwIBqAAj4YA";
-
 const openai = new OpenAI({
-    apiKey: keyTeil1 + keyTeil2
+    apiKey: process.env.OPENAI_API_KEY
 });
 
 // Statische HTML-Dateien aus dem aktuellen Ordner bereitstellen
@@ -40,7 +37,11 @@ app.post('/api/generate-expose', async (req, res) => {
             ]
         });
 
-        const exposeText = response.choices[0].message.content;
+        let exposeText = "Fehler: Antwort von KI unvollständig.";
+        if (response && response.choices && response.choices[0] && response.choices[0].message) {
+            exposeText = response.choices[0].message.content;
+        }
+
         res.json({ success: true, text: exposeText });
 
     } catch (error) {
@@ -60,7 +61,29 @@ app.post('/api/analyze-image', async (req, res) => {
     }
 
     try {
-         
+        const response = await openai.chat.completions.create({
+            model: "gpt-4o-mini",
+            messages: [
+                {
+                    role: "system",
+                    content: "Du bist ein erfahrener Immobilienmakler. Analysiere das hochgeladene Bild eines Hauses oder Raumes und extrahiere die wichtigsten, verkaufsstärksten Highlights für ein Exposé."
+                },
+                {
+                    role: "user",
+                    content: [
+                        { type: "text", text: "Analysiere dieses Immobilienbild und nenne Highlights:" },
+                        { type: "image_url", image_url: { "url": image } }
+                    ]
+                }
+            ]
+        });
+
+        let analysisText = "Fehler bei der Bildanalyse.";
+        if (response && response.choices && response.choices[0] && response.choices[0].message) {
+            analysisText = response.choices[0].message.content;
+        }
+
+        res.json({ success: true, analysis: analysisText });
 
     } catch (error) {
         console.error("Fehler bei Bildanalyse:", error);
@@ -78,12 +101,8 @@ app.post('/api/generate-mail', async (req, res) => {
         return res.status(401).json({ success: false, error: "Nicht autorisiert" });
     }
 
-    if (!query) {
-        return res.status(400).json({ success: false, error: "Keine Anfrage angegeben" });
-    }
-
     try {
-         const response = await openai.chat.completions.create({
+        const response = await openai.chat.completions.create({
             model: "gpt-4o-mini",
             messages: [
                 { 
@@ -94,8 +113,7 @@ app.post('/api/generate-mail', async (req, res) => {
             ]
         });
 
-        // 🎯 Hier zerlegen wir die Antwort sauber und fangen Fehler ab
-        let gesamtText = "Fehler bei der Generierung.";
+        let gesamtText = "Fehler bei der Mailübertragung.";
         if (response && response.choices && response.choices[0] && response.choices[0].message) {
             gesamtText = response.choices[0].message.content;
         }
@@ -114,9 +132,6 @@ app.post('/api/generate-mail', async (req, res) => {
             subjects: betreffText, 
             mail: mailText 
         });
-
-        const mailText = response.choices[0].message.content;
-        res.json({ success: true, mail: mailText });
 
     } catch (error) {
         console.error("Fehler beim Mail-Generator:", error);
@@ -146,14 +161,18 @@ app.post('/api/generate-social', async (req, res) => {
             ]
         });
 
-        const gesamtText = response.choices[0].message.content;
+        let gesamtText = "Fehler bei der Social-Media-Übertragung.";
+        if (response && response.choices && response.choices[0] && response.choices[0].message) {
+            gesamtText = response.choices[0].message.content;
+        }
+
         let instaPost = gesamtText;
         let linkedinPost = gesamtText;
 
         if (gesamtText.includes('===TRENNUNG===')) {
             const teile = gesamtText.split('===TRENNUNG===');
-            instaPost = teile[0] ? teile[0].trim() : gesamtText;
-            linkedinPost = teile[1] ? teile[1].trim() : gesamtText;
+            instaPost = teile[0].trim();
+            linkedinPost = teile[1].trim();
         } else {
             const haelfte = Math.floor(gesamtText.length / 2);
             instaPost = gesamtText.substring(0, haelfte).trim();
