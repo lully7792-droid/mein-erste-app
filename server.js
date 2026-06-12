@@ -193,6 +193,56 @@ app.post('/api/generate-location', async (req, res) => {
         res.status(500).json({ success: false, error: "Fehler bei der Lageanalyse" });
     }
 });
+
+// ==========================================
+// ROUTE 8: KI-VERTRAGS-PRÜFER
+// ==========================================
+app.post('/api/analyze-contract', async (req, res) => {
+    const { contractText, password } = req.body;
+    if (password !== "makler-erfolg") return res.status(401).json({ success: false, error: "Nicht autorisiert" });
+
+    try {
+        const response = await openai.chat.completions.create({
+            model: "gpt-4o-mini",
+            messages: [
+                { role: "system", content: "Du bist ein erfahrener Immobilien-Rechtsexperte. Analysiere den bereitgestellten Vertragstext oder die Klausel auf Deutsch. Weise auf potenzielle Stolperfallen, unübliche Nachteilsklauseln oder Risiken für Käufer/Verkäufer/Mieter hin und gib eine klare Einschätzung ab." },
+                { role: "user", content: `Vertragstext/Klausel: ${contractText}` }
+            ]
+        });
+        res.json({ success: true, text: response.choices.message.content });
+    } catch (error) {
+        console.error("Vertragsprüfer-Fehler:", error);
+        res.status(500).json({ success: false, error: "Fehler bei der Vertragsanalyse" });
+    }
+});
+
+// ==========================================
+// ROUTE 9: KI-KUNDEN-PROFILE-MATCHING
+// ==========================================
+app.post('/api/match-profile', async (req, res) => {
+    const { buyerCriteria, propTitle, propPrice, propLocation, propNotes, password } = req.body;
+    if (password !== "makler-erfolg") return res.status(401).json({ success: false, error: "Nicht autorisiert" });
+
+    try {
+        const response = await openai.chat.completions.create({
+            model: "gpt-4o-mini",
+            messages: [
+                { role: "system", content: "Du bist ein genialer Vertriebs-Makler. Vergleiche die Suchkriterien des Kunden mit den Objektdaten der aktuellen Immobilie. Schreibe eine extrem maßgeschneiderte, persönliche und überzeugende Einladungs-E-Mail auf Deutsch an diesen Suchkunden. Hebe genau die Punkte hervor, die perfekt zu seinen Wünschen passen." },
+                { role: "user", content: `Suchkriterien des Kunden: ${buyerCriteria}
+
+Aktuelles Objekt:
+Titel: ${propTitle}
+Preis: ${propPrice} EUR
+Ort: ${propLocation}
+Details: ${propNotes}` }
+            ]
+        });
+        res.json({ success: true, text: response.choices.message.content });
+    } catch (error) {
+        console.error("Matching-Fehler:", error);
+        res.status(500).json({ success: false, error: "Fehler beim Kunden-Matching" });
+    }
+});
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server läuft fehlerfrei auf Port ${PORT}`);
