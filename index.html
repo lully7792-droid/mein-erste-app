@@ -239,8 +239,28 @@
                 <button onclick="copyToClipboard('checklistText')" class="btn" style="background: #4b5563; margin-top: 15px; font-size: 14px;">📋 Checkliste kopieren</button>
             </div>
         </div>
+
+        <!-- FEATURE 7: KI-LAGE- & INFRASTRUKTUR-BESCHREIBUNG -->
+        <div class="card">
+            <h2>🗺️ KI-Lage- & Infrastruktur-Beschreiber</h2>
+            <p class="description">Erstelle eine emotionale, verkaufsstarke Lagebeschreibung für dein Exposé, perfekt zugeschnitten auf deine Zielgruppe.</p>
+            <div class="form-group">
+                <label for="locName">Ort / Stadtteil / Region</label>
+                <input type="text" id="locName" placeholder="z.B. Wuppertal-Barmen, ruhige Seitenstraße nahe Nordbahntrasse">
+            </div>
+            <div class="form-group">
+                <label for="locTarget">Bevorzugte Zielgruppe</label>
+                <input type="text" id="locTarget" placeholder="z.B. Junge Familien mit Kindern, Pendler, Kapitalanleger">
+            </div>
+            <button id="generateLocationBtn" class="btn" style="width: 100%;" onclick="generateLocationDesc()">🗺️ Lagebeschreibung generieren</button>
+            <div id="locationResultBox" class="hidden" style="margin-top: 24px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 6px;">
+                <h3>Lageanalyse & Infrastruktur:</h3>
+                <p id="locationText" style="white-space: pre-wrap; margin-top: 10px;"></p>
+                <button onclick="copyToClipboard('locationText')" class="btn" style="background: #4b5563; margin-top: 15px; font-size: 14px;">📋 Lagebeschreibung kopieren</button>
+            </div>
+        </div>
         
-        <!-- FEATURE 5: HISTORIE -->
+        <!-- FEATURE 8: HISTORIE -->
         <div class="card">
             <h2>🗄️ Letzte KI-Generierungen (Gespeichert)</h2>
             <p class="description">Deine Daten gehen nicht verloren. Hier sind deine letzten Erstellungen auf diesem Gerät:</p>
