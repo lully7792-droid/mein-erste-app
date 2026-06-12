@@ -185,9 +185,11 @@
 
         <!-- FEATURE 5: KI-IMMOBILIEN-WERTRECHNER -->
         <div class="card">
-            <h2>💰 KI-Immobilien-Wertrechner</h2>
-            <p class="description">Erhalte eine professionelle Marktwert-Einschätzung (Spanne von-bis) inklusive detaillierter Begründung der KI.</p>
-            <div class="form-group">
+            <div id="valuationResultBox" class="hidden" style="margin-top: 24px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 6px;">
+                <h3>Wertexpertise:</h3>
+                <p id="valuationText" style="white-space: pre-wrap; margin-top: 10px;"></p>
+                <button onclick="copyToClipboard('valuationText')" class="btn" style="background: #4b5563; margin-top: 15px; font-size: 14px;">📋 Expertise kopieren</button>
+                <button onclick="exportAnyToWord('valuationText', 'Wertexpertise')" class="btn" style="background: #2563eb; margin-top: 15px; font-size: 14px; margin-left: 10px;">📝 Als Word-Datei laden</button>
                 <label for="valSize">Wohnfläche (in qm)</label>
                 <input type="text" id="valSize" placeholder="z.B. 120">
             </div>
@@ -218,9 +220,11 @@
 
         <!-- FEATURE 6: KI-OBJEKT-CHECKLISTE & AUFGABENPLANER -->
         <div class="card">
-            <h2>📑 KI-Objekt-Checkliste & Aufgabenplaner</h2>
-            <p class="description">Generiere eine glasklare, maßgeschneiderte To-Do-Liste für die optimale Vorbereitung und Vermarktung dieses Objekts.</p>
-            <div class="form-group">
+            <div id="checklistResultBox" class="hidden" style="margin-top: 24px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 6px;">
+                <h3>Deine Objekt-Checkliste:</h3>
+                <p id="checklistText" style="white-space: pre-wrap; margin-top: 10px;"></p>
+                <button onclick="copyToClipboard('checklistText')" class="btn" style="background: #4b5563; margin-top: 15px; font-size: 14px;">📋 Checkliste kopieren</button>
+                <button onclick="exportAnyToWord('checklistText', 'Objekt_Checkliste')" class="btn" style="background: #2563eb; margin-top: 15px; font-size: 14px; margin-left: 10px;">📝 Als Word-Datei laden</button>
                 <label for="chkType">Objekttyp</label>
                 <input type="text" id="chkType" placeholder="z.B. Einfamilienhaus, Eigentumswohnung, Mehrfamilienhaus">
             </div>
@@ -242,9 +246,11 @@
 
         <!-- FEATURE 7: KI-LAGE- & INFRASTRUKTUR-BESCHREIBUNG -->
         <div class="card">
-            <h2>🗺️ KI-Lage- & Infrastruktur-Beschreiber</h2>
-            <p class="description">Erstelle eine emotionale, verkaufsstarke Lagebeschreibung für dein Exposé, perfekt zugeschnitten auf deine Zielgruppe.</p>
-            <div class="form-group">
+            <div id="locationResultBox" class="hidden" style="margin-top: 24px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 6px;">
+                <h3>Lageanalyse & Infrastruktur:</h3>
+                <p id="locationText" style="white-space: pre-wrap; margin-top: 10px;"></p>
+                <button onclick="copyToClipboard('locationText')" class="btn" style="background: #4b5563; margin-top: 15px; font-size: 14px;">📋 Lagebeschreibung kopieren</button>
+                <button onclick="exportAnyToWord('locationText', 'Lagebeschreibung')" class="btn" style="background: #2563eb; margin-top: 15px; font-size: 14px; margin-left: 10px;">📝 Als Word-Datei laden</button>
                 <label for="locName">Ort / Stadtteil / Region</label>
                 <input type="text" id="locName" placeholder="z.B. Wuppertal-Barmen, ruhige Seitenstraße nahe Nordbahntrasse">
             </div>
@@ -257,6 +263,40 @@
                 <h3>Lageanalyse & Infrastruktur:</h3>
                 <p id="locationText" style="white-space: pre-wrap; margin-top: 10px;"></p>
                 <button onclick="copyToClipboard('locationText')" class="btn" style="background: #4b5563; margin-top: 15px; font-size: 14px;">📋 Lagebeschreibung kopieren</button>
+            </div>
+        </div>
+
+        <!-- FEATURE 8: KI-MIET- & KAUFVERTRAGS-PRÜFER -->
+        <div class="card">
+            <h2>📑 KI-Miet- & Kaufvertrags-Prüfer</h2>
+            <p class="description">Kopiere Vertragstexte oder spezifische Klauseln hier hinein. Die KI scannt das Dokument sofort auf rechtliche Risiken, unübliche Klauseln oder Stolperfallen.</p>
+            <div class="form-group">
+                <label for="contractTextInput">Vertragstext / Klausel:</label>
+                <textarea id="contractTextInput" placeholder="Füge hier den zu prüfenden Textabschnitt ein..." style="height: 150px;"></textarea>
+            </div>
+            <button id="analyzeContractBtn" class="btn" style="width: 100%;" onclick="analyzeContract()">📑 Vertrag prüfen</button>
+            <div id="contractResultBox" class="hidden" style="margin-top: 24px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 6px;">
+                <h3>Vertragsanalyse:</h3>
+                <p id="contractText" style="white-space: pre-wrap; margin-top: 10px;"></p>
+                <button onclick="copyToClipboard('contractText')" class="btn" style="background: #4b5563; margin-top: 15px; font-size: 14px;">📋 Analyse kopieren</button>
+                <button onclick="exportAnyToWord('contractText', 'Vertragsanalyse')" class="btn" style="background: #2563eb; margin-top: 15px; font-size: 14px; margin-left: 10px;">📝 Als Word-Datei laden</button>
+            </div>
+        </div>
+
+        <!-- FEATURE 9: KI-KUNDEN-PROFIL-MATCHING (KÄUFER-FINDER) -->
+        <div class="card">
+            <h2>👥 KI-Kunden-Profil-Matching</h2>
+            <p class="description">Vergleiche die Wünsche eines Suchkunden direkt mit den Objektdaten von ganz oben. Die KI schreibt eine perfekt maßgeschneiderte Einladungs-E-Mail.</p>
+            <div class="form-group">
+                <label for="buyerCriteriaInput">Suchkriterien des Kunden (aus E-Mail oder Kartei):</label>
+                <textarea id="buyerCriteriaInput" placeholder="z.B. Familie Müller sucht: 4 Zimmer ab 100 qm, Balkon oder Garten, Wuppertal, max. 480.000 EUR..." style="height: 100px;"></textarea>
+            </div>
+            <button id="matchProfileBtn" class="btn" style="width: 100%;" onclick="matchProfile()">👥 Kunden-Matching starten</button>
+            <div id="matchResultBox" class="hidden" style="margin-top: 24px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 6px;">
+                <h3>Maßgeschneiderte Kunden-Einladung:</h3>
+                <p id="matchText" style="white-space: pre-wrap; margin-top: 10px;"></p>
+                <button onclick="copyToClipboard('matchText')" class="btn" style="background: #4b5563; margin-top: 15px; font-size: 14px;">📋 E-Mail kopieren</button>
+                <button onclick="exportAnyToWord('matchText', 'Kunden_Einladung')" class="btn" style="background: #2563eb; margin-top: 15px; font-size: 14px; margin-left: 10px;">📝 Als Word-Datei laden</button>
             </div>
         </div>
         
