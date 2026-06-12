@@ -7,12 +7,8 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 
-// 🎯 DEIN DIREKT-KEY (Perfekt zusammengeklebt und ohne Dopplungen!)
-const keyTeil1 = "sk-proj-ish6faE2wt01jf043YX1tV6Z4_y62Weh4eT71KAM6SAmmdz"; 
-const keyTeil2 = "-sdFy7iIJn_SQhBa66KmzA_tqbT3BlbkFJs5HooC_n1cinHPjXJZ3QFCKRH_UVOTKneKAMGRt"; 
-
 const openai = new OpenAI({
-    apiKey: keyTeil1 + keyTeil2
+    apiKey: process.env.OPENAI_API_KEY
 });
 
 // Statische HTML-Dateien aus dem aktuellen Ordner bereitstellen
