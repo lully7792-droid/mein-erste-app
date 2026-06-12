@@ -249,13 +249,12 @@
         </div>
 
 
-        <!-- FEATURE 7: KI-LAGE- & INFRASTRUKTUR-BESCHREIBUNG -->
+                <!-- FEATURE 7: KI-LAGE- & INFRASTRUKTUR-BESCHREIBUNG -->
         <div class="card">
-            <div id="locationResultBox" class="hidden" style="margin-top: 24px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 6px;">
-                <h3>Lageanalyse & Infrastruktur:</h3>
-                <p id="locationText" style="white-space: pre-wrap; margin-top: 10px;"></p>
-                <button onclick="copyToClipboard('locationText')" class="btn" style="background: #4b5563; margin-top: 15px; font-size: 14px;">📋 Lagebeschreibung kopieren</button>
-                <button onclick="exportAnyToWord('locationText', 'Lagebeschreibung')" class="btn" style="background: #2563eb; margin-top: 15px; font-size: 14px; margin-left: 10px;">📝 Als Word-Datei laden</button>
+            <h2>🗺️ KI-Lage- & Infrastruktur-Beschreiber</h2>
+            <p class="description">Erstelle eine emotionale, verkaufsstarke Lagebeschreibung für dein Exposé, perfekt zugeschnitten auf deine Zielgruppe.</p>
+            
+            <div class="form-group">
                 <label for="locName">Ort / Stadtteil / Region</label>
                 <input type="text" id="locName" placeholder="z.B. Wuppertal-Barmen, ruhige Seitenstraße nahe Nordbahntrasse">
             </div>
@@ -263,11 +262,14 @@
                 <label for="locTarget">Bevorzugte Zielgruppe</label>
                 <input type="text" id="locTarget" placeholder="z.B. Junge Familien mit Kindern, Pendler, Kapitalanleger">
             </div>
+            
             <button id="generateLocationBtn" class="btn" style="width: 100%;" onclick="generateLocationDesc()">🗺️ Lagebeschreibung generieren</button>
+            
             <div id="locationResultBox" class="hidden" style="margin-top: 24px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 6px;">
                 <h3>Lageanalyse & Infrastruktur:</h3>
                 <p id="locationText" style="white-space: pre-wrap; margin-top: 10px;"></p>
                 <button onclick="copyToClipboard('locationText')" class="btn" style="background: #4b5563; margin-top: 15px; font-size: 14px;">📋 Lagebeschreibung kopieren</button>
+                <button onclick="exportAnyToWord('locationText', 'Lagebeschreibung')" class="btn" style="background: #2563eb; margin-top: 15px; font-size: 14px; margin-left: 10px;">📝 Als Word-Datei laden</button>
             </div>
         </div>
 
