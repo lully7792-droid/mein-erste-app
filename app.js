@@ -77,7 +77,7 @@ async function analyzeImage() {
         alert("Keine Credits mehr übrig!");
         return;
     }
-    const file = fileInput.files[0];
+    const file = fileInput.files;
     const btn = document.getElementById('analyzeImageBtn');
     const resultDiv = document.getElementById('analysisResult');
     const resultText = document.getElementById('analysisText');
@@ -114,6 +114,7 @@ async function analyzeImage() {
     };
     reader.readAsDataURL(file);
 }
+
 async function generateMail() {
     const queryInput = document.getElementById('clientQueryInput');
     if (!queryInput || !queryInput.value.trim()) {
@@ -224,7 +225,6 @@ function exportToWordTable() {
         return;
     }
     
-    // Sauberes Tabellen-Layout für Word mit fester Schriftart
     const htmlContent = `
         <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://w3.org'>
         <head>
@@ -258,7 +258,279 @@ function exportToWordTable() {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
 }
+
+function exportAnyToWord(elementId, dateiName) {
+    const textElement = document.getElementById(elementId);
+    if (!textElement) return;
+    const text = textElement.innerText;
     
+    if (!text || text.includes("bitte warten...") || text.includes("KI schreibt...")) {
+        alert("Es gibt noch keinen Text zum Exportieren!");
+        return;
+    }
+    
+    const htmlContent = `
+        <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://w3.org'>
+        <head>
+            <meta charset="utf-8">
+            <style>
+                body { font-family: Arial, Helvetica, sans-serif; color: #000000; line-height: 1.6; padding: 20px; }
+                h1 { color: #10b981; font-size: 22px; border-bottom: 2px solid #10b981; padding-bottom: 8px; font-family: Arial, sans-serif; }
+                .content-box { font-family: Arial, sans-serif; font-size: 11pt; white-space: pre-wrap; margin-top: 15px; }
+            </style>
+        </head>
+        <body>
+            <h1>📄 ImmoFlow Expertise: ${dateiName.replace(/_/g, ' ')}</h1>
+            <div class="content-box">${text.replace(/\n/g, '<br>')}</div>
+        </body>
+        </html>
+    `;
+    
+    const blob = new Blob(['\ufeff' + htmlContent], { type: 'application/msword' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = dateiName + "_" + new Date().toLocaleDateString('de-DE').replace(/\./g, '-') + ".doc";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+async function generateValuation() {
+    if (remainingCredits <= 0) {
+        alert("Keine Credits mehr übrig!");
+        return;
+    }
+    const size = document.getElementById('valSize').value;
+    const rooms = document.getElementById('valRooms').value;
+    const condition = document.getElementById('valCondition').value;
+    const location = document.getElementById('valLocation').value;
+
+    if (!size || !rooms || !location) {
+        alert("Bitte fülle Fläche, Zimmer und Ort für die Wertermittlung aus.");
+        return;
+    }
+
+    const btn = document.getElementById('generateValuationBtn');
+    const resultBox = document.getElementById('valuationResultBox');
+    const resultText = document.getElementById('valuationText');
+
+    btn.disabled = true;
+    btn.innerText = "Berechne Marktwert...";
+    resultBox.classList.remove('hidden');
+    resultText.innerText = "Die KI analysiert die Daten und berechnet die Expertise, bitte warten...";
+
+    try {
+        const response = await fetch('/api/generate-valuation', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ size, rooms, condition, location, password: savedPassword })
+        });
+        const data = await response.json();
+        if (data.success) {
+            resultText.innerText = data.text;
+            saveToHistory("Wertexpertise", location);
+            remainingCredits--;
+            updateCreditDisplay();
+        } else {
+            resultText.innerText = "Fehler: " + data.error;
+        }
+    } catch (error) {
+        resultText.innerText = "Server-Fehler bei der Wertermittlung.";
+    } finally {
+        btn.disabled = false;
+        btn.innerText = "💰 Marktwert ermitteln";
+    }
+}
+
+async function generateChecklist() {
+    if (remainingCredits <= 0) {
+        alert("Keine Credits mehr übrig!");
+        return;
+    }
+    const type = document.getElementById('chkType').value;
+    const year = document.getElementById('chkYear').value;
+    const condition = document.getElementById('chkCondition').value;
+
+    if (!type || !condition) {
+        alert("Bitte fülle mindestens den Objekttitel und den Zustand aus.");
+        return;
+    }
+
+    const btn = document.getElementById('generateChecklistBtn');
+    const resultBox = document.getElementById('checklistResultBox');
+    const resultText = document.getElementById('checklistText');
+
+    btn.disabled = true;
+    btn.innerText = "Erstelle To-Do-Liste...";
+    resultBox.classList.remove('hidden');
+    resultText.innerText = "Die KI strukturiert den Verkaufsplan, bitte warten...";
+
+    try {
+        const response = await fetch('/api/generate-checklist', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ type, year, condition, password: savedPassword })
+        });
+        const data = await response.json();
+        if (data.success) {
+            resultText.innerText = data.text;
+            saveToHistory("To-Do-Liste", type);
+            remainingCredits--;
+            updateCreditDisplay();
+        } else {
+            resultText.innerText = "Fehler: " + data.error;
+        }
+    } catch (error) {
+        resultText.innerText = "Server-Fehler bei der Checklisten-Erstellung.";
+    } finally {
+        btn.disabled = false;
+        btn.innerText = "📑 To-Do-Liste generieren";
+    }
+}
+
+async function generateLocationDesc() {
+    if (remainingCredits <= 0) {
+        alert("Keine Credits mehr übrig!");
+        return;
+    }
+    const location = document.getElementById('locName').value;
+    const targetGroup = document.getElementById('locTarget').value;
+
+    if (!location || !targetGroup) {
+        alert("Bitte fülle den Ort und die Zielgruppe für die Lagebeschreibung aus.");
+        return;
+    }
+
+    const btn = document.getElementById('generateLocationBtn');
+    const resultBox = document.getElementById('locationResultBox');
+    const resultText = document.getElementById('locationText');
+
+    btn.disabled = true;
+    btn.innerText = "Analysiere Lage...";
+    resultBox.classList.remove('hidden');
+    resultText.innerText = "Die KI sammelt Standort-Highlights, bitte warten...";
+
+    try {
+        const response = await fetch('/api/generate-location', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ location, targetGroup, password: savedPassword })
+        });
+        const data = await response.json();
+        if (data.success) {
+            resultText.innerText = data.text;
+            saveToHistory("Lagebeschreibung", location);
+            remainingCredits--;
+            updateCreditDisplay();
+        } else {
+            resultText.innerText = "Fehler: " + data.error;
+        }
+    } catch (error) {
+        resultText.innerText = "Server-Fehler bei der Lageanalyse.";
+    } finally {
+        btn.disabled = false;
+        btn.innerText = "🗺️ Lagebeschreibung generieren";
+    }
+}
+
+async function analyzeContract() {
+    if (remainingCredits <= 0) {
+        alert("Keine Credits mehr übrig!");
+        return;
+    }
+    const contractText = document.getElementById('contractTextInput').value;
+
+    if (!contractText || !contractText.trim()) {
+        alert("Bitte kopiere zuerst einen Vertragstext oder eine Klausel in das Feld.");
+        return;
+    }
+
+    const btn = document.getElementById('analyzeContractBtn');
+    const resultBox = document.getElementById('contractResultBox');
+    const textTarget = document.getElementById('contractText');
+
+    btn.disabled = true;
+    btn.innerText = "Prüfe Vertragstext...";
+    resultBox.classList.remove('hidden');
+    textTarget.innerText = "Der KI-Rechtsexperte scannt die Klauseln auf Stolperfallen, bitte warten...";
+
+    try {
+        const response = await fetch('/api/analyze-contract', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ contractText, password: savedPassword })
+        });
+        const data = await response.json();
+        if (data.success) {
+            textTarget.innerText = data.text;
+            saveToHistory("Vertragsprüfung", "Klausel-Check");
+            remainingCredits--;
+            updateCreditDisplay();
+        } else {
+            textTarget.innerText = "Fehler: " + data.error;
+        }
+    } catch (error) {
+        textTarget.innerText = "Server-Fehler bei der Vertragsanalyse.";
+    } finally {
+        btn.disabled = false;
+        btn.innerText = "📑 Vertrag prüfen";
+    }
+}
+
+async function matchProfile() {
+    if (remainingCredits <= 0) {
+        alert("Keine Credits mehr übrig!");
+        return;
+    }
+    const buyerCriteria = document.getElementById('buyerCriteriaInput').value;
+    const propTitle = document.getElementById('title').value;
+    const propPrice = document.getElementById('price').value;
+    const propLocation = document.getElementById('location').value;
+    const propNotes = document.getElementById('notes').value;
+
+    if (!buyerCriteria || !buyerCriteria.trim()) {
+        alert("Bitte gib zuerst die Suchkriterien des Kunden ein.");
+        return;
+    }
+    if (!propTitle || !propPrice || !propLocation) {
+        alert("Bitte fülle zuerst Objekttitel, Kaufpreis und Ort ganz oben im Exposé-Generator aus, damit die KI die Daten matchen kann.");
+        return;
+    }
+
+    const btn = document.getElementById('matchProfileBtn');
+    const resultBox = document.getElementById('matchResultBox');
+    const resultText = document.getElementById('matchText');
+
+    btn.disabled = true;
+    btn.innerText = "Abgleich läuft...";
+    resultBox.classList.remove('hidden');
+    resultText.innerText = "Die KI vergleicht das Kundenprofil mit deinem... bitte warten...";
+
+    try {
+        const response = await fetch('/api/match-profile', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ buyerCriteria, propTitle, propPrice, propLocation, propNotes, password: savedPassword })
+        });
+        const data = await response.json();
+        if (data.success) {
+            resultText.innerText = data.text;
+            saveToHistory("Kunden-Matching", propTitle);
+            remainingCredits--;
+            updateCreditDisplay();
+        } else {
+            resultText.innerText = "Fehler: " + data.error;
+        }
+    } catch (error) {
+        resultText.innerText = "Server-Fehler beim Kunden-Matching.";
+    } finally {
+        btn.disabled = false;
+        btn.innerText = "👥 Kunden-Matching starten";
+    }
+}
+
 function copyToClipboard(elementId) {
     const element = document.getElementById(elementId);
     if (!element) return;
@@ -308,311 +580,11 @@ function clearHistory() {
     renderHistory();
 }
 
-// ==========================================
-// FEATURE 5: KI-IMMOBILIEN-WERTRECHNER (FRONTEND)
-// ==========================================
-async function generateValuation() {
-    if (remainingCredits <= 0) {
-        alert("Keine Credits mehr übrig!");
-        return;
-    }
-    const size = document.getElementById('valSize').value;
-    const rooms = document.getElementById('valRooms').value;
-    const condition = document.getElementById('valCondition').value;
-    const location = document.getElementById('valLocation').value;
-
-    if (!size || !rooms || !location) {
-        alert("Bitte fülle Fläche, Zimmer und Ort für die Wertermittlung aus.");
-        return;
-    }
-
-    const btn = document.getElementById('generateValuationBtn');
-    const resultBox = document.getElementById('valuationResultBox');
-    const resultText = document.getElementById('valuationText');
-
-    btn.disabled = true;
-    btn.innerText = "Berechne Marktwert...";
-    resultBox.classList.remove('hidden');
-    resultText.innerText = "Die KI analysiert die Daten und berechnet die Expertise, bitte warten...";
-
-    try {
-        const response = await fetch('/api/generate-valuation', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ size, rooms, condition, location, password: savedPassword })
-        });
-        const data = await response.json();
-        if (data.success) {
-            resultText.innerText = data.text;
-            saveToHistory("Wertexpertise", location);
-            remainingCredits--;
-            updateCreditDisplay();
-        } else {
-            resultText.innerText = "Fehler: " + data.error;
-        }
-    } catch (error) {
-        resultText.innerText = "Server-Fehler bei der Wertermittlung.";
-    } finally {
-        btn.disabled = false;
-        btn.innerText = "💰 Marktwert ermitteln";
-    }
-}
-
-// ==========================================
-// FEATURE 6: KI-OBJEKT-CHECKLISTE (FRONTEND)
-// ==========================================
-async function generateChecklist() {
-    if (remainingCredits <= 0) {
-        alert("Keine Credits mehr übrig!");
-        return;
-    }
-    const type = document.getElementById('chkType').value;
-    const year = document.getElementById('chkYear').value;
-    const condition = document.getElementById('chkCondition').value;
-
-    if (!type || !condition) {
-        alert("Bitte fülle mindestens den Objekttyp und den Zustand aus.");
-        return;
-    }
-
-    const btn = document.getElementById('generateChecklistBtn');
-    const resultBox = document.getElementById('checklistResultBox');
-    const resultText = document.getElementById('checklistText');
-
-    btn.disabled = true;
-    btn.innerText = "Erstelle To-Do-Liste...";
-    resultBox.classList.remove('hidden');
-    resultText.innerText = "Die KI strukturiert den Verkaufsplan, bitte warten...";
-
-    try {
-        const response = await fetch('/api/generate-checklist', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ type, year, condition, password: savedPassword })
-        });
-        const data = await response.json();
-        if (data.success) {
-            resultText.innerText = data.text;
-            saveToHistory("To-Do-Liste", type);
-            remainingCredits--;
-            updateCreditDisplay();
-        } else {
-            resultText.innerText = "Fehler: " + data.error;
-        }
-    } catch (error) {
-        resultText.innerText = "Server-Fehler bei der Checklisten-Erstellung.";
-    } finally {
-        btn.disabled = false;
-        btn.innerText = "📑 To-Do-Liste generieren";
-    }
-}
-
-// ==========================================
-// FEATURE 7: KI-LAGE-BESCHREIBER (FRONTEND)
-// ==========================================
-async function generateLocationDesc() {
-    if (remainingCredits <= 0) {
-        alert("Keine Credits mehr übrig!");
-        return;
-    }
-    const location = document.getElementById('locName').value;
-    const targetGroup = document.getElementById('locTarget').value;
-
-    if (!location || !targetGroup) {
-        alert("Bitte fülle den Ort und die Zielgruppe für die Lagebeschreibung aus.");
-        return;
-    }
-
-    const btn = document.getElementById('generateLocationBtn');
-    const resultBox = document.getElementById('locationResultBox');
-    const resultText = document.getElementById('locationText');
-
-    btn.disabled = true;
-    btn.innerText = "Analysiere Lage...";
-    resultBox.classList.remove('hidden');
-    resultText.innerText = "Die KI sammelt Standort-Highlights, bitte warten...";
-
-    try {
-        const response = await fetch('/api/generate-location', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ location, targetGroup, password: savedPassword })
-        });
-        const data = await response.json();
-        if (data.success) {
-            resultText.innerText = data.text;
-            saveToHistory("Lagebeschreibung", location);
-            remainingCredits--;
-            updateCreditDisplay();
-        } else {
-            resultText.innerText = "Fehler: " + data.error;
-        }
-    } catch (error) {
-        resultText.innerText = "Server-Fehler bei der Lageanalyse.";
-    } finally {
-        btn.disabled = false;
-        btn.innerText = "🗺️ Lagebeschreibung generieren";
-    }
-}
-
 document.addEventListener('DOMContentLoaded', () => {
     renderHistory();
     const imgBtn = document.getElementById('analyzeImageBtn');
     if (imgBtn) {
         imgBtn.addEventListener('click', analyzeImage);
     }
-
-    // ==========================================
-// UNIVERSELLE WORD-EXPORT-MASCHINE FOR ALLES
-// ==========================================
-function exportAnyToWord(elementId, dateiName) {
-    const textElement = document.getElementById(elementId);
-    if (!textElement) return;
-    const text = textElement.innerText;
-    
-    if (!text || text.includes("bitte warten...") || text.includes("KI schreibt...")) {
-        alert("Es gibt noch keinen Text zum Exportieren!");
-        return;
-    }
-    
-    // Generiert ein sauberes Word-Dokument in Arial/Helvetica für jedes Feature
-    const htmlContent = `
-        <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://w3.org'>
-        <head>
-            <meta charset="utf-8">
-            <style>
-                body { font-family: Arial, Helvetica, sans-serif; color: #000000; line-height: 1.6; padding: 20px; }
-                h1 { color: #10b981; font-size: 22px; border-bottom: 2px solid #10b981; padding-bottom: 8px; font-family: Arial, sans-serif; }
-                .content-box { font-family: Arial, sans-serif; font-size: 11pt; white-space: pre-wrap; margin-top: 15px; }
-            </style>
-        </head>
-        <body>
-            <h1>📄 ImmoFlow Expertise: ${dateiName.replace(/_/g, ' ')}</h1>
-            <div class="content-box">${text.replace(/\n/g, '<br>')}</div>
-        </body>
-        </html>
-    `;
-    
-    const blob = new Blob(['\ufeff' + htmlContent], { type: 'application/msword' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = dateiName + "_" + new Date().toLocaleDateString('de-DE').replace(/\./g, '-') + ".doc";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-}
-
-// ==========================================
-// FEATURE 8: KI-VERTRAGS-PRÜFER (FRONTEND)
-// ==========================================
-async function analyzeContract() {
-    if (remainingCredits <= 0) {
-        alert("Keine Credits mehr übrig!");
-        return;
-    }
-    const contractText = document.getElementById('contractTextInput').value;
-
-    if (!contractText || !contractText.trim()) {
-        alert("Bitte kopiere zuerst einen Vertragstext oder eine Klausel in das Feld.");
-        return;
-    }
-
-    const btn = document.getElementById('analyzeContractBtn');
-    const resultBox = document.getElementById('contractResultBox');
-    const resultText = document.getElementById('contractText');
-
-    btn.disabled = true;
-    btn.innerText = "Prüfe Vertragstext...";
-    resultBox.classList.remove('hidden');
-    resultText.innerText = "Der KI-Rechtsexperte scannt die Klauseln auf Stolperfallen, bitte warten...";
-
-    try {
-        const response = await fetch('/api/analyze-contract', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ contractText, password: savedPassword })
-        });
-        const data = await response.json();
-        if (data.success) {
-            resultText.innerText = data.text;
-            saveToHistory("Vertragsprüfung", "Klausel-Check");
-            remainingCredits--;
-            updateCreditDisplay();
-        } else {
-            resultText.innerText = "Fehler: " + data.error;
-        }
-    } catch (error) {
-        resultText.innerText = "Server-Fehler bei der Vertragsanalyse.";
-    } finally {
-        btn.disabled = false;
-        btn.innerText = "📑 Vertrag prüfen";
-    }
-}
-
-// ==========================================
-// FEATURE 9: KI-KUNDEN-PROFIL-MATCHING (FRONTEND)
-// ==========================================
-async function matchProfile() {
-    if (remainingCredits <= 0) {
-        alert("Keine Credits mehr übrig!");
-        return;
-    }
-    const buyerCriteria = document.getElementById('buyerCriteriaInput').value;
-    
-    // Hier greifen wir uns automatisch die Objektdaten von ganz oben ab:
-    const propTitle = document.getElementById('title').value;
-    const propPrice = document.getElementById('price').value;
-    const propLocation = document.getElementById('location').value;
-    const propNotes = document.getElementById('notes').value;
-
-    if (!buyerCriteria || !buyerCriteria.trim()) {
-        alert("Bitte gib zuerst die Suchkriterien des Kunden ein.");
-        return;
-    }
-    if (!propTitle || !propPrice || !propLocation) {
-        alert("Bitte fülle zuerst Objekttitel, Kaufpreis und Ort ganz oben im Exposé-Generator aus, damit die KI die Daten matchen kann.");
-        return;
-    }
-
-    const btn = document.getElementById('matchProfileBtn');
-    const resultBox = document.getElementById('matchResultBox');
-    const resultText = document.getElementById('matchText');
-
-    btn.disabled = true;
-    btn.innerText = "Abgleich läuft...";
-    resultBox.classList.remove('hidden');
-    resultText.innerText = "Die KI vergleicht das Kundenprofil mit deinem Objekt und verfasst die Einladung, bitte warten...";
-
-    try {
-        const response = await fetch('/api/match-profile', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-                buyerCriteria, 
-                propTitle, 
-                propPrice, 
-                propLocation, 
-                propNotes, 
-                password: savedPassword 
-            })
-        });
-        const data = await response.json();
-        if (data.success) {
-            resultText.innerText = data.text;
-            saveToHistory("Kunden-Matching", propTitle);
-            remainingCredits--;
-            updateCreditDisplay();
-        } else {
-            resultText.innerText = "Fehler: " + data.error;
-        }
-    } catch (error) {
-        resultText.innerText = "Server-Fehler beim Kunden-Matching.";
-    } finally {
-        btn.disabled = false;
-        btn.innerText = "👥 Kunden-Matching starten";
-    }
-}
-
 });
+
