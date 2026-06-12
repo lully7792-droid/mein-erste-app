@@ -308,6 +308,153 @@ function clearHistory() {
     renderHistory();
 }
 
+// ==========================================
+// FEATURE 5: KI-IMMOBILIEN-WERTRECHNER (FRONTEND)
+// ==========================================
+async function generateValuation() {
+    if (remainingCredits <= 0) {
+        alert("Keine Credits mehr übrig!");
+        return;
+    }
+    const size = document.getElementById('valSize').value;
+    const rooms = document.getElementById('valRooms').value;
+    const condition = document.getElementById('valCondition').value;
+    const location = document.getElementById('valLocation').value;
+
+    if (!size || !rooms || !location) {
+        alert("Bitte fülle Fläche, Zimmer und Ort für die Wertermittlung aus.");
+        return;
+    }
+
+    const btn = document.getElementById('generateValuationBtn');
+    const resultBox = document.getElementById('valuationResultBox');
+    const resultText = document.getElementById('valuationText');
+
+    btn.disabled = true;
+    btn.innerText = "Berechne Marktwert...";
+    resultBox.classList.remove('hidden');
+    resultText.innerText = "Die KI analysiert die Daten und berechnet die Expertise, bitte warten...";
+
+    try {
+        const response = await fetch('/api/generate-valuation', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ size, rooms, condition, location, password: savedPassword })
+        });
+        const data = await response.json();
+        if (data.success) {
+            resultText.innerText = data.text;
+            saveToHistory("Wertexpertise", location);
+            remainingCredits--;
+            updateCreditDisplay();
+        } else {
+            resultText.innerText = "Fehler: " + data.error;
+        }
+    } catch (error) {
+        resultText.innerText = "Server-Fehler bei der Wertermittlung.";
+    } finally {
+        btn.disabled = false;
+        btn.innerText = "💰 Marktwert ermitteln";
+    }
+}
+
+// ==========================================
+// FEATURE 6: KI-OBJEKT-CHECKLISTE (FRONTEND)
+// ==========================================
+async function generateChecklist() {
+    if (remainingCredits <= 0) {
+        alert("Keine Credits mehr übrig!");
+        return;
+    }
+    const type = document.getElementById('chkType').value;
+    const year = document.getElementById('chkYear').value;
+    const condition = document.getElementById('chkCondition').value;
+
+    if (!type || !condition) {
+        alert("Bitte fülle mindestens den Objekttyp und den Zustand aus.");
+        return;
+    }
+
+    const btn = document.getElementById('generateChecklistBtn');
+    const resultBox = document.getElementById('checklistResultBox');
+    const resultText = document.getElementById('checklistText');
+
+    btn.disabled = true;
+    btn.innerText = "Erstelle To-Do-Liste...";
+    resultBox.classList.remove('hidden');
+    resultText.innerText = "Die KI strukturiert den Verkaufsplan, bitte warten...";
+
+    try {
+        const response = await fetch('/api/generate-checklist', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ type, year, condition, password: savedPassword })
+        });
+        const data = await response.json();
+        if (data.success) {
+            resultText.innerText = data.text;
+            saveToHistory("To-Do-Liste", type);
+            remainingCredits--;
+            updateCreditDisplay();
+        } else {
+            resultText.innerText = "Fehler: " + data.error;
+        }
+    } catch (error) {
+        resultText.innerText = "Server-Fehler bei der Checklisten-Erstellung.";
+    } finally {
+        btn.disabled = false;
+        btn.innerText = "📑 To-Do-Liste generieren";
+    }
+}
+
+// ==========================================
+// FEATURE 7: KI-LAGE-BESCHREIBER (FRONTEND)
+// ==========================================
+async function generateLocationDesc() {
+    if (remainingCredits <= 0) {
+        alert("Keine Credits mehr übrig!");
+        return;
+    }
+    const location = document.getElementById('locName').value;
+    const targetGroup = document.getElementById('locTarget').value;
+
+    if (!location || !targetGroup) {
+        alert("Bitte fülle den Ort und die Zielgruppe für die Lagebeschreibung aus.");
+        return;
+    }
+
+    const btn = document.getElementById('generateLocationBtn');
+    const resultBox = document.getElementById('locationResultBox');
+    const resultText = document.getElementById('locationText');
+
+    btn.disabled = true;
+    btn.innerText = "Analysiere Lage...";
+    resultBox.classList.remove('hidden');
+    resultText.innerText = "Die KI sammelt Standort-Highlights, bitte warten...";
+
+    try {
+        const response = await fetch('/api/generate-location', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ location, targetGroup, password: savedPassword })
+        });
+        const data = await response.json();
+        if (data.success) {
+            resultText.innerText = data.text;
+            saveToHistory("Lagebeschreibung", location);
+            remainingCredits--;
+            updateCreditDisplay();
+        } else {
+            resultText.innerText = "Fehler: " + data.error;
+        }
+    } catch (error) {
+        resultText.innerText = "Server-Fehler bei der Lageanalyse.";
+    } finally {
+        btn.disabled = false;
+        btn.innerText = "🗺️ Lagebeschreibung generieren";
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     renderHistory();
     const imgBtn = document.getElementById('analyzeImageBtn');
