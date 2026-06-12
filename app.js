@@ -461,4 +461,157 @@ document.addEventListener('DOMContentLoaded', () => {
     if (imgBtn) {
         imgBtn.addEventListener('click', analyzeImage);
     }
+
+    // ==========================================
+// UNIVERSELLE WORD-EXPORT-MASCHINE FOR ALLES
+// ==========================================
+function exportAnyToWord(elementId, dateiName) {
+    const textElement = document.getElementById(elementId);
+    if (!textElement) return;
+    const text = textElement.innerText;
+    
+    if (!text || text.includes("bitte warten...") || text.includes("KI schreibt...")) {
+        alert("Es gibt noch keinen Text zum Exportieren!");
+        return;
+    }
+    
+    // Generiert ein sauberes Word-Dokument in Arial/Helvetica für jedes Feature
+    const htmlContent = `
+        <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://w3.org'>
+        <head>
+            <meta charset="utf-8">
+            <style>
+                body { font-family: Arial, Helvetica, sans-serif; color: #000000; line-height: 1.6; padding: 20px; }
+                h1 { color: #10b981; font-size: 22px; border-bottom: 2px solid #10b981; padding-bottom: 8px; font-family: Arial, sans-serif; }
+                .content-box { font-family: Arial, sans-serif; font-size: 11pt; white-space: pre-wrap; margin-top: 15px; }
+            </style>
+        </head>
+        <body>
+            <h1>📄 ImmoFlow Expertise: ${dateiName.replace(/_/g, ' ')}</h1>
+            <div class="content-box">${text.replace(/\n/g, '<br>')}</div>
+        </body>
+        </html>
+    `;
+    
+    const blob = new Blob(['\ufeff' + htmlContent], { type: 'application/msword' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = dateiName + "_" + new Date().toLocaleDateString('de-DE').replace(/\./g, '-') + ".doc";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+// ==========================================
+// FEATURE 8: KI-VERTRAGS-PRÜFER (FRONTEND)
+// ==========================================
+async function analyzeContract() {
+    if (remainingCredits <= 0) {
+        alert("Keine Credits mehr übrig!");
+        return;
+    }
+    const contractText = document.getElementById('contractTextInput').value;
+
+    if (!contractText.trim()) {
+        alert("Bitte kopiere zuerst einen Vertragstext oder eine Klausel in das Feld.");
+        return;
+    }
+
+    const btn = document.getElementById('analyzeContractBtn');
+    const resultBox = document.getElementById('contractResultBox');
+    const resultText = document.getElementById('contractText');
+
+    btn.disabled = true;
+    btn.innerText = "Prüfe Vertragstext...";
+    resultBox.classList.remove('hidden');
+    resultText.innerText = "Der KI-Rechtsexperte scannt die Klauseln auf Stolperfallen, bitte warten...";
+
+    try {
+        const response = await fetch('/api/analyze-contract', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ contractText, password: savedPassword })
+        });
+        const data = await response.json();
+        if (data.success) {
+            resultText.innerText = data.text;
+            saveToHistory("Vertragsprüfung", "Klausel-Check");
+            remainingCredits--;
+            updateCreditDisplay();
+        } else {
+            resultText.innerText = "Fehler: " + data.error;
+        }
+    } catch (error) {
+        resultText.innerText = "Server-Fehler bei der Vertragsanalyse.";
+    } finally {
+        btn.disabled = false;
+        btn.innerText = "📑 Vertrag prüfen";
+    }
+}
+
+    // ==========================================
+// FEATURE 9: KI-KUNDEN-PROFIL-MATCHING (FRONTEND)
+// ==========================================
+async function matchProfile() {
+    if (remainingCredits <= 0) {
+        alert("Keine Credits mehr übrig!");
+        return;
+    }
+    const buyerCriteria = document.getElementById('buyerCriteriaInput').value;
+    
+    // Hier greifen wir uns automatisch die Objektdaten von ganz oben ab:
+    const propTitle = document.getElementById('title').value;
+    const propPrice = document.getElementById('price').value;
+    const propLocation = document.getElementById('location').value;
+    const propNotes = document.getElementById('notes').value;
+
+    if (!buyerCriteria.trim()) {
+        alert("Bitte gib zuerst die Suchkriterien des Kunden ein.");
+        return;
+    }
+    if (!propTitle || !propPrice || !propLocation) {
+        alert("Bitte fülle zuerst Objekttitel, Kaufpreis und Ort ganz oben im Exposé-Generator aus, damit die KI die Daten matchen kann.");
+        return;
+    }
+
+    const btn = document.getElementById('matchProfileBtn');
+    const resultBox = document.getElementById('matchResultBox');
+    const resultText = document.getElementById('matchText');
+
+    btn.disabled = true;
+    btn.innerText = "Abgleich läuft...";
+    resultBox.classList.remove('hidden');
+    resultText.innerText = "Die KI vergleicht das Kundenprofil mit deinem Objekt und verfasst die Einladung, bitte warten...";
+
+    try {
+        const response = await fetch('/api/match-profile', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                buyerCriteria, 
+                propTitle, 
+                propPrice, 
+                propLocation, 
+                propNotes, 
+                password: savedPassword 
+            })
+        });
+        const data = await response.json();
+        if (data.success) {
+            resultText.innerText = data.text;
+            saveToHistory("Kunden-Matching", propTitle);
+            remainingCredits--;
+            updateCreditDisplay();
+        } else {
+            resultText.innerText = "Fehler: " + data.error;
+        }
+    } catch (error) {
+        resultText.innerText = "Server-Fehler beim Kunden-Matching.";
+    } finally {
+        btn.disabled = false;
+        btn.innerText = "👥 Kunden-Matching starten";
+    }
+}
 });
