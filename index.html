@@ -183,13 +183,12 @@
             </div>
         </div>
 
-        <!-- FEATURE 5: KI-IMMOBILIEN-WERTRECHNER -->
+                <!-- FEATURE 5: KI-IMMOBILIEN-WERTRECHNER -->
         <div class="card">
-            <div id="valuationResultBox" class="hidden" style="margin-top: 24px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 6px;">
-                <h3>Wertexpertise:</h3>
-                <p id="valuationText" style="white-space: pre-wrap; margin-top: 10px;"></p>
-                <button onclick="copyToClipboard('valuationText')" class="btn" style="background: #4b5563; margin-top: 15px; font-size: 14px;">📋 Expertise kopieren</button>
-                <button onclick="exportAnyToWord('valuationText', 'Wertexpertise')" class="btn" style="background: #2563eb; margin-top: 15px; font-size: 14px; margin-left: 10px;">📝 Als Word-Datei laden</button>
+            <h2>💰 KI-Immobilien-Wertrechner</h2>
+            <p class="description">Erhalte eine professionelle Marktwert-Einschätzung (Spanne von-bis) inklusive detaillierter Begründung der KI.</p>
+            
+            <div class="form-group">
                 <label for="valSize">Wohnfläche (in qm)</label>
                 <input type="text" id="valSize" placeholder="z.B. 120">
             </div>
@@ -210,13 +209,17 @@
                 <label for="valLocation">Ort / Stadtteil</label>
                 <input type="text" id="valLocation" placeholder="z.B. Wuppertal-Elberfeld">
             </div>
+            
             <button id="generateValuationBtn" class="btn" style="width: 100%;" onclick="generateValuation()">💰 Marktwert ermitteln</button>
+            
             <div id="valuationResultBox" class="hidden" style="margin-top: 24px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 6px;">
                 <h3>Wertexpertise:</h3>
                 <p id="valuationText" style="white-space: pre-wrap; margin-top: 10px;"></p>
                 <button onclick="copyToClipboard('valuationText')" class="btn" style="background: #4b5563; margin-top: 15px; font-size: 14px;">📋 Expertise kopieren</button>
+                <button onclick="exportAnyToWord('valuationText', 'Wertexpertise')" class="btn" style="background: #2563eb; margin-top: 15px; font-size: 14px; margin-left: 10px;">📝 Als Word-Datei laden</button>
             </div>
         </div>
+
 
         <!-- FEATURE 6: KI-OBJEKT-CHECKLISTE & AUFGABENPLANER -->
         <div class="card">
