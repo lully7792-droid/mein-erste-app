@@ -183,6 +183,63 @@
             </div>
         </div>
 
+        <!-- FEATURE 5: KI-IMMOBILIEN-WERTRECHNER -->
+        <div class="card">
+            <h2>💰 KI-Immobilien-Wertrechner</h2>
+            <p class="description">Erhalte eine professionelle Marktwert-Einschätzung (Spanne von-bis) inklusive detaillierter Begründung der KI.</p>
+            <div class="form-group">
+                <label for="valSize">Wohnfläche (in qm)</label>
+                <input type="text" id="valSize" placeholder="z.B. 120">
+            </div>
+            <div class="form-group">
+                <label for="valRooms">Zimmeranzahl</label>
+                <input type="text" id="valRooms" placeholder="z.B. 4">
+            </div>
+            <div class="form-group">
+                <label for="valCondition">Zustand der Immobilie</label>
+                <select id="valCondition">
+                    <option value="Neubau / Erstbezug">Neubau / Erstbezug</option>
+                    <option value="Gepflegt / Modernisiert">Gepflegt / Modernisiert</option>
+                    <option value="Teilrenovierungsbedürftig">Teilrenovierungsbedürftig</option>
+                    <option value="Stark sanierungsbedürftig">Stark sanierungsbedürftig</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="valLocation">Ort / Stadtteil</label>
+                <input type="text" id="valLocation" placeholder="z.B. Wuppertal-Elberfeld">
+            </div>
+            <button id="generateValuationBtn" class="btn" style="width: 100%;" onclick="generateValuation()">💰 Marktwert ermitteln</button>
+            <div id="valuationResultBox" class="hidden" style="margin-top: 24px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 6px;">
+                <h3>Wertexpertise:</h3>
+                <p id="valuationText" style="white-space: pre-wrap; margin-top: 10px;"></p>
+                <button onclick="copyToClipboard('valuationText')" class="btn" style="background: #4b5563; margin-top: 15px; font-size: 14px;">📋 Expertise kopieren</button>
+            </div>
+        </div>
+
+        <!-- FEATURE 6: KI-OBJEKT-CHECKLISTE & AUFGABENPLANER -->
+        <div class="card">
+            <h2>📑 KI-Objekt-Checkliste & Aufgabenplaner</h2>
+            <p class="description">Generiere eine glasklare, maßgeschneiderte To-Do-Liste für die optimale Vorbereitung und Vermarktung dieses Objekts.</p>
+            <div class="form-group">
+                <label for="chkType">Objekttyp</label>
+                <input type="text" id="chkType" placeholder="z.B. Einfamilienhaus, Eigentumswohnung, Mehrfamilienhaus">
+            </div>
+            <div class="form-group">
+                <label for="chkYear">Baujahr</label>
+                <input type="text" id="chkYear" placeholder="z.B. 1972">
+            </div>
+            <div class="form-group">
+                <label for="chkCondition">Aktueller Zustand</label>
+                <input type="text" id="chkCondition" placeholder="z.B. Bauzeittypisch, renoviert 2015, sanierungsstau im Keller">
+            </div>
+            <button id="generateChecklistBtn" class="btn" style="width: 100%;" onclick="generateChecklist()">📑 To-Do-Liste generieren</button>
+            <div id="checklistResultBox" class="hidden" style="margin-top: 24px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 6px;">
+                <h3>Deine Objekt-Checkliste:</h3>
+                <p id="checklistText" style="white-space: pre-wrap; margin-top: 10px;"></p>
+                <button onclick="copyToClipboard('checklistText')" class="btn" style="background: #4b5563; margin-top: 15px; font-size: 14px;">📋 Checkliste kopieren</button>
+            </div>
+        </div>
+        
         <!-- FEATURE 5: HISTORIE -->
         <div class="card">
             <h2>🗄️ Letzte KI-Generierungen (Gespeichert)</h2>
