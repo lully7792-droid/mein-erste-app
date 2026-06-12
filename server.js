@@ -128,6 +128,71 @@ app.post('/api/generate-social', async (req, res) => {
     }
 });
 
+// ==========================================
+// ROUTE 5: KI-IMMOBILIEN-WERTRECHNER
+// ==========================================
+app.post('/api/generate-valuation', async (req, res) => {
+    const { size, rooms, condition, location, password } = req.body;
+    if (password !== "makler-erfolg") return res.status(401).json({ success: false, error: "Nicht autorisiert" });
+
+    try {
+        const response = await openai.chat.completions.create({
+            model: "gpt-4o-mini",
+            messages: [
+                { role: "system", content: "Du bist ein zertifizierter Immobiliengutachter. Berechne eine realistische, professionelle Marktwert-Einschätzung (Spanne von-bis) auf Deutsch basierend auf den Daten. Begründe den Wert detailliert anhand von Lage, Zustand, Zimmeranzahl und Wohnfläche." },
+                { role: "user", content: `Wohnfläche: ${size} qm, Zimmer: ${rooms}, Zustand: ${condition}, Lage/Ort: ${location}` }
+            ]
+        });
+        res.json({ success: true, text: response.choices[0].message.content });
+    } catch (error) {
+        console.error("Wertrechner-Fehler:", error);
+        res.status(500).json({ success: false, error: "Fehler bei der Wertermittlung" });
+    }
+});
+
+// ==========================================
+// ROUTE 6: KI-OBJEKT-CHECKLISTE
+// ==========================================
+app.post('/api/generate-checklist', async (req, res) => {
+    const { type, year, condition, password } = req.body;
+    if (password !== "makler-erfolg") return res.status(401).json({ success: false, error: "Nicht autorisiert" });
+
+    try {
+        const response = await openai.chat.completions.create({
+            model: "gpt-4o-mini",
+            messages: [
+                { role: "system", content: "Du bist ein extrem strukturierter Immobilienmakler. Generiere eine maßgeschneiderte, glasklare To-Do-Checkliste auf Deutsch für den Verkaufsprozess dieses Objekts. Unterteile in: 1. Dokumentenbeschaffung, 2. Vorbereitung & Sanierung, 3. Vermarktung & Besichtigung." },
+                { role: "user", content: `Objekttyp: ${type}, Baujahr: ${year}, Zustand: ${condition}` }
+            ]
+        });
+        res.json({ success: true, text: response.choices[0].message.content });
+    } catch (error) {
+        console.error("Checklisten-Fehler:", error);
+        res.status(500).json({ success: false, error: "Fehler bei der Checklisten-Erstellung" });
+    }
+});
+
+// ==========================================
+// ROUTE 7: KI-LAGE-BESCHREIBER
+// ==========================================
+app.post('/api/generate-location', async (req, res) => {
+    const { location, targetGroup, password } = req.body;
+    if (password !== "makler-erfolg") return res.status(401).json({ success: false, error: "Nicht autorisiert" });
+
+    try {
+        const response = await openai.chat.completions.create({
+            model: "gpt-4o-mini",
+            messages: [
+                { role: "system", content: "Du bist ein lokaler Immobilienexperte. Schreibe eine packende, emotionale Lage- und Infrastrukturbeschreibung auf Deutsch für ein Exposé. Hebe die Anbindung, Einkaufsmöglichkeiten, Schulen und den Freizeitwert hervor, maßgeschneidert auf die genannte Zielgruppe." },
+                { role: "user", content: `Ort/Stadtteil: ${location}, Zielgruppe: ${targetGroup}` }
+            ]
+        });
+        res.json({ success: true, text: response.choices[0].message.content });
+    } catch (error) {
+        console.error("Lagebeschreiber-Fehler:", error);
+        res.status(500).json({ success: false, error: "Fehler bei der Lageanalyse" });
+    }
+});
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server läuft fehlerfrei auf Port ${PORT}`);
