@@ -220,14 +220,12 @@
             </div>
         </div>
 
-
         <!-- FEATURE 6: KI-OBJEKT-CHECKLISTE & AUFGABENPLANER -->
         <div class="card">
-            <div id="checklistResultBox" class="hidden" style="margin-top: 24px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 6px;">
-                <h3>Deine Objekt-Checkliste:</h3>
-                <p id="checklistText" style="white-space: pre-wrap; margin-top: 10px;"></p>
-                <button onclick="copyToClipboard('checklistText')" class="btn" style="background: #4b5563; margin-top: 15px; font-size: 14px;">📋 Checkliste kopieren</button>
-                <button onclick="exportAnyToWord('checklistText', 'Objekt_Checkliste')" class="btn" style="background: #2563eb; margin-top: 15px; font-size: 14px; margin-left: 10px;">📝 Als Word-Datei laden</button>
+            <h2>📑 KI-Objekt-Checkliste & Aufgabenplaner</h2>
+            <p class="description">Generiere eine glasklare, maßgeschneiderte To-Do-Liste für die optimale Vorbereitung und Vermarktung dieses Objekts.</p>
+            
+            <div class="form-group">
                 <label for="chkType">Objekttyp</label>
                 <input type="text" id="chkType" placeholder="z.B. Einfamilienhaus, Eigentumswohnung, Mehrfamilienhaus">
             </div>
@@ -239,13 +237,17 @@
                 <label for="chkCondition">Aktueller Zustand</label>
                 <input type="text" id="chkCondition" placeholder="z.B. Bauzeittypisch, renoviert 2015, sanierungsstau im Keller">
             </div>
+            
             <button id="generateChecklistBtn" class="btn" style="width: 100%;" onclick="generateChecklist()">📑 To-Do-Liste generieren</button>
+            
             <div id="checklistResultBox" class="hidden" style="margin-top: 24px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 6px;">
                 <h3>Deine Objekt-Checkliste:</h3>
                 <p id="checklistText" style="white-space: pre-wrap; margin-top: 10px;"></p>
                 <button onclick="copyToClipboard('checklistText')" class="btn" style="background: #4b5563; margin-top: 15px; font-size: 14px;">📋 Checkliste kopieren</button>
+                <button onclick="exportAnyToWord('checklistText', 'Objekt_Checkliste')" class="btn" style="background: #2563eb; margin-top: 15px; font-size: 14px; margin-left: 10px;">📝 Als Word-Datei laden</button>
             </div>
         </div>
+
 
         <!-- FEATURE 7: KI-LAGE- & INFRASTRUKTUR-BESCHREIBUNG -->
         <div class="card">
