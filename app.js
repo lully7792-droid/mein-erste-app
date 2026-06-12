@@ -514,7 +514,7 @@ async function analyzeContract() {
     }
     const contractText = document.getElementById('contractTextInput').value;
 
-    if (!contractText.trim()) {
+    if (!contractText || !contractText.trim()) {
         alert("Bitte kopiere zuerst einen Vertragstext oder eine Klausel in das Feld.");
         return;
     }
@@ -551,7 +551,7 @@ async function analyzeContract() {
     }
 }
 
-    // ==========================================
+// ==========================================
 // FEATURE 9: KI-KUNDEN-PROFIL-MATCHING (FRONTEND)
 // ==========================================
 async function matchProfile() {
@@ -567,7 +567,7 @@ async function matchProfile() {
     const propLocation = document.getElementById('location').value;
     const propNotes = document.getElementById('notes').value;
 
-    if (!buyerCriteria.trim()) {
+    if (!buyerCriteria || !buyerCriteria.trim()) {
         alert("Bitte gib zuerst die Suchkriterien des Kunden ein.");
         return;
     }
@@ -614,4 +614,5 @@ async function matchProfile() {
         btn.innerText = "👥 Kunden-Matching starten";
     }
 }
+
 });
