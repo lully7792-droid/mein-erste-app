@@ -73,31 +73,12 @@
         .hidden { display: none !important; }
         .credit-box { text-align: center; font-size: 1.1rem; color: var(--accent); font-weight: 700; letter-spacing: 0.5px; }
         
-        /* 🎛️ DAS NEUE PREMIUM-TAB-NAVIGATIONSSYSTEM */
-        .tab-navigation {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 30px;
-            overflow-x: auto;
-            padding-bottom: 5px;
-        }
-        .tab-btn {
-            background-color: #131c2e;
-            color: #94a3b8;
-            border: 1px solid var(--border-color);
-            padding: 12px 20px;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            white-space: nowrap;
-            transition: all 0.2s;
-        }
+        .tab-navigation { display: flex; gap: 10px; margin-bottom: 30px; overflow-x: auto; padding-bottom: 5px; }
+        .tab-btn { background-color: #131c2e; color: #94a3b8; border: 1px solid var(--border-color); padding: 12px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.2s; }
         .tab-btn:hover { background-color: #1e293b; color: var(--text-light); }
-        .tab-btn.active {
-            background-color: var(--accent);
-            color: #090d16;
-            border-color: var(--accent);
-        }
+        .tab-btn.active { background-color: var(--accent); color: #090d16; border-color: var(--accent); }
+        .dashboard-tab-content { display: block; }
+        .dashboard-tab-content.hidden { display: none !important; }
     </style>
 </head>
 <body>
@@ -106,7 +87,6 @@
         <h1>ImmoFlow 🚀</h1>
         <p class="subtitle">PRODUKTIVITÄTS-BOOSTER FÜR IMMOBILIENMAKLER</p>
     </header>
-
 
     <!-- LOGIN AREA -->
     <div id="loginSection" class="card" style="max-width: 500px; margin: 0 auto;">
