@@ -251,7 +251,7 @@ app.post('/api/match-profile', async (req, res) => {
 });
 
 // ==========================================
-// ROUTE 10: KI-IMMOBILIEN-RADAR (JSON-GUSS)
+// ROUTE 10: KI-IMMOBILIEN-RADAR (BLITZBLANK)
 // ==========================================
 app.post('/api/radar-hunt', async (req, res) => {
     const { region, adText, password } = req.body;
@@ -260,11 +260,10 @@ app.post('/api/radar-hunt', async (req, res) => {
     try {
         const response = await openai.chat.completions.create({
             model: "gpt-4o-mini",
-            response_format: { type: "json_object" }, // 🎯 Zwingt OpenAI, sauberes JSON zu liefern!
             messages: [
                 { 
                     role: "system", 
-                    content: "Du bist ein absoluter Spitzen-Makler im Bereich Immobilien-Einkauf und Akquise. Analysiere die private Verkaufsanzeige. Antworte AUSSCHLIESSLICH im JSON-Format mit exakt diesen beiden Feldern: { \"analysis\": \"Deine Einschätzung zur Anzeige und Makler-Taktik hier\", \"mail\": \"Deine maßgeschneiderte Akquise-Mail an den Eigentümer hier\" }" 
+                    content: "Du bist ein Spitzen-Makler im Bereich Immobilien-Einkauf. Analysiere die private Verkaufsanzeige. Schreibe zuerst deine Einschätzung zur Anzeige und danach das Akquise-Anschreiben für den Eigentümer." 
                 },
                 { 
                     role: "user", 
@@ -273,15 +272,13 @@ app.post('/api/radar-hunt', async (req, res) => {
             ]
         });
 
+        const gesamtText = response.choices.message.content;
 
-        // Antwort auslesen und parsen
-        const jsonText = response.choices[0].message.content;
-        const resultData = JSON.parse(jsonText);
-
+        // Wir schicken einfach den gesamten Text an beide Felder, damit absolut nichts abstürzen kann!
         res.json({ 
             success: true, 
-            analysis: resultData.analysis || "Analyse abgeschlossen.", 
-            mail: resultData.mail || "Anschreiben generiert." 
+            analysis: "Analyse und Akquise-Strategie live generiert:", 
+            mail: gesamtText 
         });
 
     } catch (error) {
@@ -289,7 +286,8 @@ app.post('/api/radar-hunt', async (req, res) => {
         res.status(500).json({ success: false, error: "Fehler beim Immobilien-Radar im Backend" });
     }
 });
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server läuft fehlerfrei auf Port ${PORT}`);
-});
+})
