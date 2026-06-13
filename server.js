@@ -705,6 +705,45 @@ app.post('/api/defect-mitigate', async (req, res) => {
     }
 });
 
+// ==========================================
+// ROUTE 15: KI-STADTTEIL-INSIDER & MIKROLAGE
+// ==========================================
+app.post('/api/insider-forge', async (req, res) => {
+    const { district, target, details, password } = req.body;
+    if (password !== "makler-erfolg") return res.status(401).json({ success: false, error: "Nicht autorisiert" });
+
+    try {
+        const response = await openai.chat.completions.create({
+            model: "gpt-4o-mini",
+            messages: [
+                { 
+                    role: "system", 
+                    content: "Du bist ein genialer Immobilienmakler mit absolutem Insider-Wissen über lokale Mikrolagen und Stadtteile. Deine Aufgabe ist es, eine emotionale, detailreiche und verkaufsstarke Lagebeschreibung auf Deutsch für ein Immobilienexposé zu schreiben. Passe den Fokus (Infrastruktur, Schulen, Ruhe, Freizeit, Anbindung) exakt an die gewählte Zielgruppe an. Hebe die Vorteile der Mikrolage hervor, sodass sich der Leser sofort bildhaft vorstellen kann, dort zu leben." 
+                },
+                { 
+                    role: "user", 
+                    content: `Stadtteil/Ort: ${district}\nZielgruppe: ${target}\nZusatz-Highlights vor Ort: ${details || "Keine zusätzlichen Angaben"}`
+                }
+            ]
+        });
+
+        // 🎯 ABSOLUT SICHER GEKAPSELT:
+        let insiderText = "Lagebeschreibung konnte nicht erstellt werden.";
+        if (response && response.choices && response.choices[0] && response.choices[0].message) {
+            insiderText = response.choices[0].message.content;
+        }
+
+        res.json({ 
+            success: true, 
+            text: insiderText 
+        });
+
+    } catch (error) {
+        console.error("Insider-Forge-Fehler:", error);
+        res.status(500).json({ success: false, error: "Fehler beim Lagebericht im Backend" });
+    }
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server läuft fehlerfrei auf Port ${PORT}`);
