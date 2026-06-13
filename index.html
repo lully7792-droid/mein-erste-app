@@ -365,4 +365,41 @@
     <div class="pdf-footer">Dieses Dokument wurde automatisch erstellt. Alle Angaben ohne Gewähr. Ihr Makler-Erfolg 2026.</div>
 </div>
 </body>
+    <script>
+function printProfessionalPDF() {
+    const text = document.getElementById('exposeText').innerText;
+    const title = document.getElementById('title').value || "Exklusives Immobilienangebot";
+    const price = document.getElementById('price').value || "-";
+    const location = document.getElementById('location').value || "-";
+    const year = document.getElementById('year').value || "-";
+    const energy = document.getElementById('energy').value || "-";
+    
+    const fileInput = document.getElementById('imageInput');
+    const pdfImg = document.getElementById('pdfPreviewImage');
+
+    if (!text || text.includes("bitte warten...")) {
+        alert("Es gibt noch kein generiertes Exposé zum Drucken!");
+        return;
+    }
+
+    document.getElementById('pdfMainTitle').innerText = title;
+    document.getElementById('pdfPrice').innerText = price + " EUR";
+    document.getElementById('pdfLocation').innerText = location;
+    document.getElementById('pdfYear').innerText = year;
+    document.getElementById('pdfEnergy').innerText = energy;
+    document.getElementById('pdfDescription').innerText = text;
+
+    if (fileInput && fileInput.files && fileInput.files.length > 0) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            if(pdfImg) pdfImg.src = e.target.result;
+            setTimeout(() => { window.print(); }, 300);
+        };
+        reader.readAsDataURL(fileInput.files);
+    } else {
+        if(pdfImg) pdfImg.src = "https://unsplash.com"; 
+        setTimeout(() => { window.print(); }, 300);
+    }
+}
+</script>
 </html>
