@@ -563,12 +563,14 @@ function copyToClipboard(elementId) {
     });
 }
 
-function saveToHistory(typ, titel) {
+// 🎯 MODIFIZIERT: Speichert jetzt auch den eigentlichen KI-Text mit ab!
+function saveToHistory(typ, titel, generierterText) {
     let history = JSON.parse(localStorage.getItem('immoFlowHistory')) || [];
     const eintrag = {
-        zeit: new Date().toLocaleTimeString(),
+        zeit: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         typ: typ,
-        titel: titel
+        titel: titel,
+        text: generierterText // Hier sichern wir das Meisterwerk
     };
     history.unshift(eintrag);
     if(history.length > 10) history.pop();
@@ -576,6 +578,7 @@ function saveToHistory(typ, titel) {
     renderHistory();
 }
 
+// 🎯 MODIFIZIERT: Macht jeden Eintrag zu einem klickbaren Button mit Lade-Funktion
 function renderHistory() {
     const box = document.getElementById('historyBox');
     if (!box) return;
@@ -584,12 +587,37 @@ function renderHistory() {
         box.innerHTML = '<p style="color: #9ca3af; font-style: italic;">Noch keine Historie vorhanden...</p>';
         return;
     }
-    box.innerHTML = history.map(e => `
-        <div style="padding: 6px; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 13px;">
+    
+    box.innerHTML = history.map((e, index) => `
+        <div onclick="loadFromHistory(${index})" style="padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 13px; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
             <span style="color: var(--accent); font-weight: bold;">[${e.zeit}]</span> 
-            <strong>${e.typ}:</strong> ${e.titel}
+            <strong>${e.typ}:</strong> ${e.titel} <span style="color: #6b7280; font-size: 11px;">(Klicken zum Laden ↩️)</span>
         </div>
     `).join('');
+}
+
+// 🎯 NEU: Diese Funktion schießt den alten Text kostenlos zurück ins richtige Feld!
+function loadFromHistory(index) {
+    let history = JSON.parse(localStorage.getItem('immoFlowHistory')) || [];
+    const eintrag = history[index];
+    if (!eintrag) return;
+
+    if (eintrag.typ === "Exposé") {
+        document.getElementById('exposeOutput').classList.remove('hidden');
+        document.getElementById('exposeText').innerText = eintrag.text;
+        alert("↩️ Exposé erfolgreich und kostenlos aus dem Verlauf wiederhergestellt!");
+    } else if (eintrag.typ === "Kunden-Mail") {
+        document.getElementById('emailResultBox').classList.remove('hidden');
+        document.getElementById('emailResultText').innerHTML = eintrag.text; // Mail-Struktur laden
+        alert("↩️ E-Mail-Antwort erfolgreich und kostenlos aus dem Verlauf wiederhergestellt!");
+    } else if (eintrag.typ === "Social Posts") {
+        // Bei Social Media teilen wir den Text für die Boxen wieder auf, falls nötig
+        document.getElementById('socialResultBox').classList.remove('hidden');
+        // Fallback falls Textstruktur abweicht, befüllen wir beide Felder zur Vorschau
+        document.getElementById('instaText').innerText = eintrag.text;
+        document.getElementById('linkedinText').innerText = eintrag.text;
+        alert("↩️ Social-Media-Posts erfolgreich wiederhergestellt!");
+    }
 }
 
 function clearHistory() {
