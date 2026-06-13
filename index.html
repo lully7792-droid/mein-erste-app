@@ -447,3 +447,94 @@
                 </div>
             </div>
         </div> <!-- 🎯 HIERMIT WIRD KATEGORIE 3 (LEADS) OFFIZIELL GESCHLOSSEN! -->
+        <!-- ==========================================
+             KATEGORIE 4: RHETORIK & RECHT
+             ========================================== -->
+        <div id="tab-legal" class="dashboard-tab-content hidden">
+
+            <!-- FEATURE 8: KI-VERTRAGS-PRÜFER -->
+            <div class="card">
+                <h2>📜 KI-Vertrags- & Klausel-Prüfer</h2>
+                <p class="description">Prüfe rechtliche Klauseln auf Stolperfallen oder Risiken.</p>
+                <div class="form-group">
+                    <label for="contractText">Vertragstext / Klausel zum Prüfen:</label>
+                    <textarea id="contractText" placeholder="Klausel hier reinkopieren..." style="height: 100px;"></textarea>
+                </div>
+                <button id="analyzeContractBtn" class="btn" onclick="analyzeContract()">📜 Klausel prüfen</button>
+                <div id="contractOutput" class="hidden" style="margin-top: 25px; padding: 20px; background: #0b111e; border: 1px solid var(--border-color); border-radius: 8px;">
+                    <h3 style="margin-bottom: 12px; color: var(--accent);">Rechtliche Einschätzung:</h3>
+                    <p id="contractTextOutput" style="white-space: pre-wrap; line-height: 1.6; font-size: 0.95rem;"></p>
+                </div>
+            </div>
+
+            <!-- FEATURE 3: KI-MAIL-GENERATOR -->
+            <div class="card">
+                <h2>✉️ KI-Mail-Generator</h2>
+                <p class="description">Kopiere Kundenanfragen für eine schnelle, professionelle Antwort-E-Mail.</p>
+                <div class="form-group">
+                    <label for="clientQueryInput">Kundenanfrage / Text aus Portal:</label>
+                    <textarea id="clientQueryInput" placeholder="Hier die Nachricht reinkopieren..." style="height: 100px;"></textarea>
+                </div>
+                <button id="generateEmailBtn" class="btn" onclick="generateMail()">✉️ Mail generieren</button>
+                <div id="emailResultBox" class="hidden" style="margin-top: 25px; padding: 20px; background: #0b111e; border: 1px solid var(--border-color); border-radius: 8px;">
+                    <h3 style="margin-bottom: 12px; color: var(--accent);">Generierte Antwort:</h3>
+                    <div id="emailResultText" style="line-height: 1.6; font-size: 0.95rem;"></div>
+                </div>
+            </div>
+
+            <!-- FEATURE 12: KI-TELEFON-LEITFADEN -->
+            <div class="card">
+                <h2>📞 KI-Telefon-Leitfaden-Schmied</h2>
+                <p class="description">Erstelle psychologische Gesprächsleitfäden für schwierige Kundengespräche.</p>
+                <div class="form-group">
+                    <label for="phoneSituation">Art des Telefonats</label>
+                    <select id="phoneSituation">
+                        <option value="eigentuemer_akquise">Akquise-Anruf</option>
+                        <option value="provisions_einwand">Provisions-Verhandlung</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="phoneObjection">Kundeneinwand</label>
+                    <textarea id="phoneObjection" placeholder="Einwand des Kunden..." style="height: 80px;"></textarea>
+                </div>
+                <button id="startPhoneBtn" class="btn" onclick="runPhoneScript()">📞 Skript schmieden</button>
+                <div id="phoneOutput" class="hidden" style="margin-top: 25px; padding: 20px; background: #0b111e; border: 1px solid var(--border-color); border-radius: 8px;">
+                    <h3 style="margin-bottom: 12px; color: #db2777;">🎯 Dein rhetorischer Leitfaden:</h3>
+                    <div id="phoneResultText" style="line-height: 1.6; font-size: 0.95rem;"></div>
+                </div>
+            </div>
+
+            <!-- FEATURE 13: KI-LEXIKON -->
+            <div class="card">
+                <h2>📖 KI-Immobilien-Lexikon & Laien-Übersetzer</h2>
+                <p class="description">Übersetze Fachchinesisch in einfache, verständliche Alltagssprache.</p>
+                <div class="form-group">
+                    <label for="lexiconTerm">Fachbegriff oder Klausel</label>
+                    <textarea id="lexiconTerm" placeholder="Fachbegriff hier eingeben..." style="height: 80px;"></textarea>
+                </div>
+                <button id="startLexiconBtn" class="btn" onclick="runLexiconTranslation()">📖 Begriff übersetzen</button>
+                <div id="lexiconOutput" class="hidden" style="margin-top: 25px; padding: 20px; background: #0b111e; border: 1px solid var(--border-color); border-radius: 8px;">
+                    <h3 style="margin-bottom: 12px; color: var(--accent);">🎯 Erklärung & Kunden-Nachricht:</h3>
+                    <div id="lexiconResultText" style="line-height: 1.6; font-size: 0.95rem;"></div>
+                </div>
+            </div>
+
+            <!-- FEATURE 14: KI-MÄNGEL-ENTSCHÄRFER -->
+            <div class="card">
+                <h2>🛡️ KI-Mängel-Entschärfer</h2>
+                <p class="description">Entschärfe die Mängel-Einwände von Käufern bei Besichtigungen.</p>
+                <div class="form-group">
+                    <label for="defectType">Mangel oder Einwand</label>
+                    <input type="text" id="defectType" placeholder="z.B. Heizung alt">
+                </div>
+                <div class="form-group">
+                    <label for="defectContext">Zusatz-Kontext</label>
+                    <textarea id="defectContext" placeholder="Kontext..." style="height: 80px;"></textarea>
+                </div>
+                <button id="startDefectBtn" class="btn" onclick="runDefectMitigation()">🛡️ Mangel entschärfen</button>
+                <div id="defectOutput" class="hidden" style="margin-top: 25px; padding: 20px; background: #0b111e; border: 1px solid var(--border-color); border-radius: 8px;">
+                    <h3 style="margin-bottom: 12px; color: #f59e0b;">🎯 Konter-Strategie:</h3>
+                    <div id="defectResultText" style="line-height: 1.6; font-size: 0.95rem;"></div>
+                </div>
+            </div>
+        </div> <!-- 🎯 HIERMIT WIRD KATEGORIE 4 (LEGAL) OFFIZIELL GESCHLOSSEN! -->
