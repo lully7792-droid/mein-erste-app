@@ -251,7 +251,7 @@ app.post('/api/match-profile', async (req, res) => {
 });
 
 // ==========================================
-// ROUTE 10: KI-IMMOBILIEN-RADAR (BLITZBLANK)
+// ROUTE 10: KI-IMMOBILIEN-RADAR (KORRIGIERT)
 // ==========================================
 app.post('/api/radar-hunt', async (req, res) => {
     const { region, adText, password } = req.body;
@@ -272,9 +272,12 @@ app.post('/api/radar-hunt', async (req, res) => {
             ]
         });
 
-        const gesamtText = response.choices.message.content;
+        // 🎯 HIER WURDE DIE LÜCKE MIT DER [0] PERFEKT GESCHLOSSEN:
+        let gesamtText = "Fehler beim Generieren des Textes.";
+        if (response && response.choices && response.choices[0] && response.choices[0].message) {
+            gesamtText = response.choices[0].message.content;
+        }
 
-        // Wir schicken einfach den gesamten Text an beide Felder, damit absolut nichts abstürzen kann!
         res.json({ 
             success: true, 
             analysis: "Analyse und Akquise-Strategie live generiert:", 
