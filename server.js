@@ -15,7 +15,7 @@ const openai = new OpenAI({
 app.use(express.static(__dirname));
 
 // ==========================================
-// ROUTE 1: KI-EXPOSÉ-GENERATOR
+// ROUTE 1: KI-EXPOSÉ-GENERATOR (EUROPA-SAFE)
 // ==========================================
 app.post('/api/generate-expose', async (req, res) => {
     const { title, price, location, year, energy, notes, password } = req.body;
@@ -25,40 +25,57 @@ app.post('/api/generate-expose', async (req, res) => {
         const response = await openai.chat.completions.create({
             model: "gpt-4o-mini",
             messages: [
-                { role: "system", content: "Du bist ein professioneller Immobilienmakler. Schreibe ein ansprechendes, verkaufsstarkes Exposé auf Deutsch basierend auf den bereitgestellten Objektdaten." },
-                { role: "user", content: `Titel: ${title}, Lage/Ort: ${location || "Nicht angegeben"}, Preis: ${price} EUR, Baujahr: ${year}, Energieausweis: ${energy}, Notizen: ${notes}` }
+                { 
+                    role: "system", 
+                    content: "Du bist ein erfahrener Immobilienmakler. Schreibe ein professionelles, flüssiges und verkaufsstarkes Exposé auf Deutsch basierend auf den übermittelten Daten. STRENGE REGEL: Nutze ausschließlich die vom Nutzer bereitgestellten Immobiliendaten und real existierende Fakten der Region. Erfinde niemals Infrastrukturen, Einkaufsmeilen oder Straßennamen im In- und Ausland! Strukturiere das Exposé mit ansprechenden Zwischenüberschriften." 
+                },
+                { 
+                    role: "user", 
+                    content: `Titel: ${title}\nPreis: ${price} EUR\nOrt: ${location}\nBaujahr: ${year}\nEnergieklasse: ${energy}\nDetails: ${notes}` 
+                }
             ]
         });
 
-        const exposeText = response.choices[0].message.content;
+        let exposeText = "Fehler beim Generieren.";
+        if (response && response.choices && response.choices[0] && response.choices[0].message) {
+            exposeText = response.choices[0].message.content;
+        }
+
         res.json({ success: true, text: exposeText });
     } catch (error) {
         console.error("Exposé-Fehler:", error);
-        res.status(500).json({ success: false, error: "Fehler bei der KI-Generierung" });
+        res.status(500).json({ success: false, error: "Fehler beim Generieren des Exposés" });
     }
 });
 
 // ==========================================
-// ROUTE 2: KI-BILDANALYSE
+// ROUTE 2: KI-MAIL-GENERATOR (EUROPA-SAFE)
 // ==========================================
-app.post('/api/analyze-image', async (req, res) => {
-    const { image, password } = req.body;
+app.post('/api/generate-email', async (req, res) => {
+    const { query, password } = req.body;
     if (password !== "makler-erfolg") return res.status(401).json({ success: false, error: "Nicht autorisiert" });
 
     try {
         const response = await openai.chat.completions.create({
             model: "gpt-4o-mini",
             messages: [
-                { role: "system", content: "Du bist ein erfahrener Immobilienmakler. Analysiere das Bild und extrahiere Highlights." },
-                { role: "user", content: [{ type: "text", text: "Analysiere dieses Bild:" }, { type: "image_url", image_url: { "url": image } }] }
+                { 
+                    role: "system", 
+                    content: "Du bist ein kundenorientierter Immobilienmakler. Antworte auf die folgende Kundenanfrage absolut professionell, höflich und verkaufsstark auf Deutsch. STRENGE REGEL: Bleibe absolut faktengetreu zu den Kundendaten und erfinde keine rechtlichen oder geografischen Gegebenheiten der Region im In- und Ausland! Schlage am Ende subtil einen Besichtigungstermin vor. Formatiere die Ausgabe als sauberes HTML (nutze <p>, <strong> und <br> für Zeilenumbrüche, KEIN vollständiges HTML-Gerüst, keine Markdown-Sternchen)." 
+                },
+                { role: "user", content: `Anfrage: ${query}` }
             ]
         });
 
-        const analysisText = response.choices[0].message.content;
-        res.json({ success: true, analysis: analysisText });
+        let emailText = "Fehler beim Generieren der E-Mail.";
+        if (response && response.choices && response.choices[0] && response.choices[0].message) {
+            emailText = response.choices[0].message.content;
+        }
+
+        res.json({ success: true, text: emailText });
     } catch (error) {
-        console.error("Bildanalyse-Fehler:", error);
-        res.status(500).json({ success: false, error: "Fehler bei der KI-Analyse" });
+        console.error("E-Mail-Fehler:", error);
+        res.status(500).json({ success: false, error: "Fehler beim Generieren der E-Mail" });
     }
 });
 
@@ -251,7 +268,7 @@ app.post('/api/match-profile', async (req, res) => {
 });
 
 // ==========================================
-// ROUTE 10: KI-IMMOBILIEN-RADAR (KORRIGIERT)
+// ROUTE 10: KI-IMMOBILIEN-RADAR (EUROPA-SAFE)
 // ==========================================
 app.post('/api/radar-hunt', async (req, res) => {
     const { region, adText, password } = req.body;
@@ -263,7 +280,7 @@ app.post('/api/radar-hunt', async (req, res) => {
             messages: [
                 { 
                     role: "system", 
-                    content: "Du bist ein Spitzen-Makler im Bereich Immobilien-Einkauf. Analysiere die private Verkaufsanzeige. Schreibe zuerst deine Einschätzung zur Anzeige und danach das Akquise-Anschreiben für den Eigentümer." 
+                    content: "Du bist ein Spitzen-Makler im Bereich Immobilien-Einkauf. Analysiere die private Verkaufsanzeige. Schreibe zuerst deine Einschätzung zur Anzeige und danach das Akquise-Anschreiben für den Eigentümer auf Deutsch. STRENGE REGEL: Analysiere den Markt für ganz Europa absolut präzise und nutze für dein Anschreiben nur real existierende Argumente und Fakten der jeweiligen Region, ohne Dinge frei zu erfinden." 
                 },
                 { 
                     role: "user", 
@@ -272,7 +289,6 @@ app.post('/api/radar-hunt', async (req, res) => {
             ]
         });
 
-        // 🎯 HIER WURDE DIE LÜCKE MIT DER [0] PERFEKT GESCHLOSSEN:
         let gesamtText = "Fehler beim Generieren des Textes.";
         if (response && response.choices && response.choices[0] && response.choices[0].message) {
             gesamtText = response.choices[0].message.content;
