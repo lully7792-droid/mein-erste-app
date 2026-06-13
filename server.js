@@ -667,7 +667,7 @@ app.post('/api/lexicon-forge', async (req, res) => {
 });
 
 // ==========================================
-// ROUTE 14: KI-MÄNGEL-ENTSCHÄRFER & GEGENGUTACHTER
+// ROUTE 14: KI-MAENGEL-ENTSCHAERFER (FEHLERFREI)
 // ==========================================
 app.post('/api/defect-mitigate', async (req, res) => {
     const { defect, context, password } = req.body;
@@ -679,7 +679,7 @@ app.post('/api/defect-mitigate', async (req, res) => {
             messages: [
                 { 
                     role: "system", 
-                    content: "Du bist ein erfahrener Bausachverständiger und genialer Immobilien-Vertriebsprofi. Deine Aufgabe ist es, einen von einem Kaufinteressenten genannten Mangel (z.B. Riss, Feuchtigkeit, veraltete Heizung) bautechnisch einzuordnen und vertrieblich zu entschärfen. Schreibe eine sachliche Argumentation auf Deutsch, die den Mangel nicht verschweigt, aber in Relation zum Baujahr setzt. Biete dem Makler präzise Satzbausteine, um unberechtigte, massive Preisabzüge im Gespräch psychologisch geschickt abzuwehren und lösungsorientiert zu kontern." 
+                    content: "Du bist ein erfahrener Bausachverständiger und Immobilien-Vertriebsprofi. Deine Aufgabe ist es, einen vom Kaufinteressenten genannten Mangel bautechnisch einzuordnen und vertrieblich zu entschärfen. Schreibe eine sachliche Argumentation auf Deutsch, die den Mangel nicht verschweigt, aber in Relation zum Baujahr setzt. Biete dem Makler präzise Satzbausteine, um unberechtigte, massive Preisabzüge im Gespräch psychologisch geschickt abzuwehren." 
                 },
                 { 
                     role: "user", 
@@ -688,10 +688,10 @@ app.post('/api/defect-mitigate', async (req, res) => {
             ]
         });
 
-        // 🎯 DIREKT ABSOLUT SICHER GEKAPSELT:
-        let defectText = "Mängel-Argumentation konnte nicht erstellt werden.";
-        if (response && response.choices && response.choices && response.choices.message) {
-            defectText = response.choices.message.content;
+        // 🎯 HIER MIT DER ETABLIERTEN [0]-SCHUBLADE ABGESICHERT:
+        let defectText = "Mängel-Analyse konnte nicht erstellt werden.";
+        if (response && response.choices && response.choices[0] && response.choices[0].message) {
+            defectText = response.choices[0].message.content;
         }
 
         res.json({ 
@@ -700,8 +700,8 @@ app.post('/api/defect-mitigate', async (req, res) => {
         });
 
     } catch (error) {
-        console.error("Mängel-Mitigate-Fehler:", error);
-        res.status(500).json({ success: false, error: "Fehler beim Mängel-Check im Backend" });
+        console.error("Maengel-Mitigate-Fehler:", error);
+        res.status(500).json({ success: false, error: "Fehler beim Maengel-Check im Backend" });
     }
 });
 
