@@ -392,7 +392,7 @@
     <div class="pdf-footer">Dieses Dokument wurde automatisch erstellt. Alle Angaben ohne Gewähr. Ihr Makler-Erfolg 2026.</div>
 </div>
 </body>
- <script>
+<script>
 // ==========================================
 // FEATURE: PROFI-PDF-DRUCK
 // ==========================================
@@ -507,19 +507,15 @@ window.exportHistoryToCSV = function() {
     }
 
     let csvContent = "\uFEFF";
-    csvContent += "Uhrzeit;Kategorie;Titel;Generierter_Inhalt
-";
+    csvContent += "Uhrzeit;Kategorie;Titel;Generierter_Inhalt\n";
 
     history.forEach(e => {
         let zeit = e.zeit || "";
         let typ = e.typ || "";
-        let titel = (e.titel || "").replace(/;/g, ",").replace(/
-/g, " ");
-        let text = (e.text || "").replace(/;/g, ",").replace(/
-/g, " [UMBRUCH] ").replace(/"/g, '""');
+        let titel = (e.titel || "").replace(/;/g, ",").replace(/\n/g, " ");
+        let text = (e.text || "").replace(/;/g, ",").replace(/\n/g, " [UMBRUCH] ").replace(/"/g, '""');
         
-        csvContent += `"${zeit}";"${typ}";"${titel}";"${text}"
-`;
+        csvContent += `"${zeit}";"${typ}";"${titel}";"${text}"\n`;
     });
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -536,4 +532,4 @@ window.exportHistoryToCSV = function() {
     alert("📊 Excel-kompatible CSV-Datei erfolgreich heruntergeladen!");
 };
 </script>
-</html>  
+</html>
