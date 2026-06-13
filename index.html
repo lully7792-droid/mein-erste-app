@@ -725,6 +725,71 @@ async function runMarketComparison() {
     }
 }
 
+    // Globale Variable für die HTML-Vorschau
+let generatedNewsletterHTML = "";
+
+async function runNewsletterForge() {
+    const title = document.getElementById('newsTitle').value;
+    const details = document.getElementById('newsDetails').value;
+    const tone = document.getElementById('newsTone').value;
+
+    if (!title || !details) {
+        alert("Bitte gib einen Titel und die Highlights für den Newsletter an!");
+        return;
+    }
+
+    const btn = document.getElementById('startNewsletterBtn');
+    const outputDiv = document.getElementById('newsletterOutput');
+    const resultText = document.getElementById('newsletterResultText');
+
+    if(btn) { btn.disabled = true; btn.innerText = "Schmiede Newsletter-Layout..."; }
+    if(outputDiv) outputDiv.classList.remove('hidden');
+    if(resultText) resultText.innerText = "KI entwirft das E-Mail-Design und textet die Betreffzeilen...";
+
+    try {
+        const response = await fetch('/api/newsletter-forge', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title, details, tone, password: savedPassword })
+        });
+        const data = await response.json();
+        
+        if (data.success) {
+            generatedNewsletterHTML = data.htmlCode;
+            if(resultText) {
+                resultText.innerHTML = `
+                    <div style="background: rgba(219, 39, 119, 0.1); padding: 12px; border-radius: 6px; margin-bottom: 15px; border-left: 4px solid #db2777;">
+                        <strong>📧 Empfohlene Betreffzeile:</strong><br>
+                        <span style="color: #f43f5e; font-weight: bold;">${data.subject}</span>
+                    </div>
+                    <div style="margin-bottom: 10px;"><strong>📄 HTML-Code für dein Mail-Programm:</strong></div>
+                    <textarea readonly style="width: 100%; height: 150px; background: #070a12; color: #10b981; font-family: monospace; font-size: 12px; padding: 10px; border-radius: 6px; border: 1px solid #1e293b;">${data.htmlCode}</textarea>
+                `;
+            }
+            if(typeof saveToHistory === "function") {
+                saveToHistory("Newsletter", "Objekt: " + title.substring(0, 20) + "...", data.subject);
+            }
+        } else {
+            if(resultText) resultText.innerText = "Fehler vom Server: " + data.error;
+        }
+    } catch (error) {
+        if(resultText) resultText.innerText = "Server-Fehler bei der Newsletter-Verbindung.";
+    } finally {
+        if(btn) { btn.disabled = false; btn.innerText = "✉️ Verkaufs-Newsletter schmieden"; }
+    }
+}
+
+// Öffnet ein neues Fenster mit der echten, designten HTML-Vorschau der E-Mail!
+function previewNewsletterHTML() {
+    if (!generatedNewsletterHTML) {
+        alert("Es wurde noch kein Newsletter-Code generiert!");
+        return;
+    }
+    const win = window.open("", "_blank");
+    win.document.write(generatedNewsletterHTML);
+    win.document.close();
+}
+
 window.exportHistoryToCSV = function() {
     let history = JSON.parse(localStorage.getItem('immoFlowHistory')) || [];
     
