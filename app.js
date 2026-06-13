@@ -634,6 +634,47 @@ document.addEventListener('DOMContentLoaded', () => {
     if (imgBtn) {
         imgBtn.addEventListener('click', analyzeImage);
     }
+
+    // 🎯 NEU: Gießt das perfekte Makler-PDF inklusive Bild und sauberem Layout
+function printProfessionalPDF() {
+    const text = document.getElementById('exposeText').innerText;
+    const title = document.getElementById('title').value || "Exklusives Immobilienangebot";
+    const price = document.getElementById('price').value || "-";
+    const location = document.getElementById('location').value || "-";
+    const year = document.getElementById('year').value || "-";
+    const energy = document.getElementById('energy').value || "-";
+    
+    // Bild-Input auslesen
+    const fileInput = document.getElementById('imageInput');
+    const pdfImg = document.getElementById('pdfPreviewImage');
+
+    if (!text || text.includes("bitte warten...")) {
+        alert("Es gibt noch kein generiertes Exposé zum Drucken!");
+        return;
+    }
+
+    // Werte in das versteckte PDF-Template übertragen
+    document.getElementById('pdfMainTitle').innerText = title;
+    document.getElementById('pdfPrice').innerText = price + " EUR";
+    document.getElementById('pdfLocation').innerText = location;
+    document.getElementById('pdfYear').innerText = year;
+    document.getElementById('pdfEnergy').innerText = energy;
+    document.getElementById('pdfDescription').innerText = text;
+
+    // Prüfen, ob der Nutzer ein Bild hochgeladen hat
+    if (fileInput && fileInput.files && fileInput.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            pdfImg.src = e.target.result; // Base64 Bild ins PDF setzen
+            setTimeout(() => { window.print(); }, 300); // Kurz warten bis Bild geladen ist, dann Drucken!
+        };
+        reader.readAsDataURL(fileInput.files[0]);
+    } else {
+        // Falls kein Bild hochgeladen wurde, setzen wir ein edles Platzhalter-Symbol oder lassen es leer
+        pdfImg.src = "https://unsplash.com"; 
+        setTimeout(() => { window.print(); }, 300);
+    }
+}
 });
   
 
