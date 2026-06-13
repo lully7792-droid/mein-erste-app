@@ -666,6 +666,45 @@ app.post('/api/lexicon-forge', async (req, res) => {
     }
 });
 
+// ==========================================
+// ROUTE 14: KI-MÄNGEL-ENTSCHÄRFER & GEGENGUTACHTER
+// ==========================================
+app.post('/api/defect-mitigate', async (req, res) => {
+    const { defect, context, password } = req.body;
+    if (password !== "makler-erfolg") return res.status(401).json({ success: false, error: "Nicht autorisiert" });
+
+    try {
+        const response = await openai.chat.completions.create({
+            model: "gpt-4o-mini",
+            messages: [
+                { 
+                    role: "system", 
+                    content: "Du bist ein erfahrener Bausachverständiger und genialer Immobilien-Vertriebsprofi. Deine Aufgabe ist es, einen von einem Kaufinteressenten genannten Mangel (z.B. Riss, Feuchtigkeit, veraltete Heizung) bautechnisch einzuordnen und vertrieblich zu entschärfen. Schreibe eine sachliche Argumentation auf Deutsch, die den Mangel nicht verschweigt, aber in Relation zum Baujahr setzt. Biete dem Makler präzise Satzbausteine, um unberechtigte, massive Preisabzüge im Gespräch psychologisch geschickt abzuwehren und lösungsorientiert zu kontern." 
+                },
+                { 
+                    role: "user", 
+                    content: `Genannter Mangel: "${defect}"\nZusatz-Kontext & Details: ${context || "Keine zusätzlichen Angaben"}`
+                }
+            ]
+        });
+
+        // 🎯 DIREKT ABSOLUT SICHER GEKAPSELT:
+        let defectText = "Mängel-Argumentation konnte nicht erstellt werden.";
+        if (response && response.choices && response.choices && response.choices.message) {
+            defectText = response.choices.message.content;
+        }
+
+        res.json({ 
+            success: true, 
+            text: defectText 
+        });
+
+    } catch (error) {
+        console.error("Mängel-Mitigate-Fehler:", error);
+        res.status(500).json({ success: false, error: "Fehler beim Mängel-Check im Backend" });
+    }
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server läuft fehlerfrei auf Port ${PORT}`);
