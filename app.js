@@ -1,6 +1,9 @@
+// 🎯 Holt die Credits aus dem Dauerspeicher. Gibt es noch keine, startet er bei 10:
+let remainingCredits = localStorage.getItem('immoFlowCredits') !== null 
+    ? parseInt(localStorage.getItem('immoFlowCredits')) 
+    : 10;
+
 let savedPassword = "";
-// 🎯 Holt sich die Credits aus dem Dauerspeicher des Browsers. Wenn noch nichts da ist, startet er mit 10:
-let remainingCredits = parseInt(localStorage.getItem('immoFlowCredits')) || 10;
 
 function checkLogin() {
     const passwordInput = document.getElementById('passwordInput').value;
@@ -13,18 +16,12 @@ function checkLogin() {
             app.classList.remove('hidden');
         }
         
-        // Wenn ein neuer Login stattfindet und die Credits auf 0 waren, laden wir sie für den Makler wieder auf
-        if (remainingCredits <= 0) {
-            remainingCredits = 10;
-            localStorage.setItem('immoFlowCredits', remainingCredits);
-        }
-        
         updateCreditDisplay();
     } else {
         alert("Falsches Passwort! Bitte versuche es erneut.");
     }
 }
-
+        
 function updateCreditDisplay() {
     const creditBox = document.getElementById('creditDisplay');
     if (creditBox) {
