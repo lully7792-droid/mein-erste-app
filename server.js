@@ -549,6 +549,45 @@ app.post('/api/investor-calc', async (req, res) => {
     }
 });
 
+// ==========================================
+// ROUTE 16: KI-MODERNISIERUNGS- & HOME-STAGING
+// ==========================================
+app.post('/api/staging-forge', async (req, res) => {
+    const { room, current, target, password } = req.body;
+    if (password !== "makler-erfolg") return res.status(401).json({ success: false, error: "Nicht autorisiert" });
+
+    try {
+        const response = await openai.chat.completions.create({
+            model: "gpt-4o-mini",
+            messages: [
+                { 
+                    role: "system", 
+                    content: "Du bist ein genialer Innenarchitekt, Home-Staging-Experte und Immobilien-Verkaufsprofi. Deine Aufgabe ist es, für einen veralteten Raum ein modernes, hochattraktives Renovierungs- und Einrichtungskonzept auf Deutsch zu entwickeln. Schreibe zuerst konkrete, optisch wirksame Maßnahmen (Böden, Wände, Licht, Möbel) für den Umbau auf und formuliere danach einen emotionalen, bildhaften Verkaufstext für das Exposé, der potenziellen Käufern die zukünftige Pracht perfekt vor Augen führt." 
+                },
+                { 
+                    role: "user", 
+                    content: `Raumtyp: ${room}\nIst-Zustand: ${current}\nGewünschter Ziel-Stil: ${target}`
+                }
+            ]
+        });
+
+        // 🎯 DIREKT ABSOLUT SICHER GEKAPSELT:
+        let stagingText = "Designkonzept konnte nicht erstellt werden.";
+        if (response && response.choices && response.choices[0] && response.choices[0].message) {
+            stagingText = response.choices[0].message.content;
+        }
+
+        res.json({ 
+            success: true, 
+            text: stagingText 
+        });
+
+    } catch (error) {
+        console.error("Staging-Forge-Fehler:", error);
+        res.status(500).json({ success: false, error: "Fehler beim Home-Staging im Backend" });
+    }
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server läuft fehlerfrei auf Port ${PORT}`);
