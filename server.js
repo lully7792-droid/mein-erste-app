@@ -290,6 +290,67 @@ app.post('/api/radar-hunt', async (req, res) => {
     }
 });
 
+// ==========================================
+// ROUTE 11: KI-FINANZIERUNGS-RECHNER
+// ==========================================
+app.post('/api/finance-calc', async (req, res) => {
+    const { price, equity, interest, repayment, commissionRate, password } = req.body;
+    if (password !== "makler-erfolg") return res.status(401).json({ success: false, error: "Nicht autorisiert" });
+
+    try {
+        // Mathematische Berechnungen im Backend durchführen
+        const tax = price * 0.055; // Grunderwerbsteuer NRW (5,5%)
+        const notary = price * 0.02; // Notar & Grundbuch (ca. 2%)
+        const commission = price * (commissionRate / 100); // Maklerprovision
+        const totalCost = price + tax + notary + commission; // Gesamtkosten
+        const loanAmount = Math.max(0, totalCost - equity); // Benötigter Kreditrahmen
+        
+        // Jährliche Annuität = Kreditrahmen * (Zins% + Tilgung%)
+        const yearlyAnnuity = loanAmount * ((interest + repayment) / 100);
+        const monthlyRate = yearlyAnnuity / 12; // Monatliche Rate
+
+        // Packe die nackten Zahlen in das Datenobjekt für das Frontend
+        const costs = {
+            tax: Math.round(tax),
+            notary: Math.round(notary),
+            commission: Math.round(commission),
+            totalCost: Math.round(totalCost),
+            loanAmount: Math.round(loanAmount),
+            monthlyRate: Math.round(monthlyRate)
+        };
+
+        // KI um Verkaufs-Argumentation bitten
+        const response = await openai.chat.completions.create({
+            model: "gpt-4o-mini",
+            messages: [
+                { 
+                    role: "system", 
+                    content: "Du bist ein genialer Finanzierungsberater und Immobilien-Vertriebsprofi. Dir werden die exakten Berechnungen einer Immobilie übermittelt. Deine Aufgabe ist es, einen überzeugenden, psychologisch cleveren Argumentationsleitfaden für das Kundengespräch zu schreiben. Erkläre dem Kunden im Text sachlich aber verkaufsstark, warum sich diese Investition (entweder als Eigennutzung oder Kapitalanlage) trotz der aktuellen Zinslage lohnt und wie er die monatliche Belastung einwerten kann." 
+                },
+                { 
+                    role: "user", 
+                    content: `Kaufpreis: ${price} €\nNebenkosten gesamt (Steuer, Notar, Provision): ${tax + notary + commission} €\nBenötigtes Darlehen: ${costs.loanAmount} €\nZinssatz: ${interest}%\nTilgung: ${repayment}%\nErrechnete Monatsrate: ${costs.monthlyRate} €/Monat`
+                }
+            ]
+        });
+
+        let argumentationText = "Argumentationsleitfaden konnte nicht erstellt werden.";
+        if (response && response.choices && response.choices[0] && response.choices[0].message) {
+            argumentationText = response.choices[0].message.content;
+        }
+
+        res.json({ 
+            success: true, 
+            costs: costs, 
+            argumentation: argumentationText 
+        });
+
+    } catch (error) {
+        console.error("Finanz-Rechner-Fehler:", error);
+        res.status(500).json({ success: false, error: "Fehler beim Berechnen im Backend" });
+    }
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server läuft fehlerfrei auf Port ${PORT}`);
