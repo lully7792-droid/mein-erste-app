@@ -569,6 +569,29 @@
             </div>
         </div>
 
+                <!-- FEATURE 19: KI-MÄNGEL-ENTSCHÄRFER -->
+        <div class="card" style="border-color: rgba(239, 68, 68, 0.3); background: linear-gradient(135deg, #131c2e, #381616);">
+            <h2>🛡️ KI-Mängel-Entschärfer & Einwand-Gegengutachter</h2>
+            <p class="description">Entschärfe die Mängel-Einwände von Käufern bei Besichtigungen. Die KI liefert dir sofort bautechnische Argumente und kaufmännische Lösungswege, um den Verkaufspreis zu schützen.</p>
+            
+            <div class="form-group">
+                <label for="defectType">Welcher Mangel oder Einwand wurde genannt?</label>
+                <input type="text" id="defectType" placeholder="z.B. Riss in der Hauswand, Heizung 20 Jahre alt, Keller riecht muffig">
+            </div>
+            <div class="form-group">
+                <label for="defectContext">Zusatz-Fakten (Baujahr des Hauses, Schwere des Mangels)</label>
+                <textarea id="defectContext" placeholder="z.B. Baujahr 1972, Riss ist ca. 2mm breit im Außenputz, Käufer droht mit 20.000€ Preisabzug..." style="height: 80px;"></textarea>
+            </div>
+            
+            <button id="startDefectBtn" class="btn" onclick="runDefectMitigation()" style="width: 100%; background: linear-gradient(90deg, #ef4444, #f59e0b); color: #fff;">🛡️ Mangel analysieren & Einwand entschärfen</button>
+            
+            <div id="defectOutput" class="hidden" style="margin-top: 25px; padding: 20px; background: #0b111e; border: 1px solid var(--border-color); border-radius: 8px;">
+                <h3 style="margin-bottom: 12px; color: #f59e0b;">🎯 Deine bautechnische & vertriebliche Konter-Strategie:</h3>
+                <div id="defectResultText" style="line-height: 1.6; font-size: 0.95rem; white-space: pre-wrap; color: #cbd5e1;"></div>
+                <button onclick="copyToClipboard('defectResultText')" class="btn" style="background: #334155; color: #fff; font-size: 14px; padding: 10px 18px; margin-top: 15px;">📋 Argumentation kopieren</button>
+            </div>
+        </div>
+
         <!-- FEATURE 15: HISTORIE -->
         <div class="card">
             <h2>🗄️ Letzte KI-Generierungen (Gespeichert)</h2>
@@ -1140,6 +1163,46 @@ function previewNewsletterHTML() {
         if(resultText) resultText.innerText = "Server-Fehler bei der Lexikon-Verbindung.";
     } finally {
         if(btn) { btn.disabled = false; btn.innerText = "📖 Begriff verständlich übersetzen"; }
+    }
+}
+
+    async function runDefectMitigation() {
+    const defect = document.getElementById('defectType').value;
+    const context = document.getElementById('defectContext').value;
+
+    if (!defect) {
+        alert("Bitte gib den Mangel oder Einwand des Käufers ein!");
+        return;
+    }
+
+    const btn = document.getElementById('startDefectBtn');
+    const outputDiv = document.getElementById('defectOutput');
+    const resultText = document.getElementById('defectResultText');
+
+    if(btn) { btn.disabled = true; btn.innerText = "Analysiere Bausubstanz..."; }
+    if(outputDiv) outputDiv.classList.remove('hidden');
+    if(resultText) resultText.innerText = "KI prüft bautechnische Normen und formuliert Einwandbehandlung...";
+
+    try {
+        const response = await fetch('/api/defect-mitigate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ defect, context, password: savedPassword })
+        });
+        const data = await response.json();
+        
+        if (data.success) {
+            if(resultText) resultText.innerText = data.text;
+            if(typeof saveToHistory === "function") {
+                saveToHistory("Mängel-Check", "Mangel: " + defect.substring(0, 20) + "...", data.text.substring(0, 30) + "...");
+            }
+        } else {
+            if(resultText) resultText.innerText = "Fehler vom Server: " + data.error;
+        }
+    } catch (error) {
+        if(resultText) resultText.innerText = "Server-Fehler bei der Mängel-Verbindung.";
+    } finally {
+        if(btn) { btn.disabled = false; btn.innerText = "🛡️ Mangel analysieren & Einwand entschärfen"; }
     }
 }
 
