@@ -1358,6 +1358,59 @@ async function generateExpose() {
     }
 }
 
+    // 🎯 Das unzerstörbare 5-Kanal-Social-Media-Skript (inklusive X/Twitter)
+async function generateSocialMedia() {
+    const title = document.getElementById('title').value;
+    const price = document.getElementById('price').value;
+    const size = document.getElementById('size').value || "";
+    const location = document.getElementById('location').value;
+    const notes = document.getElementById('notes').value;
+
+    if (!title || !price || !location) {
+        alert("Bitte fülle zuerst die Objektdaten oben (Titel, Preis, Ort) aus!");
+        return;
+    }
+
+    const btn = document.getElementById('generateSocialBtn');
+    const outputDiv = document.getElementById('socialResultBox');
+
+    if(btn) { btn.disabled = true; btn.innerText = "Multi-Kampagne wird geschmiedet..."; }
+    if(outputDiv) outputDiv.classList.remove('hidden');
+
+    document.getElementById('instaText').innerText = "Instagram-Post wird getextet...";
+    document.getElementById('linkedinText').innerText = "LinkedIn-Strategie wird entworfen...";
+    document.getElementById('tiktokText').innerText = "Kurzvideo-Skript wird geschrieben...";
+    document.getElementById('facebookText').innerText = "Nachbarschafts-Post wird formuliert...";
+    document.getElementById('twitterText').innerText = "X-Post (Twitter) wird komprimiert...";
+
+    try {
+        const response = await fetch('/api/generate-social-all', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title, price, size, location, notes, password: savedPassword })
+        });
+        const data = await response.json();
+        
+        if (data.success) {
+            document.getElementById('instaText').innerText = data.instagram;
+            document.getElementById('linkedinText').innerText = data.linkedin;
+            document.getElementById('tiktokText').innerText = data.tiktok;
+            document.getElementById('facebookText').innerText = data.facebook;
+            document.getElementById('twitterText').innerText = data.twitter;
+            
+            if(typeof saveToHistory === "function") {
+                saveToHistory("Social Media", "Omnichannel: " + title.substring(0, 15) + "...", "5 Plattformen generiert");
+            }
+        } else {
+            alert("Fehler vom Server: " + data.error);
+        }
+    } catch (error) {
+        alert("Server-Fehler bei der Social-Media-Verbindung.");
+    } finally {
+        if(btn) { btn.disabled = false; btn.innerText = "📱 Posts generieren"; }
+    }
+}
+
 window.exportHistoryToCSV = function() {
     let history = JSON.parse(localStorage.getItem('immoFlowHistory')) || [];
     
