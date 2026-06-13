@@ -627,6 +627,45 @@ app.post('/api/phone-forge', async (req, res) => {
     }
 });
 
+// ==========================================
+// ROUTE 18: KI-IMMOBILIEN-LEXIKON-GENERATOR
+// ==========================================
+app.post('/api/lexicon-forge', async (req, res) => {
+    const { term, password } = req.body;
+    if (password !== "makler-erfolg") return res.status(401).json({ success: false, error: "Nicht autorisiert" });
+
+    try {
+        const response = await openai.chat.completions.create({
+            model: "gpt-4o-mini",
+            messages: [
+                { 
+                    role: "system", 
+                    content: "Du bist ein erfahrener Immobilien-Fachanwalt und genialer Kommunikator. Deine Aufgabe ist es, einen schweren juristischen Fachbegriff oder eine komplexe Klausel aus dem Immobilienrecht (z.B. Grundbuch, Notarvertrag) in absolut einfache Alltagssprache für Laien zu übersetzen. Schreibe zuerst eine kurze, glasklare Definition und formuliere danach eine fertige, freundliche Nachricht (z. B. für WhatsApp oder E-Mail), die der Makler direkt an seinen zögernden Kunden senden kann, um Missverständnisse und Ängste sofort abzubauen." 
+                },
+                { 
+                    role: "user", 
+                    content: `Zu erklärender Begriff/Klausel: "${term}"`
+                }
+            ]
+        });
+
+        // 🎯 DIREKT ABSOLUT SICHER GEKAPSELT:
+        let lexiconText = "Erklärung konnte nicht erstellt werden.";
+        if (response && response.choices && response.choices[0] && response.choices[0].message) {
+            lexiconText = response.choices[0].message.content;
+        }
+
+        res.json({ 
+            success: true, 
+            text: lexiconText 
+        });
+
+    } catch (error) {
+        console.error("Lexikon-Forge-Fehler:", error);
+        res.status(500).json({ success: false, error: "Fehler beim Lexikon-Eintrag im Backend" });
+    }
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server läuft fehlerfrei auf Port ${PORT}`);
