@@ -195,7 +195,7 @@ app.post('/api/generate-location', async (req, res) => {
 });
 
 // ==========================================
-// ROUTE 8: KI-VERTRAGS-PRÜFER
+// ROUTE 8: KI-VERTRAGS-PRÜFER (FEHLERFREI)
 // ==========================================
 app.post('/api/analyze-contract', async (req, res) => {
     const { contractText, password } = req.body;
@@ -209,7 +209,13 @@ app.post('/api/analyze-contract', async (req, res) => {
                 { role: "user", content: `Vertragstext/Klausel: ${contractText}` }
             ]
         });
-        res.json({ success: true, text: response.choices.message.content });
+
+        let analyseText = "Fehler bei der Vertragsanalyse.";
+        if (response && response.choices && response.choices[0] && response.choices[0].message) {
+            analyseText = response.choices[0].message.content;
+        }
+
+        res.json({ success: true, text: analyseText });
     } catch (error) {
         console.error("Vertragsprüfer-Fehler:", error);
         res.status(500).json({ success: false, error: "Fehler bei der Vertragsanalyse" });
@@ -217,7 +223,7 @@ app.post('/api/analyze-contract', async (req, res) => {
 });
 
 // ==========================================
-// ROUTE 9: KI-KUNDEN-PROFILE-MATCHING
+// ROUTE 9: KI-KUNDEN-PROFILE-MATCHING (FEHLERFREI)
 // ==========================================
 app.post('/api/match-profile', async (req, res) => {
     const { buyerCriteria, propTitle, propPrice, propLocation, propNotes, password } = req.body;
@@ -228,16 +234,16 @@ app.post('/api/match-profile', async (req, res) => {
             model: "gpt-4o-mini",
             messages: [
                 { role: "system", content: "Du bist ein genialer Vertriebs-Makler. Vergleiche die Suchkriterien des Kunden mit den Objektdaten der aktuellen Immobilie. Schreibe eine extrem maßgeschneiderte, persönliche und überzeugende Einladungs-E-Mail auf Deutsch an diesen Suchkunden. Hebe genau die Punkte hervor, die perfekt zu seinen Wünschen passen." },
-                { role: "user", content: `Suchkriterien des Kunden: ${buyerCriteria}
-
-Aktuelles Objekt:
-Titel: ${propTitle}
-Preis: ${propPrice} EUR
-Ort: ${propLocation}
-Details: ${propNotes}` }
+                { role: "user", content: `Suchkriterien des Kunden: ${buyerCriteria}\n\nAktuelles Objekt:\nTitel: ${propTitle}\nPreis: ${propPrice} EUR\nOrt: ${propLocation}\nDetails: ${propNotes}` }
             ]
         });
-        res.json({ success: true, text: response.choices.message.content });
+
+        let matchingText = "Fehler beim Kunden-Matching.";
+        if (response && response.choices && response.choices[0] && response.choices[0].message) {
+            matchingText = response.choices[0].message.content;
+        }
+
+        res.json({ success: true, text: matchingText });
     } catch (error) {
         console.error("Matching-Fehler:", error);
         res.status(500).json({ success: false, error: "Fehler beim Kunden-Matching" });
