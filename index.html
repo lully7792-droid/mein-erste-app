@@ -25,7 +25,7 @@
             background-image: radial-gradient(circle at top right, rgba(16, 185, 129, 0.05), transparent 400px);
         }
         .container { width: 100%; max-width: 850px; }
-        header { text-align: center; margin-bottom: 50px; }
+        header { text-align: center; margin-bottom: 40px; }
         h1 { font-size: 2.8rem; color: var(--text-light); margin-bottom: 10px; font-weight: 800; letter-spacing: -1px; }
         .subtitle { color: var(--accent); font-weight: 700; letter-spacing: 2px; font-size: 0.9rem; }
         .card {
@@ -73,17 +73,31 @@
         .hidden { display: none !important; }
         .credit-box { text-align: center; font-size: 1.1rem; color: var(--accent); font-weight: 700; letter-spacing: 0.5px; }
         
-        /* 🔄 DER NEUE ANIMIERTE LADE-SPINNER */
-        .spinner {
-            width: 24px;
-            height: 24px;
-            border: 3px solid rgba(9, 13, 22, 0.2);
-            border-top: 3px solid #090d16;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            display: inline-block;
+        /* 🎛️ DAS NEUE PREMIUM-TAB-NAVIGATIONSSYSTEM */
+        .tab-navigation {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            overflow-x: auto;
+            padding-bottom: 5px;
         }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .tab-btn {
+            background-color: #131c2e;
+            color: #94a3b8;
+            border: 1px solid var(--border-color);
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+        .tab-btn:hover { background-color: #1e293b; color: var(--text-light); }
+        .tab-btn.active {
+            background-color: var(--accent);
+            color: #090d16;
+            border-color: var(--accent);
+        }
     </style>
 </head>
 <body>
@@ -92,6 +106,7 @@
         <h1>ImmoFlow 🚀</h1>
         <p class="subtitle">PRODUKTIVITÄTS-BOOSTER FÜR IMMOBILIENMAKLER</p>
     </header>
+
 
     <!-- LOGIN AREA -->
     <div id="loginSection" class="card" style="max-width: 500px; margin: 0 auto;">
@@ -109,6 +124,20 @@
         <div class="card" style="text-align: center; padding: 20px; background: linear-gradient(135deg, #131c2e, #0b111e); border-color: rgba(16, 185, 129, 0.2);">
             <div id="creditDisplay" class="credit-box">Verbleibende Abfragen: 10</div>
         </div>
+                <!-- 🎛️ REGISTER-REITER BUTTONS -->
+        <div class="tab-navigation" style="margin-top: 25px;">
+            <button class="tab-btn active" onclick="switchDashboardTab('tab-media')">📄 Exposé & Medien</button>
+            <button class="tab-btn" onclick="switchDashboardTab('tab-finance')">💰 Finanzen & Rechner</button>
+            <button class="tab-btn" onclick="switchDashboardTab('tab-leads')">🌐 Lead-Akquise</button>
+            <button class="tab-btn" onclick="switchDashboardTab('tab-legal')">📜 Rhetorik & Recht</button>
+            <button class="tab-btn" onclick="switchDashboardTab('tab-history')">🗄️ Verlauf & Export</button>
+        </div>
+
+        <!-- ==========================================
+             KATEGORIE 1: EXPOSÉ & MEDIEN
+             ========================================== -->
+        <div id="tab-media" class="dashboard-tab-content">
+
         <!-- FEATURE 1: KI-EXPOSÉ-GENERATOR -->
         <div class="card">
             <h2>✨ KI-Exposé-Spezialist</h2>
