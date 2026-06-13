@@ -251,7 +251,7 @@ app.post('/api/match-profile', async (req, res) => {
 });
 
 // ==========================================
-// ROUTE 10: KI-IMMOBILIEN-RADAR (LEAD-MASCHINE)
+// ROUTE 10: KI-IMMOBILIEN-RADAR (PROFI-STRUKTUR)
 // ==========================================
 app.post('/api/radar-hunt', async (req, res) => {
     const { region, adText, password } = req.body;
@@ -263,33 +263,36 @@ app.post('/api/radar-hunt', async (req, res) => {
             messages: [
                 { 
                     role: "system", 
-                    content: "Du bist ein absoluter Spitzen-Makler im Bereich Immobilien-Einkauf und Akquise. Deine Aufgabe ist es, eine private Verkaufsanzeige (von privat) zu analysieren und ein psychologisch optimiertes, professionelles Anschreiben an den Eigentümer auf Deutsch zu verfassen. Ziel des Anschreibens ist es, Vertrauen aufzubauen, die Risiken eines Privatverkaufs (Haftung, falscher Preis, Besichtigungstourismus) dezent aufzuzeigen und ein unverbindliches Erstgespräch oder eine kostenlose Einwertung anzubieten. Trenne deine Einschätzung zur Anzeige und das Anschreiben strikt mit dem Wort '===TRENNUNG==='." 
+                    content: "Du bist ein absoluter Spitzen-Makler im Bereich Immobilien-Einkauf und Akquise. Deine Aufgabe ist es, eine private Verkaufsanzeige zu analysieren und ein psychologisch optimiertes Anschreiben an den Eigentümer auf Deutsch zu verfassen. Trenne deine Einschätzung zur Anzeige und das Anschreiben strikt mit dem Wort '===TRENNUNG==='. Schreibe das Trennwort exakt so in eine eigene Zeile." 
                 },
                 { 
                     role: "user", 
-                    content: `Region: ${region}\n\nAnzeigentext von privat:\n${adText}` 
+                    content: [
+                        { type: "text", text: `Region für die Suche: ${region}
+
+Hier ist der private Anzeigentext zum Analysieren:
+${adText}` }
+                    ]
                 }
             ]
         });
 
         const gesamtText = response.choices.message.content;
-        let einschatzung = "Die KI hat die Anzeige analysiert.";
+        let einschatzung = "Direkte Analyse abgeschlossen.";
         let akquiseMail = gesamtText;
 
-        if (gesamtText.includes('===TRENNUNG===')) {
+        if (gesamtText && gesamtText.includes('===TRENNUNG===')) {
             const teile = gesamtText.split('===TRENNUNG===');
-            einschatzung = teile[0].trim();
-            akquiseMail = teile[1].trim();
-        } else {
-            // 🎯 DAS SICHERHEITSNETZ: Falls OpenAI das Trennwort vergisst, stürzt nichts ab!
-            einschatzung = "Direkte Analyse abgeschlossen.";
-            akquiseMail = gesamtText;
+            if (teile.length >= 2) {
+                einschatzung = teile[0].trim();
+                akquiseMail = teile[1].trim();
+            }
         }
-        
+
         res.json({ success: true, analysis: einschatzung, mail: akquiseMail });
     } catch (error) {
         console.error("Radar-Fehler:", error);
-        res.status(500).json({ success: false, error: "Fehler beim Immobilien-Radar" });
+        res.status(500).json({ success: false, error: "Fehler beim Immobilien-Radar im Backend" });
     }
 });
 const PORT = process.env.PORT || 3000;
