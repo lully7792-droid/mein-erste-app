@@ -16,10 +16,20 @@ function checkLogin() {
             app.classList.remove('hidden');
         }
         
+        // 🎯 Hier wurde die automatische Aufladung beim Login komplett gelöscht!
         updateCreditDisplay();
     } else {
         alert("Falsches Passwort! Bitte versuche es erneut.");
     }
+}
+
+function updateCreditDisplay() {
+    const creditBox = document.getElementById('creditDisplay');
+    if (creditBox) {
+        creditBox.innerText = `Verbleibende Abfragen: ${remainingCredits}`;
+    }
+    // Speichert den Stand bombenfest ab
+    localStorage.setItem('immoFlowCredits', remainingCredits);
 }
         
 function updateCreditDisplay() {
