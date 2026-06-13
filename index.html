@@ -330,7 +330,11 @@
             <div id="historyBox" style="max-height: 200px; overflow-y: auto; padding: 15px; background: #0b111e; border: 1px solid var(--border-color); border-radius: 8px;">
                 <p style="color: #64748b; font-style: italic;">Noch keine Historie vorhanden...</p>
             </div>
-            <button onclick="clearHistory()" class="btn" style="background: #ef4444; color: #fff; margin-top: 15px; width: 100%;">🗑️ Historie löschen</button>
+            <div style="display: flex; gap: 12px; margin-top: 15px;">
+                <button onclick="exportHistoryToCSV()" class="btn" style="background: #10b981; color: #090d16; flex: 1;">📊 Verlauf als Excel/CSV exportieren</button>
+                <button onclick="clearHistory()" class="btn" style="background: #ef4444; color: #fff; flex: 1;">🗑️ Historie löschen</button>
+            </div>
+
         </div>
 
     </div> <!-- CLOSES APPSECTION -->
@@ -484,7 +488,46 @@ async function runRadarHunt() {
             btn.disabled = false;
             btn.innerText = "🌐 Privat-Anzeige analysieren & Akquise starten";
         }
+        // 🎯 STUFE 5: Wandelt deinen gesamten Verlauf in ein sauberes Excel-Format um
+function exportHistoryToCSV() {
+    let history = JSON.parse(localStorage.getItem('immoFlowHistory')) || [];
+    
+    if (history.length === 0) {
+        alert("Es gibt noch keine Einträge im Verlauf, die exportiert werden könnten!");
+        return;
     }
+
+    // Excel-Spezial: UTF-8 BOM hinzufügen, damit Umlaute (ä, ö, ü) in Excel sofort richtig angezeigt werden
+    let csvContent = "\uFEFF";
+    
+    // Spaltenüberschriften für Excel
+    csvContent += "Uhrzeit;Kategorie;Titel;Generierter_Inhalt\n";
+
+    // Jeden Eintrag zeilenweise hinzufügen und Text für Excel absichern
+    history.forEach(e => {
+        let zeit = e.zeit || "";
+        let typ = e.typ || "";
+        let titel = (e.titel || "").replace(/;/g, ",").replace(/\n/g, " "); // Semikolons & Umbrüche filtern
+        let text = (e.text || "").replace(/;/g, ",").replace(/\n/g, " [UMBRUCH] ").replace(/"/g, '""'); // Text glätten
+        
+        csvContent += `"${zeit}";"${typ}";"${titel}";"${text}"\n`;
+    });
+
+    // Datei im Browser generieren und den Download erzwingen
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", "ImmoFlow_Exporte_" + new Date().toISOString().split('T')[0] + ".csv");
+    document.body.appendChild(link);
+    
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    
+    alert("📊 Excel-kompatible CSV-Datei erfolgreich heruntergeladen!");
+    }
+  }
 }
 </script>
 </html>
