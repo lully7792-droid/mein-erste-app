@@ -351,6 +351,66 @@ app.post('/api/finance-calc', async (req, res) => {
     }
 });
 
+// ==========================================
+// ROUTE 12: KI-OBJEKT-VERGLEICHER & MARKTANALYSE
+// ==========================================
+app.post('/api/market-compare', async (req, res) => {
+    const { 
+        myPrice, mySize, myFeat,
+        c1Price, c1Size, c1Feat,
+        c2Price, c2Size, c2Feat,
+        password 
+    } = req.body;
+
+    if (password !== "makler-erfolg") return res.status(401).json({ success: false, error: "Nicht autorisiert" });
+
+    try {
+        // Mathematische Berechnung der Quadratmeterpreise für den Prompt
+        const myP = parseFloat(myPrice) || 0;
+        const myS = parseFloat(mySize) || 1;
+        const myQm = Math.round(myP / myS);
+
+        const c1P = parseFloat(c1Price) || 0;
+        const c1S = parseFloat(c1Size) || 1;
+        const c1Qm = c1P > 0 ? Math.round(c1P / c1S) : "Nicht angegeben";
+
+        const c2P = parseFloat(c2Price) || 0;
+        const c2S = parseFloat(c2Size) || 1;
+        const c2Qm = c2P > 0 ? Math.round(c2P / c2S) : "Nicht angegeben";
+
+        const response = await openai.chat.completions.create({
+            model: "gpt-4o-mini",
+            messages: [
+                { 
+                    role: "system", 
+                    content: "Du bist ein genialer Immobilien-Analyst und strategischer Verhandlungsführer für Top-Makler. Dir werden die Preis- und Leistungsdaten von drei Immobilien übermittelt (Dein Objekt vs. zwei Konkurrenzobjekte). Erstelle eine knallharte, professionelle Marktanalyse auf Deutsch. Hebe die 'unfairen Vorteile' deines Objekts hervor und liefere eine präzise Argumentationskette für Preisverhandlungen mit Verkäufern oder Einwandbehandlungen mit potenziellen Käufern." 
+                },
+                { 
+                    role: "user", 
+                    content: `📊 DATEN-BASIS FÜR DIE ANALYSE:\n\n` +
+                             `🏠 DEIN OBJEKT:\n- Preis: ${myP} EUR\n- Fläche: ${myS} m²\n- Qm-Preis: ${myQm} EUR/m²\n- Besonderheiten: ${myFeat || "Keine"}\n\n` +
+                             `🛑 KONKURRENZ 1:\n- Preis: ${c1P} EUR\n- Fläche: ${c1S} m²\n- Qm-Preis: ${c1Qm} EUR/m²\n- Besonderheiten: ${c1Feat || "Keine"}\n\n` +
+                             `🛑 KONKURRENZ 2:\n- Preis: ${c2P} EUR\n- Fläche: ${c2S} m²\n- Qm-Preis: ${c2Qm} EUR/m²\n- Besonderheiten: ${c2Feat || "Keine"}`
+                }
+            ]
+        });
+
+        let analysisText = "Marktbericht konnte nicht erstellt werden.";
+        if (response && response.choices && response.choices[0] && response.choices[0].message) {
+            analysisText = response.choices[0].message.content;
+        }
+
+        res.json({ 
+            success: true, 
+            analysis: analysisText 
+        });
+
+    } catch (error) {
+        console.error("Vergleichs-Rechner-Fehler:", error);
+        res.status(500).json({ success: false, error: "Fehler beim Berechnen im Backend" });
+    }
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server läuft fehlerfrei auf Port ${PORT}`);
