@@ -889,6 +889,63 @@ function previewNewsletterHTML() {
     }
 }
 
+    async function runInvestorCalculation() {
+    const price = parseFloat(document.getElementById('investPrice').value) || 0;
+    const rent = parseFloat(document.getElementById('investRent').value) || 0;
+    const location = document.getElementById('investLocation').value || "";
+
+    if (price <= 0 || rent <= 0) {
+        alert("Bitte gib einen gültigen Kaufpreis und die jährliche Netto-Kaltmiete an!");
+        return;
+    }
+
+    const btn = document.getElementById('startInvestBtn');
+    const outputDiv = document.getElementById('investOutput');
+    const resultText = document.getElementById('investResultText');
+
+    if(btn) { btn.disabled = true; btn.innerText = "Berechne Kennzahlen..."; }
+    if(outputDiv) outputDiv.classList.remove('hidden');
+    if(resultText) resultText.innerText = "Zahlen werden verarbeitet, KI analysiert das Investitionspotenzial...";
+
+    try {
+        const response = await fetch('/api/investor-calc', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ price, rent, location, password: savedPassword })
+        });
+        const data = await response.json();
+        
+        if (data.success) {
+            if(resultText) {
+                resultText.innerHTML = `
+                    <div style="background: rgba(59, 130, 246, 0.1); padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #3b82f6;">
+                        <h4 style="color: #3b82f6; margin-bottom: 8px;">📊 Kaufmännische Kennzahlen:</h4>
+                        <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+                            <tr><td style="padding: 4px 0;">Kaufpreis:</td><td style="text-align: right; font-weight: bold;">${price.toLocaleString('de-DE')} €</td></tr>
+                            <tr><td style="padding: 4px 0;">Jahres-Nettokaltmiete:</td><td style="text-align: right;">${rent.toLocaleString('de-DE')} €</td></tr>
+                            <tr style="border-top: 1px solid #334155;"><td style="padding: 6px 0; font-weight: bold; color: #10b981;">Mietvervielfältiger (Faktor):</td><td style="text-align: right; font-weight: bold; color: #10b981;">${data.metrics.factor}x</td></tr>
+                            <tr><td style="padding: 4px 0; font-weight: bold; color: #ef4444;">Bruttorendite:</td><td style="text-align: right; font-weight: bold; color: #ef4444;">${data.metrics.yield}%</td></tr>
+                        </table>
+                    </div>
+                    <div>
+                        <h4 style="color: #10b981; margin-bottom: 8px;">🧠 Strategischer Investoren-Pitch (KI):</h4>
+                        <span style="white-space: pre-wrap; font-size: 13.5px; color: #cbd5e1;">${data.pitch}</span>
+                    </div>
+                `;
+            }
+            if(typeof saveToHistory === "function") {
+                saveToHistory("Kapitalanlage", "Kaufpreis " + price.toLocaleString('de-DE') + " €", data.pitch);
+            }
+        } else {
+            if(resultText) resultText.innerText = "Fehler vom Server: " + data.error;
+        }
+    } catch (error) {
+        if(resultText) resultText.innerText = "Server-Fehler bei der Investoren-Verbindung.";
+    } finally {
+        if(btn) { btn.disabled = false; btn.innerText = "🏢 Rendite berechnen & Investoren-Pitch starten"; }
+    }
+}
+
 window.exportHistoryToCSV = function() {
     let history = JSON.parse(localStorage.getItem('immoFlowHistory')) || [];
     
