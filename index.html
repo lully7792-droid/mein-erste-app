@@ -637,6 +637,60 @@ async function runFinanceCalculation() {
     }
 }
 
+async function runMarketComparison() {
+    const myPrice = document.getElementById('compMyPrice').value;
+    const mySize = document.getElementById('compMySize').value;
+    const myFeat = document.getElementById('compMyFeatures').value;
+    
+    const c1Price = document.getElementById('comp1Price').value;
+    const c1Size = document.getElementById('comp1Size').value;
+    const c1Feat = document.getElementById('comp1Features').value;
+    
+    const c2Price = document.getElementById('comp2Price').value;
+    const c2Size = document.getElementById('comp2Size').value;
+    const c2Feat = document.getElementById('comp2Features').value;
+
+    if (!myPrice || !mySize) {
+        alert("Bitte gib mindestens den Preis und die m² deines eigenen Objekts an!");
+        return;
+    }
+
+    const btn = document.getElementById('startCompareBtn');
+    const outputDiv = document.getElementById('compareOutput');
+    const resultText = document.getElementById('compareResultText');
+
+    if(btn) { btn.disabled = true; btn.innerText = "Analysiere Wettbewerb..."; }
+    if(outputDiv) outputDiv.classList.remove('hidden');
+    if(resultText) resultText.innerText = "KI berechnet Quadratmeterpreise und vergleicht Ausstattungsmerkmale...";
+
+    try {
+        const response = await fetch('/api/market-compare', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                myPrice, mySize, myFeat,
+                c1Price, c1Size, c1Feat,
+                c2Price, c2Size, c2Feat,
+                password: savedPassword 
+            })
+        });
+        const data = await response.json();
+        
+        if (data.success) {
+            if(resultText) resultText.innerText = data.analysis;
+            if(typeof saveToHistory === "function") {
+                saveToHistory("Marktanalyse", "Vergleich " + myPrice + " €", data.analysis);
+            }
+        } else {
+            if(resultText) resultText.innerText = "Fehler vom Server: " + data.error;
+        }
+    } catch (error) {
+        if(resultText) resultText.innerText = "Server-Fehler bei der Vergleichs-Verbindung.";
+    } finally {
+        if(btn) { btn.disabled = false; btn.innerText = "📊 Marktanalyse & Vergleich starten"; }
+    }
+}
+
 window.exportHistoryToCSV = function() {
     let history = JSON.parse(localStorage.getItem('immoFlowHistory')) || [];
     
