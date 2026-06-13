@@ -588,6 +588,45 @@ app.post('/api/staging-forge', async (req, res) => {
     }
 });
 
+// ==========================================
+// ROUTE 17: KI-TELEFON-LEITFADEN-SCHMIED
+// ==========================================
+app.post('/api/phone-forge', async (req, res) => {
+    const { situation, objection, password } = req.body;
+    if (password !== "makler-erfolg") return res.status(401).json({ success: false, error: "Nicht autorisiert" });
+
+    try {
+        const response = await openai.chat.completions.create({
+            model: "gpt-4o-mini",
+            messages: [
+                { 
+                    role: "system", 
+                    content: "Du bist ein absoluter Spitzen-Verkaufstrainer, spezialisiert auf Telefon-Psychologie, Kaltakquise und Einwandbehandlung für Premium-Immobilienmakler. Deine Aufgabe ist es, einen glasklaren, schrittweisen Telefon-Leitfaden auf Deutsch zu entwickeln. Gib dem Makler präzise Wort-für-Wort-Formulierungen an die Hand, um den Kundeneinwand elegant zu entkräften, den Nutzen der Maklerdienstleistung zu belegen und das Gespräch psychologisch sicher zum Ziel (Termin oder Abschluss) zu führen." 
+                },
+                { 
+                    role: "user", 
+                    content: `Gesprächs-Situation: ${situation}\nKonkreter Kundeneinwand: "${objection}"`
+                }
+            ]
+        });
+
+        // 🎯 DIREKT ABSOLUT SICHER GEKAPSELT:
+        let phoneText = "Telefon-Leitfaden konnte nicht erstellt werden.";
+        if (response && response.choices && response.choices[0] && response.choices[0].message) {
+            phoneText = response.choices[0].message.content;
+        }
+
+        res.json({ 
+            success: true, 
+            text: phoneText 
+        });
+
+    } catch (error) {
+        console.error("Telefon-Forge-Fehler:", error);
+        res.status(500).json({ success: false, error: "Fehler beim Telefon-Skript im Backend" });
+    }
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server läuft fehlerfrei auf Port ${PORT}`);
