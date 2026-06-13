@@ -123,6 +123,19 @@
                 <input type="text" id="price" placeholder="z.B. 620.000">
             </div>
             <div class="form-group">
+    <label for="size">Wohnfläche (in m²)</label>
+    <input type="text" id="size" placeholder="z.B. 120">
+</div>
+<div class="form-group">
+    <label for="exposeStyle">Schreibstil des Exposés</label>
+    <select id="exposeStyle">
+        <option value="modern">✨ Modern & Elegant (Professionell und ansprechend)</option>
+        <option value="luxus">💎 Luxuriös & Exklusiv (Hochtrabend, perfekt für Premium-Objekte)</option>
+        <option value="schlicht">📝 Schlicht & Sachlich (Klar, direkt auf den Punkt, schnörkellos)</option>
+    </select>
+</div>
+
+            <div class="form-group">
                 <label for="location">Ort / Lage der Immobilie</label>
                 <input type="text" id="location" placeholder="z.B. Wuppertal-Zentrum oder Berlin-Mitte">
             </div>
@@ -143,7 +156,7 @@
                 <textarea id="notes" placeholder="z.B. Luxus-Einbauküche inklusive, Fußbodenheizung, kernsaniert 2024, Balkon mit Fernblick..." style="height: 120px;"></textarea>
             </div>
             
-            <button id="generateExposeBtn" class="btn" onclick="generateExpose()" style="width: 100%;">✨ Exposé meisterhaft formulieren</button>
+            <button id="generateExposeBtn" class="btn" onclick="generateExpose()" style="width: 100%;">✨ Exposé formulieren</button>
             
             <div id="exposeOutput" class="hidden" style="margin-top: 25px; padding: 20px; background: #0b111e; border: 1px solid var(--border-color); border-radius: 8px;">
                 <h3 style="margin-bottom: 12px; color: var(--accent);">Dein generiertes Exposé:</h3>
@@ -1275,6 +1288,53 @@ function previewNewsletterHTML() {
         if(resultText) resultText.innerText = "Server-Fehler bei der Lagebericht-Verbindung.";
     } finally {
         if(btn) { btn.disabled = false; btn.innerText = "🌳 Lagebericht meisterhaft formulieren"; }
+    }
+}
+
+    // 🎯 Überschreibt die alte Funktion und schickt m² sowie den Stil mit an den Server
+async function generateExpose() {
+    const title = document.getElementById('title').value;
+    const price = document.getElementById('price').value;
+    const size = document.getElementById('size').value; // NEU
+    const location = document.getElementById('location').value;
+    const year = document.getElementById('year').value;
+    const energy = document.getElementById('energy').value;
+    const style = document.getElementById('exposeStyle').value; // NEU
+    const notes = document.getElementById('notes').value;
+
+    if (!title || !price || !size || !location) {
+        alert("Bitte fülle mindestens Titel, Kaufpreis, Wohnfläche und Ort aus!");
+        return;
+    }
+
+    const btn = document.getElementById('generateExposeBtn');
+    const outputDiv = document.getElementById('exposeOutput');
+    const resultText = document.getElementById('exposeText');
+
+    if(btn) { btn.disabled = true; btn.innerText = "Exposé wird formuliert..."; }
+    if(outputDiv) outputDiv.classList.remove('hidden');
+    if(resultText) resultText.innerText = "Die KI strukturiert deine Daten, bitte warten...";
+
+    try {
+        const response = await fetch('/api/generate-expose', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title, price, size, location, year, energy, style, password: savedPassword })
+        });
+        const data = await response.json();
+        
+        if (data.success) {
+            if(resultText) resultText.innerText = data.text;
+            if(typeof saveToHistory === "function") {
+                saveToHistory("Exposé", title, data.text);
+            }
+        } else {
+            if(resultText) resultText.innerText = "Fehler vom Server: " + data.error;
+        }
+    } catch (error) {
+        if(resultText) resultText.innerText = "Server-Fehler bei der Exposé-Verbindung.";
+    } finally {
+        if(btn) { btn.disabled = false; btn.innerText = "✨ Exposé formulieren"; }
     }
 }
 
