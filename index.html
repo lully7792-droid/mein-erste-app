@@ -114,4 +114,64 @@
             <button class="tab-btn" onclick="switchDashboardTab('tab-history')">🗄️ Verlauf & Export</button>
         </div>
 
-    
+            <!-- ==========================================
+             KATEGORIE 1: EXPOSÉ & MEDIEN
+             ========================================== -->
+        <div id="tab-media" class="dashboard-tab-content">
+
+            <!-- FEATURE 1: KI-EXPOSÉ-GENERATOR -->
+            <div class="card">
+                <h2>✨ KI-Exposé-Spezialist</h2>
+                <p class="description">Füttere die KI mit den harten Fakten deines Objekts. Du erhältst sofort ein flüssiges, professionelles Exposé für deine Kunden.</p>
+                <div class="form-group">
+                    <label for="title">Objekttitel / Überschrift</label>
+                    <input type="text" id="title" placeholder="z.B. Exklusives Loft im Herzen der Altstadt">
+                </div>
+                <div class="form-group">
+                    <label for="price">Kaufpreis (in EUR)</label>
+                    <input type="text" id="price" placeholder="z.B. 620.000">
+                </div>
+                <div class="form-group">
+                    <label for="size">Wohnfläche (in m²)</label>
+                    <input type="text" id="size" placeholder="z.B. 120">
+                </div>
+                <div class="form-group">
+                    <label for="location">Ort / Lage der Immobilie</label>
+                    <input type="text" id="location" placeholder="z.B. Wuppertal-Zentrum">
+                </div>
+                <div class="form-group">
+                    <label for="year">Baujahr</label>
+                    <input type="text" id="year" placeholder="z.B. 2012">
+                </div>
+                <div class="form-group">
+                    <label for="energy">Energieeffizienzklasse</label>
+                    <select id="energy">
+                        <option value="A+">A+</option><option value="A">A</option><option value="B">B</option>
+                        <option value="C">C</option><option value="D">D</option><option value="E">E</option>
+                        <option value="F">F</option><option value="G">G</option><option value="H">H</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="exposeStyle">Schreibstil des Exposés</label>
+                    <select id="exposeStyle">
+                        <option value="modern">✨ Modern & Elegant (Professionell und ansprechend)</option>
+                        <option value="luxus">💎 Luxuriös & Exklusiv (Hochtrabend, für Premium-Objekte)</option>
+                        <option value="schlicht">📝 Schlicht & Sachlich (Klar, direkt auf den Punkt)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="notes">Besondere Ausstattungsmerkmale & Notizen</label>
+                    <textarea id="notes" placeholder="z.B. Luxus-Einbauküche, Fußbodenheizung..." style="height: 100px;"></textarea>
+                </div>
+                <button id="generateExposeBtn" class="btn" onclick="generateExpose()" style="width: 100%;">✨ Exposé formulieren</button>
+                <div id="exposeOutput" class="hidden" style="margin-top: 25px; padding: 20px; background: #0b111e; border: 1px solid var(--border-color); border-radius: 8px;">
+                    <h3 style="margin-bottom: 12px; color: var(--accent);">Dein generiertes Exposé:</h3>
+                    <p id="exposeText" style="white-space: pre-wrap; line-height: 1.6; font-size: 0.95rem;"></p>
+                    <div style="margin-top: 20px; display: flex; gap: 12px; flex-wrap: wrap;">
+                        <button onclick="copyToClipboard('exposeText')" class="btn" style="background: #334155; color: #fff; font-size: 14px; padding: 10px 18px;">📋 Text kopieren</button>
+                        <button onclick="exportToWordTable()" class="btn" style="background: #2563eb; color: #fff; font-size: 14px; padding: 10px 18px;">📝 Als saubere Word-Tabelle laden</button>
+                        <button onclick="printProfessionalPDF()" class="btn" style="background: #e11d48; color: #fff; font-size: 14px; padding: 10px 18px;">📄 Als Profi-PDF drucken</button>
+                    </div>
+                </div>
+            </div>
+
