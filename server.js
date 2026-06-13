@@ -117,35 +117,43 @@ app.post('/api/generate-mail', async (req, res) => {
 });
 
 // ==========================================
-// ROUTE 4: KI-SOCIAL-MEDIA-GENERATOR
+// ROUTE 19: KI-OMNICHANNEL-SOCIAL-MEDIA (5 KANÄLE)
 // ==========================================
-app.post('/api/generate-social', async (req, res) => {
-    const { title, price, location, notes, password } = req.body;
+app.post('/api/generate-social-all', async (req, res) => {
+    const { title, price, size, location, notes, password } = req.body;
     if (password !== "makler-erfolg") return res.status(401).json({ success: false, error: "Nicht autorisiert" });
 
     try {
         const response = await openai.chat.completions.create({
             model: "gpt-4o-mini",
+            response_format: { type: "json_object" }, // 🎯 Zwingt OpenAI zu einer perfekten 5-Kanal-JSON-Struktur
             messages: [
-                { role: "system", content: "Du bist ein Social-Media-Manager für Immobilien. Generiere einen Post für Instagram und einen für LinkedIn. Trenne die Posts strikt mit dem Wort '===TRENNUNG==='." },
-                { role: "user", content: `Objekt: ${title}, Ort: ${location}, Preis: ${price}, Details: ${notes}` }
+                { 
+                    role: "system", 
+                    content: "Du bist ein genialer Social-Media-Manager für internationale Immobilienunternehmen. Deine Aufgabe ist es, aus den Objektdaten eine hocheffektive Multi-Kanal-Kampagne zu schmieden. STRENGE REGEL: Nutze ausschließlich die vom Nutzer bereitgestellten Realdaten. Erfinde niemals Infrastrukturen oder Straßennamen im In- und Ausland! Antworte AUSSCHLIESSLICH im JSON-Format mit exakt diesen 5 Feldern:\n{\n  \"instagram\": \"Emotionaler Text mit Emojis und Hashtags\",\n  \"linkedin\": \"Professioneller B2B-Text mit Fokus auf Netzwerk und Investment\",\n  \"tiktok\": \"Kurzvideo-Skript bestehend aus: [HOOK], [HAUPTTEIL] und [CALL TO ACTION]\",\n  \"facebook\": \"Nachbarer, freundlicher Text für lokale Community-Gruppen\",\n  \"twitter\": \"Extrem komprimierter, aggressiver Post (Maximal 280 Zeichen!)\"\n}" 
+                },
+                { 
+                    role: "user", 
+                    content: `Titel: ${title}\nPreis: ${price} EUR\nWohnfläche: ${size} m²\nOrt: ${location}\nDetails: ${notes || "Keine"}`
+                }
             ]
         });
 
-        const gesamtText = response.choices[0].message.content;
-        let instaPost = gesamtText;
-        let linkedinPost = gesamtText;
+        const jsonText = response.choices[0].message.content; // 🎯 SICHER MIT UNSERER [0] ABGEFANGEN!
+        const resultData = JSON.parse(jsonText);
 
-        if (gesamtText.includes('===TRENNUNG===')) {
-            const teile = gesamtText.split('===TRENNUNG===');
-            instaPost = teile[0].trim();
-            linkedinPost = teile[1].trim();
-        }
+        res.json({ 
+            success: true, 
+            instagram: resultData.instagram || "Fehler bei Instagram.", 
+            linkedin: resultData.linkedin || "Fehler bei LinkedIn.", 
+            tiktok: resultData.tiktok || "Fehler bei TikTok.", 
+            facebook: resultData.facebook || "Fehler bei Facebook.", 
+            twitter: resultData.twitter || "Fehler bei X/Twitter." 
+        });
 
-        res.json({ success: true, instagram: instaPost, linkedin: linkedinPost });
     } catch (error) {
-        console.error("Social-Media-Fehler:", error);
-        res.status(500).json({ success: false, error: "Fehler bei der Generierung" });
+        console.error("Multi-Social-Fehler:", error);
+        res.status(500).json({ success: false, error: "Fehler bei der Social-Media-Generierung im Backend" });
     }
 });
 
