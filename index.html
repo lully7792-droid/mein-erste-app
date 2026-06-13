@@ -287,3 +287,93 @@
                     <button onclick="copyToClipboard('utilityText')" class="btn" style="background: #334155; color: #fff; font-size: 14px; padding: 10px 18px; margin-top: 15px;">📋 Aufstellung kopieren</button>
                 </div>
             </div>
+            <!-- FEATURE 11: KI-PROVISION & FINANZIERUNGS-RECHNER -->
+            <div class="card">
+                <h2>🏦 KI-Finanzierungs- & Provisions-Rechner</h2>
+                <p class="description">Berechne sekundenschnell die Kaufnebenkosten, Maklerprovisionen und monatlichen Kreditraten.</p>
+                <div class="form-group">
+                    <label for="calcPrice">Objekt-Kaufpreis (in EUR)</label>
+                    <input type="text" id="calcPrice" placeholder="z.B. 350000">
+                </div>
+                <div class="form-group">
+                    <label for="calcEquity">Eigenkapital (in EUR)</label>
+                    <input type="text" id="calcEquity" placeholder="z.B. 50000">
+                </div>
+                <div class="form-group">
+                    <label for="calcInterest">Zinssatz (in %)</label>
+                    <input type="text" id="calcInterest" placeholder="z.B. 3.5">
+                </div>
+                <div class="form-group">
+                    <label for="calcRepayment">Tilgung (in %)</label>
+                    <input type="text" id="calcRepayment" placeholder="z.B. 2.0">
+                </div>
+                <div class="form-group">
+                    <label for="calcCommission">Maklerprovision (in %)</label>
+                    <input type="text" id="calcCommission" placeholder="z.B. 3.57">
+                </div>
+                <button id="startFinanceBtn" class="btn" onclick="runFinanceCalculation()">🏦 Berechnung starten</button>
+                <div id="financeOutput" class="hidden" style="margin-top: 25px; padding: 20px; background: #0b111e; border: 1px solid var(--border-color); border-radius: 8px;">
+                    <h3 style="margin-bottom: 12px; color: #8b5cf6;">📊 Aufstellung & Verkaufs-Strategie:</h3>
+                    <div id="financeResultText" style="line-height: 1.6; font-size: 0.95rem;"></div>
+                    <button onclick="copyToClipboard('financeResultText')" class="btn" style="background: #334155; color: #fff; font-size: 14px; padding: 10px 18px; margin-top: 15px;">📋 Kopieren</button>
+                </div>
+            </div>
+
+            <!-- FEATURE 15: KI-GEWERBE- & RENDITE-SPEZIALIST -->
+            <div class="card">
+                <h2>🏢 KI-Gewerbeimmobilien- & Rendite-Spezialist</h2>
+                <p class="description">Berechne den Vervielfältiger sowie die Bruttorendite für Anlageobjekte.</p>
+                <div class="form-group">
+                    <label for="investPrice">Kaufpreis (in EUR)</label>
+                    <input type="text" id="investPrice" placeholder="z.B. 750000">
+                </div>
+                <div class="form-group">
+                    <label for="investRent">Jährliche Netto-Kaltmiete (in EUR)</label>
+                    <input type="text" id="investRent" placeholder="z.B. 42000">
+                </div>
+                <div class="form-group">
+                    <label for="investLocation">Mikrolage & Potenzial</label>
+                    <input type="text" id="investLocation" placeholder="z.B. Wuppertal-Nord">
+                </div>
+                <button id="startInvestBtn" class="btn" onclick="runInvestorCalculation()">🏢 Rendite berechnen</button>
+                <div id="investOutput" class="hidden" style="margin-top: 25px; padding: 20px; background: #0b111e; border: 1px solid var(--border-color); border-radius: 8px;">
+                    <h3 style="margin-bottom: 12px; color: #3b82f6;">📊 Rendite-Analyse & Pitch:</h3>
+                    <div id="investResultText" style="line-height: 1.6; font-size: 0.95rem;"></div>
+                    <button onclick="copyToClipboard('investResultText')" class="btn" style="background: #334155; color: #fff; font-size: 14px; padding: 10px 18px; margin-top: 15px;">📋 Kopieren</button>
+                </div>
+            </div>
+            
+            <!-- FEATURE 12: KI-OBJEKT-VERGLEICHER -->
+            <div class="card">
+                <h2>📊 KI-Objekt-Vergleicher & Marktanalyse</h2>
+                <p class="description">Vergleiche deine Immobilie direkt mit zwei Konkurrenzobjekten am Markt.</p>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                    <div style="background: rgba(255,255,255,0.02); padding: 15px; border-radius: 8px; border: 1px solid var(--border-color);">
+                        <h3 style="font-size: 14px; color: var(--accent); margin-bottom: 10px;">🏠 Dein Objekt</h3>
+                        <div class="form-group"><input type="text" id="compMyPrice" placeholder="Preis in EUR"></div>
+                        <div class="form-group"><input type="text" id="compMySize" placeholder="Fläche in m²"></div>
+                        <div class="form-group"><input type="text" id="compMyFeatures" placeholder="Besonderheiten"></div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.02); padding: 15px; border-radius: 8px; border: 1px solid var(--border-color);">
+                        <h3 style="font-size: 14px; color: #ef4444; margin-bottom: 10px;">🛑 Konkurrenz 1</h3>
+                        <div class="form-group"><input type="text" id="comp1Price" placeholder="Preis in EUR"></div>
+                        <div class="form-group"><input type="text" id="comp1Size" placeholder="Fläche in m²"></div>
+                        <div class="form-group"><input type="text" id="comp1Features" placeholder="Besonderheiten"></div>
+                    </div>
+                </div>
+                <div style="background: rgba(255,255,255,0.02); padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 22px;">
+                    <h3 style="font-size: 14px; color: #ef4444; margin-bottom: 10px;">🛑 Konkurrenz 2</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+                        <input type="text" id="comp2Price" placeholder="Preis">
+                        <input type="text" id="comp2Size" placeholder="m²">
+                        <input type="text" id="comp2Features" placeholder="Details">
+                    </div>
+                </div>
+                <button id="startCompareBtn" class="btn" onclick="runMarketComparison()">📊 Marktanalyse starten</button>
+                <div id="compareOutput" class="hidden" style="margin-top: 25px; padding: 20px; background: #0b111e; border: 1px solid var(--border-color); border-radius: 8px;">
+                    <h3 style="margin-bottom: 12px; color: var(--accent);">🎯 Marktbericht:</h3>
+                    <div id="compareResultText" style="line-height: 1.6; font-size: 0.95rem; white-space: pre-wrap; color: #cbd5e1;"></div>
+                    <button onclick="copyToClipboard('compareResultText')" class="btn" style="background: #334155; color: #fff; font-size: 14px; padding: 10px 18px; margin-top: 15px;">📋 Kopieren</button>
+                </div>
+            </div>
+        </div> <!-- 🎯 HIERMIT WIRD KATEGORIE 2 (FINANCE) OFFIZIELL GESCHLOSSEN! -->
