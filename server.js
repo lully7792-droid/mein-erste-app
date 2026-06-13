@@ -251,7 +251,7 @@ app.post('/api/match-profile', async (req, res) => {
 });
 
 // ==========================================
-// ROUTE 10: KI-IMMOBILIEN-RADAR (PROFI-STRUKTUR)
+// ROUTE 10: KI-IMMOBILIEN-RADAR (JSON-GUSS)
 // ==========================================
 app.post('/api/radar-hunt', async (req, res) => {
     const { region, adText, password } = req.body;
@@ -260,36 +260,32 @@ app.post('/api/radar-hunt', async (req, res) => {
     try {
         const response = await openai.chat.completions.create({
             model: "gpt-4o-mini",
+            response_format: { type: "json_object" }, // 🎯 Zwingt OpenAI, sauberes JSON zu liefern!
             messages: [
                 { 
                     role: "system", 
-                    content: "Du bist ein absoluter Spitzen-Makler im Bereich Immobilien-Einkauf und Akquise. Deine Aufgabe ist es, eine private Verkaufsanzeige zu analysieren und ein psychologisch optimiertes Anschreiben an den Eigentümer auf Deutsch zu verfassen. Trenne deine Einschätzung zur Anzeige und das Anschreiben strikt mit dem Wort '===TRENNUNG==='. Schreibe das Trennwort exakt so in eine eigene Zeile." 
+                    content: "Du bist ein absoluter Spitzen-Makler im Bereich Immobilien-Einkauf und Akquise. Analysiere die private Verkaufsanzeige. Antworte AUSSCHLIESSLICH im JSON-Format mit exakt diesen beiden Feldern: { "analysis": "Deine Einschätzung zur Anzeige und Makler-Taktik hier", "mail": "Deine maßgeschneiderte Akquise-Mail an den Eigentümer hier" }" 
                 },
                 { 
                     role: "user", 
-                    content: [
-                        { type: "text", text: `Region für die Suche: ${region}
+                    content: `Region: ${region}
 
-Hier ist der private Anzeigentext zum Analysieren:
-${adText}` }
-                    ]
+Anzeigentext von privat:
+${adText}`
                 }
             ]
         });
 
-        const gesamtText = response.choices.message.content;
-        let einschatzung = "Direkte Analyse abgeschlossen.";
-        let akquiseMail = gesamtText;
+        // Antwort auslesen und parsen
+        const jsonText = response.choices[0].message.content;
+        const resultData = JSON.parse(jsonText);
 
-        if (gesamtText && gesamtText.includes('===TRENNUNG===')) {
-            const teile = gesamtText.split('===TRENNUNG===');
-            if (teile.length >= 2) {
-                einschatzung = teile[0].trim();
-                akquiseMail = teile[1].trim();
-            }
-        }
+        res.json({ 
+            success: true, 
+            analysis: resultData.analysis || "Analyse abgeschlossen.", 
+            mail: resultData.mail || "Anschreiben generiert." 
+        });
 
-        res.json({ success: true, analysis: einschatzung, mail: akquiseMail });
     } catch (error) {
         console.error("Radar-Fehler:", error);
         res.status(500).json({ success: false, error: "Fehler beim Immobilien-Radar im Backend" });
