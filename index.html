@@ -392,7 +392,10 @@
     <div class="pdf-footer">Dieses Dokument wurde automatisch erstellt. Alle Angaben ohne Gewähr. Ihr Makler-Erfolg 2026.</div>
 </div>
 </body>
-    <script>
+ <script>
+// ==========================================
+// FEATURE: PROFI-PDF-DRUCK
+// ==========================================
 function printProfessionalPDF() {
     const text = document.getElementById('exposeText').innerText;
     const title = document.getElementById('title').value || "Exklusives Immobilienangebot";
@@ -429,7 +432,9 @@ function printProfessionalPDF() {
     }
 }
 
-// 🎯 HIER DIE OPTIMIERT ABSICHERTE FUNKTION FÜR DAS RADAR:
+// ==========================================
+// FEATURE: KI-IMMOBILIEN-RADAR
+// ==========================================
 async function runRadarHunt() {
     const region = document.getElementById('radarRegion').value;
     const adText = document.getElementById('radarAdText').value;
@@ -459,7 +464,6 @@ async function runRadarHunt() {
         const data = await response.json();
         
         if (data.success) {
-            // Zeigt den Text sauber getrennt an
             const checkText = data.analysis || "Analyse abgeschlossen.";
             const mailText = data.mail || "Kein Text generiert.";
             
@@ -482,13 +486,18 @@ async function runRadarHunt() {
             if(resultText) resultText.innerText = "Fehler vom Server: " + data.error;
         }
     } catch (error) {
-        if(resultText) resultText.innerText = "Server-Fehler beim Immobilien-Radarverbindung.";
+        if(resultText) resultText.innerText = "Server-Fehler bei der Immobilien-Radarverbindung.";
     } finally {
         if(btn) {
             btn.disabled = false;
             btn.innerText = "🌐 Privat-Anzeige analysieren & Akquise starten";
         }
-// 🎯 Jetzt absolut unzerstörbar direkt an das Sichtfeld des Browsers getackert:
+    }
+}
+
+// ==========================================
+// FEATURE: EXCEL/CSV HISTORIEN-EXPORT
+// ==========================================
 window.exportHistoryToCSV = function() {
     let history = JSON.parse(localStorage.getItem('immoFlowHistory')) || [];
     
@@ -498,22 +507,25 @@ window.exportHistoryToCSV = function() {
     }
 
     let csvContent = "\uFEFF";
-    csvContent += "Uhrzeit;Kategorie;Titel;Generierter_Inhalt\n";
+    csvContent += "Uhrzeit;Kategorie;Titel;Generierter_Inhalt
+";
 
     history.forEach(e => {
         let zeit = e.zeit || "";
         let typ = e.typ || "";
-        let titel = (e.titel || "").replace(/;/g, ",").replace(/\n/g, " ");
-        let text = (e.text || "").replace(/;/g, ",").replace(/\n/g, " [UMBRUCH] ").replace(/"/g, '""');
+        let titel = (e.titel || "").replace(/;/g, ",").replace(/
+/g, " ");
+        let text = (e.text || "").replace(/;/g, ",").replace(/
+/g, " [UMBRUCH] ").replace(/"/g, '""');
         
-        csvContent += `"${zeit}";"${typ}";"${titel}";"${text}"\n`;
+        csvContent += `"${zeit}";"${typ}";"${titel}";"${text}"
+`;
     });
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.setAttribute("href", url);
-    // 🎯 Hier sauber mit der eckigen Klammer korrigiert:
     link.setAttribute("download", "ImmoFlow_Exporte_" + new Date().toISOString().split('T')[0] + ".csv");
     document.body.appendChild(link);
     
@@ -524,4 +536,4 @@ window.exportHistoryToCSV = function() {
     alert("📊 Excel-kompatible CSV-Datei erfolgreich heruntergeladen!");
 };
 </script>
-</html>
+</html>  
