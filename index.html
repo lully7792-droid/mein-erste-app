@@ -300,7 +300,30 @@
             </div>
         </div>
 
-        <!-- FEATURE 10: HISTORIE -->
+        <!-- FEATURE 10: KI-IMMOBILIEN-RADAR (LEAD-MASCHINE) -->
+        <div class="card" style="border-color: rgba(16, 185, 129, 0.3); background: linear-gradient(135deg, #131c2e, #0c1527);">
+            <h2>🌐 KI-Immobilien-Radar & Lead-Maschine</h2>
+            <p class="description">Durchsuche den Markt nach privaten Immobilienverkäufen. Die KI analysiert das Angebot und schreibt sofort eine psychologisch optimierte Akquise-Mail, um den Makler-Alleinauftrag zu sichern.</p>
+            
+            <div class="form-group">
+                <label for="radarRegion">Ziel-Region / Stadt</label>
+                <input type="text" id="radarRegion" placeholder="z.B. Wuppertal oder Düsseldorf">
+            </div>
+            <div class="form-group">
+                <label for="radarAdText">Gefundener Anzeigentext (von privat)</label>
+                <textarea id="radarAdText" placeholder="Kopiere hier den Text einer privaten Anzeige hinein (z.B. von Kleinanzeigen oder Zeitung)..." style="height: 100px;"></textarea>
+            </div>
+            
+            <button id="startRadarBtn" class="btn" onclick="runRadarHunt()" style="width: 100%; background: linear-gradient(90deg, #10b981, #3b82f6); color: #fff;">🌐 Privat-Anzeige analysieren & Akquise starten</button>
+            
+            <div id="radarOutput" class="hidden" style="margin-top: 25px; padding: 20px; background: #0b111e; border: 1px solid var(--border-color); border-radius: 8px;">
+                <h3 style="margin-bottom: 12px; color: #3b82f6;">🎯 Analyse & Eigentümer-Anschreiben:</h3>
+                <div id="radarResultText" style="line-height: 1.6; font-size: 0.95rem;"></div>
+                <button onclick="copyToClipboard('radarResultText')" class="btn" style="background: #334155; color: #fff; font-size: 14px; padding: 10px 18px; margin-top: 15px;">📋 Akquise-Text kopieren</button>
+            </div>
+        </div>
+
+        <!-- FEATURE 11: HISTORIE -->
         <div class="card">
             <h2>🗄️ Letzte KI-Generierungen (Gespeichert)</h2>
             <p class="description">Deine Daten gehen nicht verloren. Hier sind deine letzten Erstellungen auf diesem Gerät:</p>
