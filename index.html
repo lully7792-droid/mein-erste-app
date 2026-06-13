@@ -424,7 +424,9 @@ function printProfessionalPDF() {
         setTimeout(() => { window.print(); }, 300);
     }
 }
-        async function runRadarHunt() {
+
+// 🎯 HIER DIE OPTIMIERT ABSICHERTE FUNKTION FÜR DAS RADAR:
+async function runRadarHunt() {
     const region = document.getElementById('radarRegion').value;
     const adText = document.getElementById('radarAdText').value;
 
@@ -437,10 +439,12 @@ function printProfessionalPDF() {
     const outputDiv = document.getElementById('radarOutput');
     const resultText = document.getElementById('radarResultText');
 
-    btn.disabled = true;
-    btn.innerText = "KI scannt Anzeige und formuliert Anschreiben...";
-    outputDiv.classList.remove('hidden');
-    resultText.innerText = "Der Immobilien-Radar läuft heiß, bitte warten...";
+    if(btn) {
+        btn.disabled = true;
+        btn.innerText = "KI scannt Anzeige und formuliert Anschreiben...";
+    }
+    if(outputDiv) outputDiv.classList.remove('hidden');
+    if(resultText) resultText.innerText = "Der Immobilien-Radar läuft heiß, bitte warten...";
 
     try {
         const response = await fetch('/api/radar-hunt', {
@@ -449,29 +453,37 @@ function printProfessionalPDF() {
             body: JSON.stringify({ region, adText, password: savedPassword })
         });
         const data = await response.json();
+        
         if (data.success) {
-            resultText.innerHTML = `
-                <div style="background: rgba(59, 130, 246, 0.1); padding: 12px; border-radius: 6px; margin-bottom: 15px; border-left: 4px solid #3b82f6;">
-                    <strong>🕵️ KI-Einschätzung zur Anzeige:</strong><br>
-                    <span style="white-space: pre-wrap;">${data.analysis}</span>
-                </div>
-                <div>
-                    <strong>✉️ Maßgeschneiderte Akquise-Mail für den Eigentümer:</strong><br>
-                    <span style="white-space: pre-wrap;">${data.mail}</span>
-                </div>
-            `;
-            // Falls saveToHistory existiert, loggen wir es mit
+            // Zeigt den Text sauber getrennt an
+            const checkText = data.analysis || "Analyse abgeschlossen.";
+            const mailText = data.mail || "Kein Text generiert.";
+            
+            if(resultText) {
+                resultText.innerHTML = `
+                    <div style="background: rgba(59, 130, 246, 0.1); padding: 12px; border-radius: 6px; margin-bottom: 15px; border-left: 4px solid #3b82f6;">
+                        <strong>🕵️ KI-Einschätzung zur Anzeige:</strong><br>
+                        <span style="white-space: pre-wrap;">${checkText}</span>
+                    </div>
+                    <div>
+                        <strong>✉️ Maßgeschneiderte Akquise-Mail für den Eigentümer:</strong><br>
+                        <span style="white-space: pre-wrap;">${mailText}</span>
+                    </div>
+                `;
+            }
             if(typeof saveToHistory === "function") {
-                saveToHistory("Immo-Radar", "Privat-Akquise " + region, data.mail);
+                saveToHistory("Immo-Radar", "Privat-Akquise " + region, mailText);
             }
         } else {
-            resultText.innerText = "Fehler: " + data.error;
+            if(resultText) resultText.innerText = "Fehler vom Server: " + data.error;
         }
     } catch (error) {
-        resultText.innerText = "Server-Fehler beim Immobilien-Radar.";
+        if(resultText) resultText.innerText = "Server-Fehler beim Immobilien-Radarverbindung.";
     } finally {
-        btn.disabled = false;
-        btn.innerText = "🌐 Privat-Anzeige analysieren & Akquise starten";
+        if(btn) {
+            btn.disabled = false;
+            btn.innerText = "🌐 Privat-Anzeige analysieren & Akquise starten";
+        }
     }
 }
 </script>
