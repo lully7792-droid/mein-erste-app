@@ -434,7 +434,11 @@ app.post('/api/newsletter-forge', async (req, res) => {
             ]
         });
 
-        const jsonText = response.choices.message.content;
+        // 🎯 HIER WURDE DIE [0] BOMBENFEST EINGESETZT:
+        let jsonText = "{}";
+        if (response && response.choices && response.choices[0] && response.choices[0].message) {
+            jsonText = response.choices[0].message.content;
+        }
         const resultData = JSON.parse(jsonText);
 
         res.json({ 
