@@ -453,6 +453,45 @@ app.post('/api/newsletter-forge', async (req, res) => {
     }
 });
 
+// ==========================================
+// ROUTE 14: KI-FLYER- & AKQUISE-TEXTER
+// ==========================================
+app.post('/api/flyer-forge', async (req, res) => {
+    const { street, reason, details, password } = req.body;
+    if (password !== "makler-erfolg") return res.status(401).json({ success: false, error: "Nicht autorisiert" });
+
+    try {
+        const response = await openai.chat.completions.create({
+            model: "gpt-4o-mini",
+            messages: [
+                { 
+                    role: "system", 
+                    content: "Du bist ein genialer Werbetexter und Psychologe, spezialisiert auf lokale Kaltakquise für Immobilienmakler. Schreibe einen extrem auffälligen, verkaufsstarken und vertrauenswürdigen Text für einen Akquise-Flyer oder eine Postkarte auf Deutsch. Der Text muss eine fette, neugierig machende Überschrift (Headline), einen packenden Hauptteil und einen glasklaren Aufruf zur Aktion (Call-to-Action, z. B. kostenlose Wertermittlung) enthalten." 
+                },
+                { 
+                    role: "user", 
+                    content: `Aktionsgebiet/Straße: ${street}\nAnlass der Aktion: ${reason}\nZusatz-Fakten & Details: ${details || "Keine zusätzlichen Angaben"}`
+                }
+            ]
+        });
+
+        // 🎯 DIREKT ABSOLUT SICHER MIT [0] GEKAPSELT:
+        let flyerText = "Flyer-Text konnte nicht erstellt werden.";
+        if (response && response.choices && response.choices[0] && response.choices[0].message) {
+            flyerText = response.choices[0].message.content;
+        }
+
+        res.json({ 
+            success: true, 
+            text: flyerText 
+        });
+
+    } catch (error) {
+        console.error("Flyer-Forge-Fehler:", error);
+        res.status(500).json({ success: false, error: "Fehler beim Flyer-Texten im Backend" });
+    }
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server läuft fehlerfrei auf Port ${PORT}`);
