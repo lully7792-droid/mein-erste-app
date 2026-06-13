@@ -264,17 +264,15 @@ app.post('/api/radar-hunt', async (req, res) => {
             messages: [
                 { 
                     role: "system", 
-                    content: "Du bist ein absoluter Spitzen-Makler im Bereich Immobilien-Einkauf und Akquise. Analysiere die private Verkaufsanzeige. Antworte AUSSCHLIESSLICH im JSON-Format mit exakt diesen beiden Feldern: { "analysis": "Deine Einschätzung zur Anzeige und Makler-Taktik hier", "mail": "Deine maßgeschneiderte Akquise-Mail an den Eigentümer hier" }" 
+                    content: "Du bist ein absoluter Spitzen-Makler im Bereich Immobilien-Einkauf und Akquise. Analysiere die private Verkaufsanzeige. Antworte AUSSCHLIESSLICH im JSON-Format mit exakt diesen beiden Feldern: { \"analysis\": \"Deine Einschätzung zur Anzeige und Makler-Taktik hier\", \"mail\": \"Deine maßgeschneiderte Akquise-Mail an den Eigentümer hier\" }" 
                 },
                 { 
                     role: "user", 
-                    content: `Region: ${region}
-
-Anzeigentext von privat:
-${adText}`
+                    content: `Region: ${region}\n\nAnzeigentext von privat:\n${adText}`
                 }
             ]
         });
+
 
         // Antwort auslesen und parsen
         const jsonText = response.choices[0].message.content;
