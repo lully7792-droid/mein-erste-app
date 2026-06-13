@@ -31,29 +31,6 @@ function updateCreditDisplay() {
     localStorage.setItem('immoFlowCredits', remainingCredits);
 }
 
-function checkLogin() {
-    const passwordInput = document.getElementById('passwordInput').value;
-    if (passwordInput === "makler-erfolg") {
-        savedPassword = passwordInput;
-        document.getElementById('loginSection').style.display = 'none';
-        const app = document.getElementById('appSection');
-        if (app) {
-            app.style.display = 'block';
-            app.classList.remove('hidden');
-        }
-        updateCreditDisplay();
-    } else {
-        alert("Falsches Passwort! Bitte versuche es erneut.");
-    }
-}
-
-function updateCreditDisplay() {
-    const creditBox = document.getElementById('creditDisplay');
-    if (creditBox) {
-        creditBox.innerText = `Verbleibende Abfragen: ${remainingCredits}`;
-    }
-}
-
 async function generateExpose() {
     if (remainingCredits <= 0) {
         alert("Keine Credits mehr übrig! Bitte lade dein Konto auf.");
