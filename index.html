@@ -488,8 +488,8 @@ async function runRadarHunt() {
             btn.disabled = false;
             btn.innerText = "🌐 Privat-Anzeige analysieren & Akquise starten";
         }
-        // 🎯 STUFE 5: Wandelt deinen gesamten Verlauf in ein sauberes Excel-Format um
-function exportHistoryToCSV() {
+// 🎯 Jetzt absolut unzerstörbar direkt an das Sichtfeld des Browsers getackert:
+window.exportHistoryToCSV = function() {
     let history = JSON.parse(localStorage.getItem('immoFlowHistory')) || [];
     
     if (history.length === 0) {
@@ -497,27 +497,23 @@ function exportHistoryToCSV() {
         return;
     }
 
-    // Excel-Spezial: UTF-8 BOM hinzufügen, damit Umlaute (ä, ö, ü) in Excel sofort richtig angezeigt werden
     let csvContent = "\uFEFF";
-    
-    // Spaltenüberschriften für Excel
     csvContent += "Uhrzeit;Kategorie;Titel;Generierter_Inhalt\n";
 
-    // Jeden Eintrag zeilenweise hinzufügen und Text für Excel absichern
     history.forEach(e => {
         let zeit = e.zeit || "";
         let typ = e.typ || "";
-        let titel = (e.titel || "").replace(/;/g, ",").replace(/\n/g, " "); // Semikolons & Umbrüche filtern
-        let text = (e.text || "").replace(/;/g, ",").replace(/\n/g, " [UMBRUCH] ").replace(/"/g, '""'); // Text glätten
+        let titel = (e.titel || "").replace(/;/g, ",").replace(/\n/g, " ");
+        let text = (e.text || "").replace(/;/g, ",").replace(/\n/g, " [UMBRUCH] ").replace(/"/g, '""');
         
         csvContent += `"${zeit}";"${typ}";"${titel}";"${text}"\n`;
     });
 
-    // Datei im Browser generieren und den Download erzwingen
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.setAttribute("href", url);
+    // 🎯 Hier sauber mit der eckigen Klammer korrigiert:
     link.setAttribute("download", "ImmoFlow_Exporte_" + new Date().toISOString().split('T')[0] + ".csv");
     document.body.appendChild(link);
     
@@ -526,8 +522,6 @@ function exportHistoryToCSV() {
     URL.revokeObjectURL(url);
     
     alert("📊 Excel-kompatible CSV-Datei erfolgreich heruntergeladen!");
-    }
-  }
-}
+};
 </script>
 </html>
