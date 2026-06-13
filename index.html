@@ -434,7 +434,38 @@
             </div>
         </div>
 
-        <!-- FEATURE 14: HISTORIE -->
+                <!-- FEATURE 14: KI-FLYER- & AKQUISE-TEXTER -->
+        <div class="card" style="border-color: rgba(239, 68, 68, 0.3); background: linear-gradient(135deg, #131c2e, #380c0c);">
+            <h2>📬 KI-Flyer- & Nachbarschafts-Akquise-Texter</h2>
+            <p class="description">Erstelle aggressive, verkaufsstarke Flyer- und Postkartentexte für die gezielte Nachbarschafts-Akquise, um direkt neue Immobilien-Eigentümer aus der Umgebung zu gewinnen.</p>
+            
+            <div class="form-group">
+                <label for="flyerStreet">Straße / Stadtteil für die Aktion</label>
+                <input type="text" id="flyerStreet" placeholder="z.B. Luisenstraße oder Elberfeld">
+            </div>
+            <div class="form-group">
+                <label for="flyerReason">Anlass der Flyer-Aktion</label>
+                <select id="flyerReason">
+                    <option value="suchkunde">🔍 Konkreter Suchkunde vorhanden (Suchdruck nutzen)</option>
+                    <option value="frisch_verkauft">🎉 Gerade erfolgreich verkauft (Erfolgsnachweis)</option>
+                    <option value="kostenlose_bewertung">📈 Kostenlose Immobilien-Einwertung (Direkter Lead-Fang)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="flyerDetails">Zusatz-Fakten oder Slogan-Wünsche</label>
+                <textarea id="flyerDetails" placeholder="z.B. Familie mit 2 Kindern sucht dringend; oder: Verkauf innerhalb von nur 3 Wochen erzielt..." style="height: 80px;"></textarea>
+            </div>
+            
+            <button id="startFlyerBtn" class="btn" onclick="runFlyerForge()" style="width: 100%; background: linear-gradient(90deg, #ef4444, #f59e0b); color: #fff;">📬 Akquise-Flyer texten lassen</button>
+            
+            <div id="flyerOutput" class="hidden" style="margin-top: 25px; padding: 20px; background: #0b111e; border: 1px solid var(--border-color); border-radius: 8px;">
+                <h3 style="margin-bottom: 12px; color: #f59e0b;">🎯 Deine fertigen Flyer-Texte (Überschrift + Inhalt):</h3>
+                <div id="flyerResultText" style="line-height: 1.6; font-size: 0.95rem; white-space: pre-wrap; color: #cbd5e1;"></div>
+                <button onclick="copyToClipboard('flyerResultText')" class="btn" style="background: #334155; color: #fff; font-size: 14px; padding: 10px 18px; margin-top: 15px;">📋 Flyer-Text kopieren</button>
+            </div>
+        </div>
+
+        <!-- FEATURE 15: HISTORIE -->
         <div class="card">
             <h2>🗄️ Letzte KI-Generierungen (Gespeichert)</h2>
             <p class="description">Deine Daten gehen nicht verloren. Hier sind deine letzten Erstellungen auf diesem Gerät:</p>
