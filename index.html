@@ -299,17 +299,37 @@
             <h2>📱 KI-Social-Media-Spezialist</h2>
             <p class="description">Erstelle aus den Objektdaten sofort optimierte Posts für Instagram und LinkedIn.</p>
             <button id="generateSocialBtn" class="btn" style="width: 100%;" onclick="generateSocialMedia()">📱 Posts generieren</button>
-            <div id="socialResultBox" class="hidden" style="margin-top: 25px;">
+                        <div id="socialResultBox" class="hidden" style="margin-top: 25px;">
+                <!-- 📸 INSTAGRAM -->
                 <div style="margin-bottom: 15px; padding: 15px; background: rgba(219, 39, 119, 0.05); border: 1px solid rgba(219, 39, 119, 0.2); border-left: 4px solid #db2777; border-radius: 8px;">
-                    <h4 style="color: #db2777; margin-bottom: 5px;">📸 Instagram (mit Hashtags):</h4>
+                    <h4 style="color: #db2777; margin-bottom: 5px;">📸 Instagram Feed (Emotional & Hashtags):</h4>
                     <p id="instaText" style="white-space: pre-wrap; margin-top: 5px; font-size: 0.95rem; line-height: 1.6;"></p>
                     <button onclick="copyToClipboard('instaText')" class="btn" style="background: #334155; color: #fff; padding: 6px 12px; font-size: 12px; margin-top: 10px;">📋 Kopieren</button>
                 </div>
+                <!-- 💼 LINKEDIN -->
                 <div style="margin-bottom: 15px; padding: 15px; background: rgba(37, 99, 235, 0.05); border: 1px solid rgba(37, 99, 235, 0.2); border-left: 4px solid #2563eb; border-radius: 8px;">
-                    <h4 style="color: #2563eb; margin-bottom: 5px;">💼 LinkedIn (Professionell):</h4>
+                    <h4 style="color: #2563eb; margin-bottom: 5px;">💼 LinkedIn (Professionell & B2B):</h4>
                     <p id="linkedinText" style="white-space: pre-wrap; margin-top: 5px; font-size: 0.95rem; line-height: 1.6;"></p>
                     <button onclick="copyToClipboard('linkedinText')" class="btn" style="background: #334155; color: #fff; padding: 6px 12px; font-size: 12px; margin-top: 10px;">📋 Kopieren</button>
                 </div>
+                <!-- 🎬 TIKTOK & REELS (NEU) -->
+                <div style="margin-bottom: 15px; padding: 15px; background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2); border-left: 4px solid #10b981; border-radius: 8px;">
+                    <h4 style="color: #10b981; margin-bottom: 5px;">🎬 TikTok & Reels (Kurzvideo-Skript mit Hook):</h4>
+                    <p id="tiktokText" style="white-space: pre-wrap; margin-top: 5px; font-size: 0.95rem; line-height: 1.6;"></p>
+                    <button onclick="copyToClipboard('tiktokText')" class="btn" style="background: #334155; color: #fff; padding: 6px 12px; font-size: 12px; margin-top: 10px;">📋 Kopieren</button>
+                </div>
+                <!-- 👥 FACEBOOK-GRUPPEN (NEU) -->
+                <div style="margin-bottom: 15px; padding: 15px; background: rgba(245, 158, 11, 0.05); border: 1px solid rgba(245, 158, 11, 0.2); border-left: 4px solid #f59e0b; border-radius: 8px;">
+                    <h4 style="color: #f59e0b; margin-bottom: 5px;">👥 Lokale Facebook-Gruppen (Nahbar & Community):</h4>
+                    <p id="facebookText" style="white-space: pre-wrap; margin-top: 5px; font-size: 0.95rem; line-height: 1.6;"></p>
+                    <button onclick="copyToClipboard('facebookText')" class="btn" style="background: #334155; color: #fff; padding: 6px 12px; font-size: 12px; margin-top: 10px;">📋 Kopieren</button>
+                </div>
+                <!-- 🐦 X (TWITTER) -->
+                <div style="margin-bottom: 15px; padding: 15px; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.1); border-left: 4px solid #f8fafc; border-radius: 8px;">
+                    <h4 style="color: #f8fafc; margin-bottom: 5px;">🐦 X / Twitter (Kurz & Aggressiv - Max. 280 Zeichen):</h4>
+                    <p id="twitterText" style="white-space: pre-wrap; margin-top: 5px; font-size: 0.95rem; line-height: 1.6;"></p>
+                    <button onclick="copyToClipboard('twitterText')" class="btn" style="background: #334155; color: #fff; padding: 6px 12px; font-size: 12px; margin-top: 10px;">📋 Kopieren</button>
+                </div>       
             </div>
         </div>
 
