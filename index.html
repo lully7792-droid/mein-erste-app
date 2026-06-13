@@ -424,5 +424,55 @@ function printProfessionalPDF() {
         setTimeout(() => { window.print(); }, 300);
     }
 }
+        async function runRadarHunt() {
+    const region = document.getElementById('radarRegion').value;
+    const adText = document.getElementById('radarAdText').value;
+
+    if (!region || !adText) {
+        alert("Bitte gib eine Region ein und kopiere einen privaten Anzeigentext in das Feld!");
+        return;
+    }
+
+    const btn = document.getElementById('startRadarBtn');
+    const outputDiv = document.getElementById('radarOutput');
+    const resultText = document.getElementById('radarResultText');
+
+    btn.disabled = true;
+    btn.innerText = "KI scannt Anzeige und formuliert Anschreiben...";
+    outputDiv.classList.remove('hidden');
+    resultText.innerText = "Der Immobilien-Radar läuft heiß, bitte warten...";
+
+    try {
+        const response = await fetch('/api/radar-hunt', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ region, adText, password: savedPassword })
+        });
+        const data = await response.json();
+        if (data.success) {
+            resultText.innerHTML = `
+                <div style="background: rgba(59, 130, 246, 0.1); padding: 12px; border-radius: 6px; margin-bottom: 15px; border-left: 4px solid #3b82f6;">
+                    <strong>🕵️ KI-Einschätzung zur Anzeige:</strong><br>
+                    <span style="white-space: pre-wrap;">${data.analysis}</span>
+                </div>
+                <div>
+                    <strong>✉️ Maßgeschneiderte Akquise-Mail für den Eigentümer:</strong><br>
+                    <span style="white-space: pre-wrap;">${data.mail}</span>
+                </div>
+            `;
+            // Falls saveToHistory existiert, loggen wir es mit
+            if(typeof saveToHistory === "function") {
+                saveToHistory("Immo-Radar", "Privat-Akquise " + region, data.mail);
+            }
+        } else {
+            resultText.innerText = "Fehler: " + data.error;
+        }
+    } catch (error) {
+        resultText.innerText = "Server-Fehler beim Immobilien-Radar.";
+    } finally {
+        btn.disabled = false;
+        btn.innerText = "🌐 Privat-Anzeige analysieren & Akquise starten";
+    }
+}
 </script>
 </html>
