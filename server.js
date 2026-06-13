@@ -519,16 +519,17 @@ app.post('/api/investor-calc', async (req, res) => {
         // KI um den professionellen Investoren-Pitch bitten
         const response = await openai.chat.completions.create({
             model: "gpt-4o-mini",
-            messages: [
+                        messages: [
                 { 
                     role: "system", 
-                    content: "Du bist ein erfahrener Gewerbe-Makler und Wirtschafts-Analyst, spezialisiert auf Kapitalanlagen und institutionelle Investoren. Dir werden die harten mathematischen Kennzahlen eines Objekts übermittelt. Schreibe einen professionellen, faktenbasierten und überzeugenden Verkaufs-Pitch auf Deutsch für Großinvestoren. Hebe Faktoren wie Cashflow-Stabilität, Inflationsschutz, Wertsteigerungspotenzial und die Attraktivität der Mikrolage hervor. Nutze Business-Vokabular." 
+                    content: "Du bist ein internationaler Immobilien-Analyst und Mikrolagen-Experte für den europäischen Markt. Deine Aufgabe ist es, eine hochexakte, lokal absolut korrekte und emotionale Lagebeschreibung auf Deutsch zu verfassen. STRENGE REGEL: Nutze ausschließlich real existierende Straßen, Infrastrukturen, Einkaufsmeilen, Parks und Verkehrsanbindungen der eingegebenen Region (egal ob in Deutschland oder im europäischen Ausland). Erfinde NIEMALS Fantasie-Namen oder Center-Komplexe! Wenn du die genaue Fußgängerzone oder lokale Hotspots nicht zu 100% kennst, konzentriere dich allgemein auf die echten geografischen Vorzüge (z.B. Autobahnanbindung, Flughafen-Nähe, Natur-Anteil, Demografie) der jeweiligen Stadt/Region, ohne Straßennamen zu erfinden. Passe den Text perfekt an die gewählte Zielgruppe an." 
                 },
                 { 
                     role: "user", 
-                    content: `Kaufpreis des Objekts: ${p} EUR\nJährliche Netto-Kaltmiete: ${r} EUR\nMietvervielfältiger (Faktor): ${factor}x\nBruttorendite: ${bruttorendite}%\nMikrolage & Potenzial: ${location || "Keine zusätzlichen Angaben"}`
+                    content: `Eingegebener Stadtteil/Ort & Land: ${district}\nZielgruppe für das Objekt: ${target}\nManuell übergebene Zusatz-Highlights vor Ort: ${details || "Keine zusätzlichen Angaben"}`
                 }
             ]
+
         });
 
         // 🎯 DIREKT MIT ABSOLUT SICHER GEKAPSELT:
