@@ -1,5 +1,38 @@
 let savedPassword = "";
-let remainingCredits = 10;
+// 🎯 Holt sich die Credits aus dem Dauerspeicher des Browsers. Wenn noch nichts da ist, startet er mit 10:
+let remainingCredits = parseInt(localStorage.getItem('immoFlowCredits')) || 10;
+
+function checkLogin() {
+    const passwordInput = document.getElementById('passwordInput').value;
+    if (passwordInput === "makler-erfolg") {
+        savedPassword = passwordInput;
+        document.getElementById('loginSection').style.display = 'none';
+        const app = document.getElementById('appSection');
+        if (app) {
+            app.style.display = 'block';
+            app.classList.remove('hidden');
+        }
+        
+        // Wenn ein neuer Login stattfindet und die Credits auf 0 waren, laden wir sie für den Makler wieder auf
+        if (remainingCredits <= 0) {
+            remainingCredits = 10;
+            localStorage.setItem('immoFlowCredits', remainingCredits);
+        }
+        
+        updateCreditDisplay();
+    } else {
+        alert("Falsches Passwort! Bitte versuche es erneut.");
+    }
+}
+
+function updateCreditDisplay() {
+    const creditBox = document.getElementById('creditDisplay');
+    if (creditBox) {
+        creditBox.innerText = `Verbleibende Abfragen: ${remainingCredits}`;
+    }
+    // 🎯 Speichert den aktuellen Stand sofort atomsicher ab!
+    localStorage.setItem('immoFlowCredits', remainingCredits);
+}
 
 function checkLogin() {
     const passwordInput = document.getElementById('passwordInput').value;
@@ -582,9 +615,13 @@ function clearHistory() {
 
 document.addEventListener('DOMContentLoaded', () => {
     renderHistory();
+    // 🎯 Sorgt dafür, dass die Credits auch nach dem Neuladen sofort stimmen:
+    updateCreditDisplay();
+    
     const imgBtn = document.getElementById('analyzeImageBtn');
     if (imgBtn) {
         imgBtn.addEventListener('click', analyzeImage);
     }
 });
+  
 
