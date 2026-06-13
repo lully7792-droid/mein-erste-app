@@ -773,6 +773,44 @@ app.post('/api/insider-forge', async (req, res) => {
     }
 });
 
+// ==========================================
+// ROUTE 16: KI-GRUNDRISS-BESCHREIBER
+// ==========================================
+app.post('/api/floor-tour', async (req, res) => {
+    const { layoutNotes, password } = req.body;
+    if (password !== "makler-erfolg") return res.status(401).json({ success: false, error: "Nicht autorisiert" });
+
+    try {
+        const response = await openai.chat.completions.create({
+            model: "gpt-4o-mini",
+            messages: [
+                { 
+                    role: "system", 
+                    content: "Du bist ein genialer Immobilien-Texter und virtueller Tourguide. Dir werden stichpunktartige Notizen, Maße oder die Raumreihenfolge eines Grundrisses übermittelt. Deine Aufgabe ist es, daraus einen flüssigen, logischen und hocherlebnisreichen Besichtigungs-Rundgangtext auf Deutsch für das Exposé zu schreiben. Führe den Leser virtuell Schritt für Schritt von der Haustür durch alle Räume, nutze eine hohe visuelle Ausdruckskraft und lasse das Objekt lebendig wirken. STRENGE REGEL: Halte dich nur an die real existierenden Räume, erfinde keine Zimmer dazu!" 
+                },
+                { 
+                    role: "user", 
+                    content: `Grundriss-Notizen & Raumabfolge:\n${layoutNotes}`
+                }
+            ]
+        });
+
+        let tourText = "Raumtour konnte nicht generiert werden.";
+        if (response && response.choices && response.choices[0] && response.choices[0].message) {
+            tourText = response.choices[0].message.content;
+        }
+
+        res.json({ 
+            success: true, 
+            text: tourText 
+        });
+
+    } catch (error) {
+        console.error("Floor-Tour-Fehler:", error);
+        res.status(500).json({ success: false, error: "Fehler beim Grundriss-Check im Backend" });
+    }
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server läuft fehlerfrei auf Port ${PORT}`);
