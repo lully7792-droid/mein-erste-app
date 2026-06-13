@@ -314,5 +314,55 @@
 </div> <!-- CLOSES CONTAINER -->
 
 <script src="app.js"></script>
+    <!-- 🎨 UNSICHTBARES LAYOUT NUR FÜR DEN PDF-DRUCK -->
+<style>
+    @media print {
+        body * { display: none !important; } /* Versteckt das gesamte dunkle Dashboard */
+        #printTemplate, #printTemplate * { display: block !important; } /* Zeigt nur das saubere PDF */
+        #printTemplate {
+            display: block !important;
+            position: absolute; left: 0; top: 0; width: 100%;
+            font-family: Arial, Helvetica, sans-serif; color: #1e293b;
+            padding: 20px; box-sizing: border-box;
+        }
+        .pdf-header { border-bottom: 3px solid #10b981; padding-bottom: 15px; margin-bottom: 30px; display: flex !important; justify-content: space-between; align-items: center; }
+        .pdf-title { font-size: 26px; font-weight: bold; color: #0f172a; margin-bottom: 5px; }
+        .pdf-meta-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; margin-bottom: 25px; display: flex !important; gap: 40px; }
+        .pdf-meta-item strong { color: #10b981; display: block; font-size: 12px; text-transform: uppercase; }
+        .pdf-meta-item span { font-size: 16px; font-weight: bold; color: #1e293b; }
+        .pdf-content-grid { display: grid !important; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 20px; }
+        .pdf-image-box { border-radius: 8px; overflow: hidden; max-height: 350px; background: #f1f5f9; border: 1px solid #cbd5e1; }
+        .pdf-image-box img { width: 100%; height: 100%; object-fit: cover; display: block !important; }
+        .pdf-text { font-size: 14px; line-height: 1.6; white-space: pre-wrap; color: #334155; text-align: justify; }
+        .pdf-footer { position: fixed; bottom: 0; left: 0; width: 100%; border-top: 1px solid #e2e8f0; padding-top: 10px; font-size: 11px; color: #94a3b8; text-align: center; }
+    }
+</style>
+<div id="printTemplate" style="display: none;">
+    <div class="pdf-header">
+        <div>
+            <div id="pdfMainTitle" class="pdf-title">Immobilien-Exposé</div>
+            <div style="font-size: 13px; color: #64748b; font-weight: 600;">Präsentiert von ImmoFlow Premium</div>
+        </div>
+    </div>
+    <div class="pdf-meta-box">
+        <div class="pdf-meta-item"><strong>📍 Standort:</strong> <span id="pdfLocation">-</span></div>
+        <div class="pdf-meta-item"><strong>💰 Kaufpreis:</strong> <span id="pdfPrice">- EUR</span></div>
+        <div class="pdf-meta-item"><strong>🏗️ Baujahr:</strong> <span id="pdfYear">-</span></div>
+        <div class="pdf-meta-item"><strong>⚡ Energieklasse:</strong> <span id="pdfEnergy">-</span></div>
+    </div>
+    <div class="pdf-content-grid">
+        <div>
+            <h3 style="font-size: 16px; color: #0f172a; margin-bottom: 10px; border-bottom: 1px solid #cbd5e1; padding-bottom: 5px;">📋 Objektbeschreibung</h3>
+            <div id="pdfDescription" class="pdf-text">Hier folgt das generierte Exposé...</div>
+        </div>
+        <div>
+            <h3 style="font-size: 16px; color: #0f172a; margin-bottom: 10px; border-bottom: 1px solid #cbd5e1; padding-bottom: 5px;">📸 Objektansicht</h3>
+            <div class="pdf-image-box">
+                <img id="pdfPreviewImage" src="" alt="Immobilienbild">
+            </div>
+        </div>
+    </div>
+    <div class="pdf-footer">Dieses Dokument wurde automatisch erstellt. Alle Angaben ohne Gewähr. Ihr Makler-Erfolg 2026.</div>
+</div>
 </body>
 </html>
