@@ -239,3 +239,51 @@
                 </div>
             </div>
         </div> <!-- 🎯 HIERMIT WIRD KATEGORIE 1 (MEDIA) OFFIZIELL GESCHLOSSEN! -->
+        <!-- ==========================================
+             KATEGORIE 2: FINANZEN & RECHNER
+             ========================================== -->
+        <div id="tab-finance" class="dashboard-tab-content hidden">
+
+            <!-- FEATURE 5: KI-MIETPREIS-SCHÄTZER -->
+            <div class="card">
+                <h2>💰 KI-Mietpreis-Schätzer</h2>
+                <p class="description">Lass die KI basierend auf Lage, Quadratmetern und Zustand eine realistische Mietpreis-Spanne für dein Objekt schätzen.</p>
+                <div class="form-group">
+                    <label for="rentLocation">Lage / Stadtteil</label>
+                    <input type="text" id="rentLocation" placeholder="z.B. Elberfeld">
+                </div>
+                <div class="form-group">
+                    <label for="rentSize">Wohnfläche (in m²)</label>
+                    <input type="text" id="rentSize" placeholder="z.B. 85">
+                </div>
+                <div class="form-group">
+                    <label for="rentCondition">Zustand & Ausstattung</label>
+                    <textarea id="rentCondition" placeholder="z.B. Erstbezug nach Sanierung..." style="height: 80px;"></textarea>
+                </div>
+                <button id="estimateRentBtn" class="btn" onclick="estimateRent()">💰 Mietpreis schätzen lassen</button>
+                <div id="rentOutput" class="hidden" style="margin-top: 25px; padding: 20px; background: #0b111e; border: 1px solid var(--border-color); border-radius: 8px;">
+                    <h3 style="margin-bottom: 12px; color: var(--accent);">Mietpreis-Einschätzung:</h3>
+                    <p id="rentText" style="white-space: pre-wrap; line-height: 1.6; font-size: 0.95rem;"></p>
+                    <button onclick="copyToClipboard('rentText')" class="btn" style="background: #334155; color: #fff; font-size: 14px; padding: 10px 18px; margin-top: 15px;">📋 Schätzung kopieren</button>
+                </div>
+            </div>
+
+            <!-- FEATURE 6: KI-NEBENKOSTEN-RECHNER -->
+            <div class="card">
+                <h2>🧮 KI-Nebenkosten-Prognose</h2>
+                <p class="description">Erstellt eine detaillierte Aufstellung der voraussichtlichen Nebenkosten für Mieter oder Käufer.</p>
+                <div class="form-group">
+                    <label for="utilitySize">Wohnfläche (in m²)</label>
+                    <input type="text" id="utilitySize" placeholder="z.B. 100">
+                </div>
+                <div class="form-group">
+                    <label for="utilityHeating">Heizungsart & Energieträger</label>
+                    <input type="text" id="utilityHeating" placeholder="z.B. Gas-Zentralheizung">
+                </div>
+                <button id="calcUtilitiesBtn" class="btn" onclick="calcUtilities()">🧮 Nebenkosten berechnen</button>
+                <div id="utilityOutput" class="hidden" style="margin-top: 25px; padding: 20px; background: #0b111e; border: 1px solid var(--border-color); border-radius: 8px;">
+                    <h3 style="margin-bottom: 12px; color: var(--accent);">Voraussichtliche Nebenkosten-Tabelle:</h3>
+                    <p id="utilityText" style="white-space: pre-wrap; line-height: 1.6; font-size: 0.95rem;"></p>
+                    <button onclick="copyToClipboard('utilityText')" class="btn" style="background: #334155; color: #fff; font-size: 14px; padding: 10px 18px; margin-top: 15px;">📋 Aufstellung kopieren</button>
+                </div>
+            </div>
