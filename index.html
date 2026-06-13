@@ -821,6 +821,47 @@ function previewNewsletterHTML() {
     win.document.close();
 }
 
+    async function runFlyerForge() {
+    const street = document.getElementById('flyerStreet').value;
+    const reason = document.getElementById('flyerReason').value;
+    const details = document.getElementById('flyerDetails').value;
+
+    if (!street) {
+        alert("Bitte gib eine Straße oder einen Stadtteil für die Aktion an!");
+        return;
+    }
+
+    const btn = document.getElementById('startFlyerBtn');
+    const outputDiv = document.getElementById('flyerOutput');
+    const resultText = document.getElementById('flyerResultText');
+
+    if(btn) { btn.disabled = true; btn.innerText = "Ki formuliert Flyer-Psychologie..."; }
+    if(outputDiv) outputDiv.classList.remove('hidden');
+    if(resultText) resultText.innerText = "KI entwirft auffällige Überschriften und verkaufsstarke Aufrufe...";
+
+    try {
+        const response = await fetch('/api/flyer-forge', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ street, reason, details, password: savedPassword })
+        });
+        const data = await response.json();
+        
+        if (data.success) {
+            if(resultText) resultText.innerText = data.text;
+            if(typeof saveToHistory === "function") {
+                saveToHistory("Flyer-Aktion", "Aktion: " + street, data.text.substring(0, 30) + "...");
+            }
+        } else {
+            if(resultText) resultText.innerText = "Fehler vom Server: " + data.error;
+        }
+    } catch (error) {
+        if(resultText) resultText.innerText = "Server-Fehler bei der Flyer-Verbindung.";
+    } finally {
+        if(btn) { btn.disabled = false; btn.innerText = "📬 Akquise-Flyer texten lassen"; }
+    }
+}
+
 window.exportHistoryToCSV = function() {
     let history = JSON.parse(localStorage.getItem('immoFlowHistory')) || [];
     
