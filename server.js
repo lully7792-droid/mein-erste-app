@@ -492,6 +492,63 @@ app.post('/api/flyer-forge', async (req, res) => {
     }
 });
 
+// ==========================================
+// ROUTE 15: KI-GEWERBE- & RENDITE-SPEZIALIST
+// ==========================================
+app.post('/api/investor-calc', async (req, res) => {
+    const { price, rent, location, password } = req.body;
+    if (password !== "makler-erfolg") return res.status(401).json({ success: false, error: "Nicht autorisiert" });
+
+    try {
+        const p = parseFloat(price) || 0;
+        const r = parseFloat(rent) || 0;
+
+        if (p <= 0 || r <= 0) {
+            return res.status(400).json({ success: false, error: "Ungültige Werte für Kaufpreis oder Miete" });
+        }
+
+        // Kaufmännische Kennzahlen exakt berechnen
+        const factor = (p / r).toFixed(2); // Mietvervielfältiger (z.B. 17.85x)
+        const bruttorendite = ((r / p) * 100).toFixed(2); // Bruttorendite in % (z.B. 5.60%)
+
+        const metrics = {
+            factor: factor,
+            yield: bruttorendite
+        };
+
+        // KI um den professionellen Investoren-Pitch bitten
+        const response = await openai.chat.completions.create({
+            model: "gpt-4o-mini",
+            messages: [
+                { 
+                    role: "system", 
+                    content: "Du bist ein erfahrener Gewerbe-Makler und Wirtschafts-Analyst, spezialisiert auf Kapitalanlagen und institutionelle Investoren. Dir werden die harten mathematischen Kennzahlen eines Objekts übermittelt. Schreibe einen professionellen, faktenbasierten und überzeugenden Verkaufs-Pitch auf Deutsch für Großinvestoren. Hebe Faktoren wie Cashflow-Stabilität, Inflationsschutz, Wertsteigerungspotenzial und die Attraktivität der Mikrolage hervor. Nutze Business-Vokabular." 
+                },
+                { 
+                    role: "user", 
+                    content: `Kaufpreis des Objekts: ${p} EUR\nJährliche Netto-Kaltmiete: ${r} EUR\nMietvervielfältiger (Faktor): ${factor}x\nBruttorendite: ${bruttorendite}%\nMikrolage & Potenzial: ${location || "Keine zusätzlichen Angaben"}`
+                }
+            ]
+        });
+
+        // 🎯 DIREKT MIT ABSOLUT SICHER GEKAPSELT:
+        let pitchText = "Investoren-Pitch konnte nicht erstellt werden.";
+        if (response && response.choices && response.choices[0] && response.choices[0].message) {
+            pitchText = response.choices[0].message.content;
+        }
+
+        res.json({ 
+            success: true, 
+            metrics: metrics, 
+            pitch: pitchText 
+        });
+
+    } catch (error) {
+        console.error("Gewerbe-Rechner-Fehler:", error);
+        res.status(500).json({ success: false, error: "Fehler beim Berechnen im Backend" });
+    }
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server läuft fehlerfrei auf Port ${PORT}`);
