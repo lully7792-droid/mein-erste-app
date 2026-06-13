@@ -411,6 +411,44 @@ app.post('/api/market-compare', async (req, res) => {
     }
 });
 
+// ==========================================
+// ROUTE 13: KI-KUNDEN-NEWSLETTER-SCHMIED
+// ==========================================
+app.post('/api/newsletter-forge', async (req, res) => {
+    const { title, details, tone, password } = req.body;
+    if (password !== "makler-erfolg") return res.status(401).json({ success: false, error: "Nicht autorisiert" });
+
+    try {
+        const response = await openai.chat.completions.create({
+            model: "gpt-4o-mini",
+            response_format: { type: "json_object" }, // 🎯 JSON-Format für fehlerfreie Trennung von Betreff und Code
+            messages: [
+                { 
+                    role: "system", 
+                    content: "Du bist ein genialer E-Mail-Marketing-Experte für Immobilienmakler. Schreibe eine packende, verkaufsstarke Newsletter-E-Mail an Suchkunden basierend auf den übermittelten Daten. Antworte AUSSCHLIESSLICH im JSON-Format mit exakt diesen beiden Feldern:\n{\n  \"subject\": \"Eine emotionale, klickstarke Betreffzeile hier\",\n  \"htmlCode\": \"Der komplette, bildschön designte HTML-Code der E-Mail (inline CSS, sauber zentrierte Tabellen-Struktur, edle Schriftarten, farbige Akzente passend zum Tonfall, mobil-optimiert) hier\"\n}" 
+                },
+                { 
+                    role: "user", 
+                    content: `Objekttitel: ${title}\nFakten & Highlights: ${details}\nTonfall: ${tone}`
+                }
+            ]
+        });
+
+        const jsonText = response.choices.message.content;
+        const resultData = JSON.parse(jsonText);
+
+        res.json({ 
+            success: true, 
+            subject: resultData.subject || "Exklusives Immobilienangebot für Sie", 
+            htmlCode: resultData.htmlCode || "📧 Newsletter-Inhalt konnte nicht generiert werden." 
+        });
+
+    } catch (error) {
+        console.error("Newsletter-Forge-Fehler:", error);
+        res.status(500).json({ success: false, error: "Fehler beim Newsletter-Schmieden im Backend" });
+    }
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server läuft fehlerfrei auf Port ${PORT}`);
