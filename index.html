@@ -523,6 +523,33 @@
             </div>
         </div>
 
+                <!-- FEATURE 17: KI-TELEFON-LEITFADEN-SCHMIED -->
+        <div class="card" style="border-color: rgba(139, 92, 246, 0.3); background: linear-gradient(135deg, #131c2e, #290c38);">
+            <h2>📞 KI-Telefon-Leitfaden- & Skript-Schmied</h2>
+            <p class="description">Erstelle psychologische Gesprächsleitfäden und unschlagbare Einwandbehandlungen für Telefonate mit Eigentümern oder schwierigen Interessenten.</p>
+            
+            <div class="form-group">
+                <label for="phoneSituation">Art des Telefonats / Ziel des Gesprächs</label>
+                <select id="phoneSituation">
+                    <option value="eigentuemer_akquise">📞 Eigentümer-Akquise (Termin für Objekt-Einwertung sichern)</option>
+                    <option value="provisions_einwand">💰 Provisions-Verhandlung (Eigentümer will Maklergebühr drücken)</option>
+                    <option value="interessent_nachfassen">🔍 Kaufinteressent nachfassen (Zur Kaufentscheidung bewegen)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="phoneObjection">Häufiger Einwand / Schwieriges Argument des Kunden</label>
+                <textarea id="phoneObjection" placeholder="z.B. 'Ich will es erst mal ohne Makler versuchen' oder 'Ein anderer Makler macht es billiger'..." style="height: 80px;"></textarea>
+            </div>
+            
+            <button id="startPhoneBtn" class="btn" onclick="runPhoneScript()" style="width: 100%; background: linear-gradient(90deg, #8b5cf6, #db2777); color: #fff;">📞 Psychologisches Telefon-Skript schmieden</button>
+            
+            <div id="phoneOutput" class="hidden" style="margin-top: 25px; padding: 20px; background: #0b111e; border: 1px solid var(--border-color); border-radius: 8px;">
+                <h3 style="margin-bottom: 12px; color: #db2777;">🎯 Dein rhetorischer Leitfaden:</h3>
+                <div id="phoneResultText" style="line-height: 1.6; font-size: 0.95rem; white-space: pre-wrap; color: #cbd5e1;"></div>
+                <button onclick="copyToClipboard('phoneResultText')" class="btn" style="background: #334155; color: #fff; font-size: 14px; padding: 10px 18px; margin-top: 15px;">📋 Skript kopieren</button>
+            </div>
+        </div>
+
         <!-- FEATURE 15: HISTORIE -->
         <div class="card">
             <h2>🗄️ Letzte KI-Generierungen (Gespeichert)</h2>
@@ -1015,6 +1042,46 @@ function previewNewsletterHTML() {
         if(resultText) resultText.innerText = "Server-Fehler bei der Home-Staging-Verbindung.";
     } finally {
         if(btn) { btn.disabled = false; btn.innerText = "🛋️ Designkonzept & Verkaufstext generieren"; }
+    }
+}
+
+    async function runPhoneScript() {
+    const situation = document.getElementById('phoneSituation').value;
+    const objection = document.getElementById('phoneObjection').value;
+
+    if (!objection) {
+        alert("Bitte gib den Einwand oder das Argument des Kunden ein!");
+        return;
+    }
+
+    const btn = document.getElementById('startPhoneBtn');
+    const outputDiv = document.getElementById('phoneOutput');
+    const resultText = document.getElementById('phoneResultText');
+
+    if(btn) { btn.disabled = true; btn.innerText = "Analysiere Einwand-Psychologie..."; }
+    if(outputDiv) outputDiv.classList.remove('hidden');
+    if(resultText) resultText.innerText = "KI entwickelt psychologische Konter-Strategie und formuliert Gesprächsphasen...";
+
+    try {
+        const response = await fetch('/api/phone-forge', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ situation, objection, password: savedPassword })
+        });
+        const data = await response.json();
+        
+        if (data.success) {
+            if(resultText) resultText.innerText = data.text;
+            if(typeof saveToHistory === "function") {
+                saveToHistory("Telefon-Skript", "Einwand: " + objection.substring(0, 20) + "...", data.text.substring(0, 30) + "...");
+            }
+        } else {
+            if(resultText) resultText.innerText = "Fehler vom Server: " + data.error;
+        }
+    } catch (error) {
+        if(resultText) resultText.innerText = "Server-Fehler bei der Telefon-Skript-Verbindung.";
+    } finally {
+        if(btn) { btn.disabled = false; btn.innerText = "📞 Psychologisches Telefon-Skript schmieden"; }
     }
 }
 
