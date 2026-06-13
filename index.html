@@ -550,6 +550,25 @@
             </div>
         </div>
 
+                <!-- FEATURE 18: KI-IMMOBILIEN-LEXIKON-GENERATOR -->
+        <div class="card" style="border-color: rgba(16, 185, 129, 0.3); background: linear-gradient(135deg, #131c2e, #0c2420);">
+            <h2>📖 KI-Immobilien-Lexikon & Laien-Übersetzer</h2>
+            <p class="description">Übersetze komplizierte juristische Fachbegriffe oder schwere Vertragsklauseln blitzschnell in einfache Sprache. Perfekt, um Kundenängste vor der Unterschrift sofort zu nehmen.</p>
+            
+            <div class="form-group">
+                <label for="lexiconTerm">Fachbegriff oder Klausel (z.B. Auflassungsvormerkung)</label>
+                <textarea id="lexiconTerm" placeholder="Gib hier den Begriff oder die schwere Vertragsklausel ein..." style="height: 80px;"></textarea>
+            </div>
+            
+            <button id="startLexiconBtn" class="btn" onclick="runLexiconTranslation()" style="width: 100%; background: linear-gradient(90deg, #10b981, #3b82f6); color: #090d16;">📖 Begriff verständlich übersetzen</button>
+            
+            <div id="lexiconOutput" class="hidden" style="margin-top: 25px; padding: 20px; background: #0b111e; border: 1px solid var(--border-color); border-radius: 8px;">
+                <h3 style="margin-bottom: 12px; color: var(--accent);">🎯 Laien-Verständliche Erklärung & Kunden-Nachricht:</h3>
+                <div id="lexiconResultText" style="line-height: 1.6; font-size: 0.95rem; white-space: pre-wrap; color: #cbd5e1;"></div>
+                <button onclick="copyToClipboard('lexiconResultText')" class="btn" style="background: #334155; color: #fff; font-size: 14px; padding: 10px 18px; margin-top: 15px;">📋 Erklärung kopieren</button>
+            </div>
+        </div>
+
         <!-- FEATURE 15: HISTORIE -->
         <div class="card">
             <h2>🗄️ Letzte KI-Generierungen (Gespeichert)</h2>
@@ -1082,6 +1101,45 @@ function previewNewsletterHTML() {
         if(resultText) resultText.innerText = "Server-Fehler bei der Telefon-Skript-Verbindung.";
     } finally {
         if(btn) { btn.disabled = false; btn.innerText = "📞 Psychologisches Telefon-Skript schmieden"; }
+    }
+}
+
+    async function runLexiconTranslation() {
+    const term = document.getElementById('lexiconTerm').value;
+
+    if (!term) {
+        alert("Bitte gib einen Begriff oder eine Klausel zum Übersetzen ein!");
+        return;
+    }
+
+    const btn = document.getElementById('startLexiconBtn');
+    const outputDiv = document.getElementById('lexiconOutput');
+    const resultText = document.getElementById('lexiconResultText');
+
+    if(btn) { btn.disabled = true; btn.innerText = "Übersetze Fachchinesisch..."; }
+    if(outputDiv) outputDiv.classList.remove('hidden');
+    if(resultText) resultText.innerText = "KI zerlegt den Rechtsbegriff und formuliert die Kunden-Erklärung...";
+
+    try {
+        const response = await fetch('/api/lexicon-forge', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ term, password: savedPassword })
+        });
+        const data = await response.json();
+        
+        if (data.success) {
+            if(resultText) resultText.innerText = data.text;
+            if(typeof saveToHistory === "function") {
+                saveToHistory("Lexikon", "Begriff: " + term.substring(0, 20) + "...", data.text.substring(0, 30) + "...");
+            }
+        } else {
+            if(resultText) resultText.innerText = "Fehler vom Server: " + data.error;
+        }
+    } catch (error) {
+        if(resultText) resultText.innerText = "Server-Fehler bei der Lexikon-Verbindung.";
+    } finally {
+        if(btn) { btn.disabled = false; btn.innerText = "📖 Begriff verständlich übersetzen"; }
     }
 }
 
