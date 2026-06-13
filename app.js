@@ -73,7 +73,7 @@ async function generateExpose() {
         const data = await response.json();
         if (data.success) {
             outputText.innerText = data.text;
-            saveToHistory("Exposé", title);
+            saveToHistory("Exposé", title, data.text);
             remainingCredits--;
             updateCreditDisplay();
         } else {
@@ -169,7 +169,7 @@ async function generateMail() {
                     <span style="white-space: pre-wrap;">${data.mail}</span>
                 </div>
             `;
-            saveToHistory("Kunden-Mail", "Antwort + Betreff generiert");
+            saveToHistory("Kunden-Mail", "Antwort für: " + queryInput.value.substring(0, 20) + "...", document.getElementById('emailResultText').innerHTML);
             remainingCredits--;
             updateCreditDisplay();
         } else {
