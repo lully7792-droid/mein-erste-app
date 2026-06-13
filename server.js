@@ -15,10 +15,10 @@ const openai = new OpenAI({
 app.use(express.static(__dirname));
 
 // ==========================================
-// ROUTE 1: KI-EXPOSÉ-GENERATOR (EUROPA-SAFE)
+// ROUTE 1: KI-EXPOSÉ-GENERATOR (PERFEKTIONIERT)
 // ==========================================
 app.post('/api/generate-expose', async (req, res) => {
-    const { title, price, location, year, energy, notes, password } = req.body;
+    const { title, price, size, location, year, energy, style, notes, password } = req.body;
     if (password !== "makler-erfolg") return res.status(401).json({ success: false, error: "Nicht autorisiert" });
 
     try {
@@ -27,15 +27,19 @@ app.post('/api/generate-expose', async (req, res) => {
             messages: [
                 { 
                     role: "system", 
-                    content: "Du bist ein erfahrener Immobilienmakler. Schreibe ein professionelles, flüssiges und verkaufsstarkes Exposé auf Deutsch basierend auf den übermittelten Daten. STRENGE REGEL: Nutze ausschließlich die vom Nutzer bereitgestellten Immobiliendaten und real existierende Fakten der Region. Erfinde niemals Infrastrukturen, Einkaufsmeilen oder Straßennamen im In- und Ausland! Strukturiere das Exposé mit ansprechenden Zwischenüberschriften." 
+                    content: `Du bist ein erfahrener internationaler Immobilienmakler. Schreibe ein professionelles, flüssiges und verkaufsstarkes Exposé auf Deutsch basierend auf den Daten. 
+                    STRENGE REGEL: Nutze ausschließlich real existierende Fakten der Region im In- und Ausland. Erfinde niemals Infrastrukturen oder Straßennamen frei dazu!
+                    Passe deinen Tonfall und die Wortwahl exakt an den gewählten Schreibstil an: '${style}'. 
+                    Strukturiere das Exposé übersichtlich mit Zwischenüberschriften.` 
                 },
                 { 
                     role: "user", 
-                    content: `Titel: ${title}\nPreis: ${price} EUR\nOrt: ${location}\nBaujahr: ${year}\nEnergieklasse: ${energy}\nDetails: ${notes}` 
+                    content: `Titel: ${title}\nKaufpreis: ${price} EUR\nWohnfläche: ${size} m²\nOrt: ${location}\nBaujahr: ${year}\nEnergieklasse: ${energy}\nZusatzdetails: ${notes || "Keine"}` 
                 }
             ]
         });
 
+        // 🎯 ABSOLUT SICHER GEKAPSELT:
         let exposeText = "Fehler beim Generieren.";
         if (response && response.choices && response.choices[0] && response.choices[0].message) {
             exposeText = response.choices[0].message.content;
