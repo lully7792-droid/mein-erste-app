@@ -280,8 +280,12 @@ app.post('/api/radar-hunt', async (req, res) => {
             const teile = gesamtText.split('===TRENNUNG===');
             einschatzung = teile[0].trim();
             akquiseMail = teile[1].trim();
+        } else {
+            // 🎯 DAS SICHERHEITSNETZ: Falls OpenAI das Trennwort vergisst, stürzt nichts ab!
+            einschatzung = "Direkte Analyse abgeschlossen.";
+            akquiseMail = gesamtText;
         }
-
+        
         res.json({ success: true, analysis: einschatzung, mail: akquiseMail });
     } catch (error) {
         console.error("Radar-Fehler:", error);
