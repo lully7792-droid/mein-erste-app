@@ -492,6 +492,37 @@
             </div>
         </div>
 
+                <!-- FEATURE 16: KI-MODERNISIERUNGS- & HOME-STAGING-STUDIO -->
+        <div class="card" style="border-color: rgba(16, 185, 129, 0.3); background: linear-gradient(135deg, #131c2e, #1b240c);">
+            <h2>🛋️ KI-Modernisierungs- & Home-Staging-Studio</h2>
+            <p class="description">Verwandle veraltete Räume in absolute Verkaufsschlager. Die KI entwickelt ein detailliertes Einrichtungs- und Renovierungskonzept sowie emotionale Bildbeschreibungen für deine Käufer.</p>
+            
+            <div class="form-group">
+                <label for="stagingRoom">Welcher Raum soll aufgewertet werden?</label>
+                <input type="text" id="stagingRoom" placeholder="z.B. Badezimmer, Wohnzimmer, Küche">
+            </div>
+            <div class="form-group">
+                <label for="stagingCurrent">Aktueller, unschöner Zustand</label>
+                <textarea id="stagingCurrent" placeholder="z.B. Dunkle Holzdecken, grüne Fliesen aus den 70ern, wenig Tageslicht, abgenutzter Teppich..." style="height: 80px;"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="stagingTarget">Gewünschter Ziel-Stil</label>
+                <select id="stagingTarget">
+                    <option value="modern_luxus">💎 Modern & Luxuriös (Marmor-Optik, edle Armaturen, LED-Licht)</option>
+                    <option value="scandi_cozy">🌿 Skandinavisch & Gemütlich (Helles Holz, warme Naturtöne, Loft-Charakter)</option>
+                    <option value="industrial_loft">🧱 Industrial & Urban (Sichtbeton, Backstein-Elemente, matt-schwarzer Stahl)</option>
+                </select>
+            </div>
+            
+            <button id="startStagingBtn" class="btn" onclick="runStagingConcept()" style="width: 100%; background: linear-gradient(90deg, #10b981, #f59e0b); color: #090d16;">🛋️ Designkonzept & Verkaufstext generieren</button>
+            
+            <div id="stagingOutput" class="hidden" style="margin-top: 25px; padding: 20px; background: #0b111e; border: 1px solid var(--border-color); border-radius: 8px;">
+                <h3 style="margin-bottom: 12px; color: var(--accent);">🎯 Dein exklusives Raumkonzept:</h3>
+                <div id="stagingResultText" style="line-height: 1.6; font-size: 0.95rem; white-space: pre-wrap; color: #cbd5e1;"></div>
+                <button onclick="copyToClipboard('stagingResultText')" class="btn" style="background: #334155; color: #fff; font-size: 14px; padding: 10px 18px; margin-top: 15px;">📋 Konzept kopieren</button>
+            </div>
+        </div>
+
         <!-- FEATURE 15: HISTORIE -->
         <div class="card">
             <h2>🗄️ Letzte KI-Generierungen (Gespeichert)</h2>
@@ -943,6 +974,47 @@ function previewNewsletterHTML() {
         if(resultText) resultText.innerText = "Server-Fehler bei der Investoren-Verbindung.";
     } finally {
         if(btn) { btn.disabled = false; btn.innerText = "🏢 Rendite berechnen & Investoren-Pitch starten"; }
+    }
+}
+
+    async function runStagingConcept() {
+    const room = document.getElementById('stagingRoom').value;
+    const current = document.getElementById('stagingCurrent').value;
+    const target = document.getElementById('stagingTarget').value;
+
+    if (!room || !current) {
+        alert("Bitte gib den Raum und den aktuellen Zustand an!");
+        return;
+    }
+
+    const btn = document.getElementById('startStagingBtn');
+    const outputDiv = document.getElementById('stagingOutput');
+    const resultText = document.getElementById('stagingResultText');
+
+    if(btn) { btn.disabled = true; btn.innerText = "Entwerfe Raum-Transformation..."; }
+    if(outputDiv) outputDiv.classList.remove('hidden');
+    if(resultText) resultText.innerText = "KI analysiert Raumprobleme und wählt Materialien aus...";
+
+    try {
+        const response = await fetch('/api/staging-forge', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ room, current, target, password: savedPassword })
+        });
+        const data = await response.json();
+        
+        if (data.success) {
+            if(resultText) resultText.innerText = data.text;
+            if(typeof saveToHistory === "function") {
+                saveToHistory("Home Staging", "Konzept: " + room, data.text.substring(0, 30) + "...");
+            }
+        } else {
+            if(resultText) resultText.innerText = "Fehler vom Server: " + data.error;
+        }
+    } catch (error) {
+        if(resultText) resultText.innerText = "Server-Fehler bei der Home-Staging-Verbindung.";
+    } finally {
+        if(btn) { btn.disabled = false; btn.innerText = "🛋️ Designkonzept & Verkaufstext generieren"; }
     }
 }
 
