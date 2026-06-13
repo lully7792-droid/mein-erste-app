@@ -377,3 +377,73 @@
                 </div>
             </div>
         </div> <!-- 🎯 HIERMIT WIRD KATEGORIE 2 (FINANCE) OFFIZIELL GESCHLOSSEN! -->
+        <!-- ==========================================
+             KATEGORIE 3: LEAD-AKQUISE
+             ========================================== -->
+        <div id="tab-leads" class="dashboard-tab-content hidden">
+
+            <!-- FEATURE 10: KI-IMMOBILIEN-RADAR -->
+            <div class="card">
+                <h2>🌐 KI-Immobilien-Radar & Lead-Maschine</h2>
+                <p class="description">Durchsuche den Markt nach privaten Immobilienverkäufen. Die KI analysiert das Angebot und schreibt sofort eine optimierte Akquise-Mail.</p>
+                <div class="form-group">
+                    <label for="radarRegion">Ziel-Region / Stadt</label>
+                    <input type="text" id="radarRegion" placeholder="z.B. Wuppertal">
+                </div>
+                <div class="form-group">
+                    <label for="radarAdText">Gefundener Anzeigentext (von privat)</label>
+                    <textarea id="radarAdText" placeholder="Kopiere hier den Text einer privaten Anzeige hinein..." style="height: 100px;"></textarea>
+                </div>
+                <button id="startRadarBtn" class="btn" onclick="runRadarHunt()">🌐 Privat-Anzeige analysieren</button>
+                <div id="radarOutput" class="hidden" style="margin-top: 25px; padding: 20px; background: #0b111e; border: 1px solid var(--border-color); border-radius: 8px;">
+                    <h3 style="margin-bottom: 12px; color: #3b82f6;">🎯 Analyse & Anschreiben:</h3>
+                    <div id="radarResultText" style="line-height: 1.6; font-size: 0.95rem;"></div>
+                    <button onclick="copyToClipboard('radarResultText')" class="btn" style="background: #334155; color: #fff; font-size: 14px; padding: 10px 18px; margin-top: 15px;">📋 Kopieren</button>
+                </div>
+            </div>
+
+            <!-- FEATURE 7: KI-SANIERUNGS-CHECK -->
+            <div class="card">
+                <h2>🛠️ KI-Sanierungs- & Modernisierungs-Check</h2>
+                <p class="description">Analysiert den Sanierungsbedarf älterer Immobilien und schätzt grob die notwendigen Maßnahmen ein.</p>
+                <div class="form-group">
+                    <label for="renovationYear">Baujahr & Zustand</label>
+                    <input type="text" id="renovationYear" placeholder="z.B. Baujahr 1965, Dach alt">
+                </div>
+                <div class="form-group">
+                    <label for="renovationDefects">Bekannte Mängel / Geplante Maßnahmen</label>
+                    <textarea id="renovationDefects" placeholder="z.B. Fenster einfach verglast..." style="height: 80px;"></textarea>
+                </div>
+                <button id="checkRenovationBtn" class="btn" onclick="checkRenovation()">🛠️ Sanierungs-Check starten</button>
+                <div id="renovationOutput" class="hidden" style="margin-top: 25px; padding: 20px; background: #0b111e; border: 1px solid var(--border-color); border-radius: 8px;">
+                    <h3 style="margin-bottom: 12px; color: var(--accent);">Sanierungs-Fahrplan:</h3>
+                    <p id="renovationText" style="white-space: pre-wrap; line-height: 1.6; font-size: 0.95rem;"></p>
+                </div>
+            </div>
+
+            <!-- FEATURE 14: KI-FLYER-TEXTER -->
+            <div class="card">
+                <h2>📬 KI-Flyer- & Nachbarschafts-Akquise-Texter</h2>
+                <p class="description">Erstelle Postkartentexte für die gezielte Nachbarschafts-Akquise, um direkt neue Immobilien-Eigentümer zu gewinnen.</p>
+                <div class="form-group">
+                    <label for="flyerStreet">Straße / Stadtteil</label>
+                    <input type="text" id="flyerStreet" placeholder="z.B. Luisenstraße">
+                </div>
+                <div class="form-group">
+                    <label for="flyerReason">Anlass der Flyer-Aktion</label>
+                    <select id="flyerReason">
+                        <option value="suchkunde">🔍 Suchkunde vorhanden</option>
+                        <option value="frisch_verkauft">🎉 Gerade erfolgreich verkauft</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="flyerDetails">Zusatz-Fakten</label>
+                    <textarea id="flyerDetails" placeholder="Details..." style="height: 80px;"></textarea>
+                </div>
+                <button id="startFlyerBtn" class="btn" onclick="runFlyerForge()">📬 Akquise-Flyer texten lassen</button>
+                <div id="flyerOutput" class="hidden" style="margin-top: 25px; padding: 20px; background: #0b111e; border: 1px solid var(--border-color); border-radius: 8px;">
+                    <h3 style="margin-bottom: 12px; color: #f59e0b;">🎯 Deine Flyer-Texte:</h3>
+                    <div id="flyerResultText" style="line-height: 1.6; font-size: 0.95rem; white-space: pre-wrap; color: #cbd5e1;"></div>
+                </div>
+            </div>
+        </div> <!-- 🎯 HIERMIT WIRD KATEGORIE 3 (LEADS) OFFIZIELL GESCHLOSSEN! -->
