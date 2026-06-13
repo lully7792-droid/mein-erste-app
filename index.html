@@ -1479,6 +1479,69 @@ async function generateSocialMedia() {
     }
 }
 
+    // 🎛️ DAS GENERATOR-TAB-UMSCHALT-SYSTEM
+window.switchDashboardTab = function(tabId) {
+    // 1. Alle Inhalts-Boxen unsichtbar machen
+    const allTabs = document.querySelectorAll('.dashboard-tab-content');
+    allTabs.forEach(tab => tab.classList.add('hidden'));
+
+    // 2. Den ausgewählten Tab sichtbar machen
+    const activeTab = document.getElementById(tabId);
+    if (activeTab) {
+        activeTab.classList.remove('hidden');
+    }
+
+    // 3. Den aktiven Style auf den geklickten Button übertragen
+    const allButtons = document.querySelectorAll('.tab-btn');
+    allButtons.forEach(btn => btn.classList.remove('active'));
+    
+    // Sucht den Button, der die passende Funktion aufruft
+    const clickedBtn = Array.from(allButtons).find(btn => btn.getAttribute('onclick').includes(tabId));
+    if (clickedBtn) clickedBtn.classList.add('active');
+};
+
+// ==========================================
+// FEATURE: KI-GRUNDRISS-BESCHREIBER LOGIK
+// ==========================================
+async function runFloorTourForge() {
+    const layoutNotes = document.getElementById('floorLayout').value;
+
+    if (!layoutNotes) {
+        alert("Bitte gib ein paar stichpunktartige Notizen oder Maße zum Grundriss ein!");
+        return;
+    }
+
+    const btn = document.getElementById('startFloorBtn');
+    const outputDiv = document.getElementById('floorOutput');
+    const resultText = document.getElementById('floorResultText');
+
+    if(btn) { btn.disabled = true; btn.innerText = "Konstruiere virtuelle Raumtour..."; }
+    if(outputDiv) outputDiv.classList.remove('hidden');
+    if(resultText) resultText.innerText = "KI analysiert Laufwege und formuliert den logischen Rundgang...";
+
+    try {
+        const response = await fetch('/api/floor-tour', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ layoutNotes, password: savedPassword })
+        });
+        const data = await response.json();
+        
+        if (data.success) {
+            if(resultText) resultText.innerText = data.text;
+            if(typeof saveToHistory === "function") {
+                saveToHistory("Raumtour", "Grundriss-Rundgang", data.text.substring(0, 30) + "...");
+            }
+        } else {
+            if(resultText) resultText.innerText = "Fehler vom Server: " + data.error;
+        }
+    } catch (error) {
+        if(resultText) resultText.innerText = "Server-Fehler bei der Grundriss-Verbindung.";
+    } finally {
+        if(btn) { btn.disabled = false; btn.innerText = "🗺️ Virtuellen Rundgang texten lassen"; }
+    }
+}
+
 window.exportHistoryToCSV = function() {
     let history = JSON.parse(localStorage.getItem('immoFlowHistory')) || [];
     
