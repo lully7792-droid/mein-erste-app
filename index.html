@@ -681,6 +681,178 @@ async function generateMail() {
     } catch (e) { txt.innerText = "Server-Fehler."; }
     finally { btn.disabled = false; }
 }
+// ==========================================
+// KERN-LOGIK: RADAR, LEADS, RHETORIK & INSIDER
+// ==========================================
+async function runFinanceCalculation() {
+    const price = parseFloat(document.getElementById('calcPrice').value) || 0;
+    const equity = parseFloat(document.getElementById('calcEquity').value) || 0;
+    const interest = parseFloat(document.getElementById('calcInterest').value) || 0;
+    const repayment = parseFloat(document.getElementById('calcRepayment').value) || 0;
+    const commissionRate = parseFloat(document.getElementById('calcCommission').value) || 0;
+    if (price <= 0) { alert("Bitte gib einen Kaufpreis an!"); return; }
+    const btn = document.getElementById('startFinanceBtn');
+    const out = document.getElementById('financeOutput');
+    const txt = document.getElementById('financeResultText');
+    if(btn) { btn.disabled = true; btn.innerText = "Berechne..."; }
+    if(out) out.classList.remove('hidden');
+    try {
+        const r = await fetch('/api/finance-calc', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ price, equity, interest, repayment, commissionRate, password: savedPassword })
+        });
+        const d = await r.json();
+        if (d.success && txt) {
+            txt.innerHTML = `<p><strong>Kaufpreis:</strong> ${price.toLocaleString('de-DE')} €</p><p><strong>Monatsrate:</strong> ${d.costs.monthlyRate.toLocaleString('de-DE')} €/Monat</p><br><p>${d.argumentation}</p>`;
+        }
+    } catch (e) { if(txt) txt.innerText = "Fehler."; }
+    finally { if(btn) { btn.disabled = false; btn.innerText = "🏦 Berechnung starten"; } }
+}
+
+async function runInvestorCalculation() {
+    const price = parseFloat(document.getElementById('investPrice').value) || 0;
+    const rent = parseFloat(document.getElementById('investRent').value) || 0;
+    const location = document.getElementById('investLocation').value || "";
+    if (price <= 0 || rent <= 0) { alert("Kaufpreis und Miete eingeben!"); return; }
+    const btn = document.getElementById('startInvestBtn');
+    const out = document.getElementById('investOutput');
+    const txt = document.getElementById('investResultText');
+    if(btn) btn.disabled = true; if(out) out.classList.remove('hidden');
+    try {
+        const r = await fetch('/api/investor-calc', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ price, rent, location, password: savedPassword })
+        });
+        const d = await r.json();
+        if(d.success && txt) {
+            txt.innerHTML = `<p><strong>Faktor:</strong> ${d.metrics.factor}x | <strong>Rendite:</strong> ${d.metrics.yield}%</p><br><p>${d.pitch}</p>`;
+        }
+    } catch(e) { if(txt) txt.innerText = "Fehler."; }
+    finally { if(btn) btn.disabled = false; }
+}
+
+async function runRadarHunt() {
+    const region = document.getElementById('radarRegion').value;
+    const adText = document.getElementById('radarAdText').value;
+    if (!region || !adText) { alert("Region und Text eingeben!"); return; }
+    const btn = document.getElementById('startRadarBtn');
+    const out = document.getElementById('radarOutput');
+    const txt = document.getElementById('radarResultText');
+    if(btn) btn.disabled = true; if(out) out.classList.remove('hidden');
+    try {
+        const r = await fetch('/api/radar-hunt', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ region, adText, password: savedPassword })
+        });
+        const d = await r.json();
+        if(d.success && txt) txt.innerHTML = `<p>${d.mail}</p>`;
+    } catch(e) { if(txt) txt.innerText = "Fehler."; }
+    finally { if(btn) btn.disabled = false; }
+}
+
+async function runFlyerForge() {
+    const street = document.getElementById('flyerStreet').value;
+    const reason = document.getElementById('flyerReason').value;
+    const details = document.getElementById('flyerDetails').value;
+    if (!street) { alert("Bitte Straße angeben!"); return; }
+    const btn = document.getElementById('startFlyerBtn');
+    const out = document.getElementById('flyerOutput');
+    const txt = document.getElementById('flyerResultText');
+    if(btn) btn.disabled = true; if(out) out.classList.remove('hidden');
+    try {
+        const r = await fetch('/api/flyer-forge', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ street, reason, details, password: savedPassword })
+        });
+        const d = await r.json();
+        if(d.success && txt) txt.innerText = d.text;
+    } catch(e) { if(txt) txt.innerText = "Fehler."; }
+    finally { if(btn) btn.disabled = false; }
+}
+
+async function runPhoneScript() {
+    const situation = document.getElementById('phoneSituation').value;
+    const objection = document.getElementById('phoneObjection').value;
+    if (!objection) { alert("Bitte Einwand eingeben!"); return; }
+    const btn = document.getElementById('startPhoneBtn');
+    const out = document.getElementById('phoneOutput');
+    const txt = document.getElementById('phoneResultText');
+    if(btn) btn.disabled = true; if(out) out.classList.remove('hidden');
+    try {
+        const r = await fetch('/api/phone-forge', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ situation, objection, password: savedPassword })
+        });
+        const d = await r.json();
+        if(d.success && txt) txt.innerText = d.text;
+    } catch(e) { if(txt) txt.innerText = "Fehler."; }
+    finally { if(btn) btn.disabled = false; }
+}
+
+async function runLexiconTranslation() {
+    const term = document.getElementById('lexiconTerm').value;
+    if (!term) { alert("Bitte Begriff eingeben!"); return; }
+    const btn = document.getElementById('startLexiconBtn');
+    const out = document.getElementById('lexiconOutput');
+    const txt = document.getElementById('lexiconResultText');
+    if(btn) btn.disabled = true; if(out) out.classList.remove('hidden');
+    try {
+        const r = await fetch('/api/lexicon-forge', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ term, password: savedPassword })
+        });
+        const d = await r.json();
+        if(d.success && txt) txt.innerText = d.text;
+    } catch(e) { if(txt) txt.innerText = "Fehler."; }
+    finally { if(btn) btn.disabled = false; }
+}
+
+async function runDefectMitigation() {
+    const defect = document.getElementById('defectType').value;
+    const context = document.getElementById('defectContext').value;
+    if (!defect) { alert("Bitte Mangel eingeben!"); return; }
+    const btn = document.getElementById('startDefectBtn');
+    const out = document.getElementById('defectOutput');
+    const txt = document.getElementById('defectResultText');
+    if(btn) btn.disabled = true; if(out) out.classList.remove('hidden');
+    try {
+        const r = await fetch('/api/defect-mitigate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ defect, context, password: savedPassword })
+        });
+        const d = await r.json();
+        if(d.success && txt) txt.innerText = d.text;
+    } catch(e) { if(txt) txt.innerText = "Fehler."; }
+    finally { if(btn) btn.disabled = false; }
+}
+
+async function runInsiderText() {
+    const district = document.getElementById('insiderDistrict').value;
+    const target = document.getElementById('insiderTarget').value;
+    const details = document.getElementById('insiderDetails').value;
+    if (!district) { alert("Bitte Stadtteil angeben!"); return; }
+    const btn = document.getElementById('startInsiderBtn');
+    const out = document.getElementById('insiderOutput');
+    const txt = document.getElementById('insiderResultText');
+    if(btn) btn.disabled = true; if(out) out.classList.remove('hidden');
+    try {
+        const r = await fetch('/api/insider-forge', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ district, target, details, password: savedPassword })
+        });
+        const d = await r.json();
+        if(d.success && txt) txt.innerText = d.text;
+    } catch(e) { if(txt) txt.innerText = "Fehler."; }
+    finally { if(btn) btn.disabled = false; }
+}
 
 function printProfessionalPDF() {
     const text = document.getElementById('exposeText').innerText;
