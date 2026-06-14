@@ -619,6 +619,68 @@ async function calcUtilities() {
     } catch (e) { txt.innerText = "Server-Fehler."; }
     finally { btn.disabled = false; }
 }
+// ==========================================
+// KERN-LOGIK: SANIERUNG & VERTRÄGE
+// ==========================================
+async function checkRenovation() {
+    const year = document.getElementById('renovationYear').value;
+    const defects = document.getElementById('renovationDefects').value;
+    if (!year) { alert("Bitte Baujahr/Zustand angeben!"); return; }
+    const btn = document.getElementById('checkRenovationBtn');
+    const out = document.getElementById('renovationOutput');
+    const txt = document.getElementById('renovationText');
+    btn.disabled = true; txt.innerText = "KI prüft Sanierungsbedarf..."; out.classList.remove('hidden');
+    try {
+        const r = await fetch('/api/check-renovation', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ year, defects, password: savedPassword })
+        });
+        const d = await r.json();
+        txt.innerText = d.success ? d.text : "Fehler: " + d.error;
+    } catch (e) { txt.innerText = "Server-Fehler."; }
+    finally { btn.disabled = false; }
+}
+
+async function analyzeContract() {
+    const contractInput = document.getElementById('contractText');
+    if (!contractInput) { alert("Fehler: Textfeld nicht gefunden!"); return; }
+    const text = contractInput.value;
+    if (!text) { alert("Bitte Klausel eingeben!"); return; }
+    const btn = document.getElementById('analyzeContractBtn');
+    const out = document.getElementById('contractOutput');
+    const txt = document.getElementById('contractTextOutput');
+    btn.disabled = true; txt.innerText = "Prüfe Klausel..."; out.classList.remove('hidden');
+    try {
+        const r = await fetch('/api/analyze-contract', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text, password: savedPassword })
+        });
+        const d = await r.json();
+        txt.innerText = d.success ? d.text : "Fehler: " + d.error;
+    } catch (e) { txt.innerText = "Server-Fehler."; }
+    finally { btn.disabled = false; }
+}
+
+async function generateMail() {
+    const query = document.getElementById('clientQueryInput').value;
+    if (!query) { alert("Bitte Anfrage eingeben!"); return; }
+    const btn = document.getElementById('generateEmailBtn');
+    const out = document.getElementById('emailResultBox');
+    const txt = document.getElementById('emailResultText');
+    btn.disabled = true; txt.innerText = "E-Mail wird generiert..."; out.classList.remove('hidden');
+    try {
+        const r = await fetch('/api/generate-email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ query, password: savedPassword })
+        });
+        const d = await r.json();
+        txt.innerHTML = d.success ? d.text : "Fehler: " + d.error;
+    } catch (e) { txt.innerText = "Server-Fehler."; }
+    finally { btn.disabled = false; }
+}
 
 function printProfessionalPDF() {
     const text = document.getElementById('exposeText').innerText;
