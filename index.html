@@ -576,6 +576,50 @@
 <script src="app.js"></script>
 <!-- HIER FOLGEN DIE UNZERSTÖRBAREN HOOKS FÜR DEINE BUTTONS -->
 <script>
+    // ==========================================
+// KERN-LOGIK: MIETPREIS & NEBENKOSTEN
+// ==========================================
+async function estimateRent() {
+    const location = document.getElementById('rentLocation').value;
+    const size = document.getElementById('rentSize').value;
+    const condition = document.getElementById('rentCondition').value;
+    if (!location || !size) { alert("Bitte fülle Lage und m² aus!"); return; }
+    const btn = document.getElementById('estimateRentBtn');
+    const out = document.getElementById('rentOutput');
+    const txt = document.getElementById('rentText');
+    btn.disabled = true; txt.innerText = "KI schätzt Mietpreis..."; out.classList.remove('hidden');
+    try {
+        const r = await fetch('/api/estimate-rent', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ location, size, condition, password: savedPassword })
+        });
+        const d = await r.json();
+        txt.innerText = d.success ? d.text : "Fehler: " + d.error;
+    } catch (e) { txt.innerText = "Server-Fehler."; }
+    finally { btn.disabled = false; }
+}
+
+async function calcUtilities() {
+    const size = document.getElementById('utilitySize').value;
+    const heating = document.getElementById('utilityHeating').value;
+    if (!size) { alert("Bitte m² angeben!"); return; }
+    const btn = document.getElementById('calcUtilitiesBtn');
+    const out = document.getElementById('utilityOutput');
+    const txt = document.getElementById('utilityText');
+    btn.disabled = true; txt.innerText = "Berechne Nebenkosten..."; out.classList.remove('hidden');
+    try {
+        const r = await fetch('/api/calc-utilities', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ size, heating, password: savedPassword })
+        });
+        const d = await r.json();
+        txt.innerText = d.success ? d.text : "Fehler: " + d.error;
+    } catch (e) { txt.innerText = "Server-Fehler."; }
+    finally { btn.disabled = false; }
+}
+
 function printProfessionalPDF() {
     const text = document.getElementById('exposeText').innerText;
     if (!text || text.includes("bitte warten...")) {
