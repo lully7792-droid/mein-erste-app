@@ -926,6 +926,56 @@ async function runVideoConceptForge() {
         if(btn) { btn.disabled = false; btn.innerText = "🎬 Video-Konzepte schmieden"; }
     }
 }
+// ==========================================
+// FIX-HOOK FÜR DIE SOCIAL-MEDIA-MASCHINE
+// ==========================================
+async function generateSocial() {
+    const title = document.getElementById('title').value;
+    const price = document.getElementById('price').value;
+    const size = document.getElementById('size').value || "";
+    const location = document.getElementById('location').value;
+    const notes = document.getElementById('notes').value || "";
+
+    if (!title || !price || !location) {
+        alert("Bitte fülle zuerst die Objektdaten oben aus!");
+        return;
+    }
+
+    const btn = document.getElementById('generateSocialBtn');
+    const outputDiv = document.getElementById('socialResultBox');
+
+    if(btn) { btn.disabled = true; btn.innerText = "Kampagne wird geschmiedet..."; }
+    if(outputDiv) outputDiv.classList.remove('hidden');
+
+    if(document.getElementById('instaText')) document.getElementById('instaText').innerText = "Instagram-Post wird getextet...";
+    if(document.getElementById('linkedinText')) document.getElementById('linkedinText').innerText = "LinkedIn-Post wird getextet...";
+    if(document.getElementById('tiktokText')) document.getElementById('tiktokText').innerText = "TikTok-Skript wird geschrieben...";
+    if(document.getElementById('facebookText')) document.getElementById('facebookText').innerText = "Facebook-Post wird formuliert...";
+    if(document.getElementById('twitterText')) document.getElementById('twitterText').innerText = "X-Post wird komprimiert...";
+
+    try {
+        const response = await fetch('/api/generate-social-all', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title, price, size, location, notes, password: savedPassword })
+        });
+        const data = await response.json();
+        
+        if (data.success) {
+            if(document.getElementById('instaText')) document.getElementById('instaText').innerText = data.instagram;
+            if(document.getElementById('linkedinText')) document.getElementById('linkedinText').innerText = data.linkedin;
+            if(document.getElementById('tiktokText')) document.getElementById('tiktokText').innerText = data.tiktok;
+            if(document.getElementById('facebookText')) document.getElementById('facebookText').innerText = data.facebook;
+            if(document.getElementById('twitterText')) document.getElementById('twitterText').innerText = data.twitter;
+        } else {
+            alert("Fehler: " + data.error);
+        }
+    } catch (error) {
+        alert("Server-Fehler bei der Verbindung.");
+    } finally {
+        if(btn) { btn.disabled = false; btn.innerText = "📱 Posts generieren"; }
+    }
+}
 
 window.switchDashboardTab = function(tabId) {
     // 1. Alle Inhalts-Boxen unsichtbar machen
