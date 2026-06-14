@@ -809,7 +809,7 @@ app.post('/api/floor-tour', async (req, res) => {
         console.error("Floor-Tour-Fehler:", error);
         res.status(500).json({ success: false, error: "Fehler beim Grundriss-Check im Backend" });
     }
-}
+});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
