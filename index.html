@@ -239,6 +239,25 @@
                 </div>
             </div>
         </div> <!-- 🎯 HIERMIT WIRD KATEGORIE 1 (MEDIA) OFFIZIELL GESCHLOSSEN! -->
+                    <!-- FEATURE 17: KI-VIDEO-IDEEN-GENERATOR -->
+            <div class="card" style="border-color: rgba(139, 92, 246, 0.3); background: linear-gradient(135deg, #131c2e, #240c38);">
+                <h2>🎬 KI-Immobilien-Video-Ideen & Hooks</h2>
+                <p class="description">Generiere 3 virale Kurzvideo-Konzepte (TikTok/Reels) für dein Objekt. Inklusive unschlagbarer Einstiegs-Sätze (Hooks) und genauer Regie-Anweisungen für die Kamera.</p>
+                <div class="form-group">
+                    <label for="videoGoal">Hauptziel des Videos</label>
+                    <select id="videoGoal">
+                        <option value="kaeufer_finden">🔍 Kaufinteressenten anlocken (Objekt-Präsentation)</option>
+                        <option value="eigentuemer_akquise">💼 Neue Eigentümer jagen (Makler-Expertise zeigen)</option>
+                        <option value="unterhaltung">🔥 Viraler Reichweiten-Bringer (Geheime Räume / Luxus-Vibes)</option>
+                    </select>
+                </div>
+                <button id="startVideoBtn" class="btn" onclick="runVideoConceptForge()" style="width: 100%; background: linear-gradient(90deg, #8b5cf6, #ec4899); color: #fff;">🎬 Video-Konzepte schmieden</button>
+                <div id="videoOutput" class="hidden" style="margin-top: 25px; padding: 20px; background: #0b111e; border: 1px solid var(--border-color); border-radius: 8px;">
+                    <h3 style="margin-bottom: 12px; color: #ec4899;">🎯 Deine 3 viralen Video-Drehbücher:</h3>
+                    <div id="videoResultText" style="line-height: 1.6; font-size: 0.95rem; white-space: pre-wrap; color: #cbd5e1;"></div>
+                    <button onclick="copyToClipboard('videoResultText')" class="btn" style="background: #334155; color: #fff; font-size: 14px; padding: 10px 18px; margin-top: 15px;">📋 Skripte kopieren</button>
+                </div>
+            </div>
         <!-- ==========================================
              KATEGORIE 2: FINANZEN & RECHNER
              ========================================== -->
