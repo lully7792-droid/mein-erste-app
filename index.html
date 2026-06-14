@@ -574,3 +574,36 @@
 </div>
 
 <script src="app.js"></script>
+<!-- HIER FOLGEN DIE UNZERSTÖRBAREN HOOKS FÜR DEINE BUTTONS -->
+<script>
+function printProfessionalPDF() {
+    const text = document.getElementById('exposeText').innerText;
+    if (!text || text.includes("bitte warten...")) {
+        alert("Es gibt noch kein generiertes Exposé zum Drucken!");
+        return;
+    }
+    window.print();
+}
+
+window.switchDashboardTab = function(tabId) {
+    // 1. Alle Inhalts-Boxen unsichtbar machen
+    const allTabs = document.querySelectorAll('.dashboard-tab-content');
+    allTabs.forEach(tab => tab.classList.add('hidden'));
+
+    // 2. Den ausgewählten Tab sichtbar machen
+    const activeTab = document.getElementById(tabId);
+    if (activeTab) {
+        activeTab.classList.remove('hidden');
+    }
+
+    // 3. Den aktiven Style auf den geklickten Button übertragen
+    const allButtons = document.querySelectorAll('.tab-btn');
+    allButtons.forEach(btn => btn.classList.remove('active'));
+    
+    // Sucht den Button, der die passende Funktion aufruft
+    const clickedBtn = Array.from(allButtons).find(btn => btn.getAttribute('onclick').includes(tabId));
+    if (clickedBtn) clickedBtn.classList.add('active');
+};
+</script>
+</body>
+</html>
