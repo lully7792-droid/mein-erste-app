@@ -881,6 +881,51 @@ function printProfessionalPDF() {
     }
     window.print();
 }
+// ==========================================
+// KERN-LOGIK: KI-VIDEO-IDEEN-GENERATOR
+// ==========================================
+async function runVideoConceptForge() {
+    const title = document.getElementById('title').value;
+    const price = document.getElementById('price').value;
+    const location = document.getElementById('location').value;
+    const notes = document.getElementById('notes').value || "";
+    const goal = document.getElementById('videoGoal').value;
+
+    if (!title || !price || !location) {
+        alert("Bitte fülle zuerst die Objektdaten oben (Titel, Preis, Ort) aus!");
+        return;
+    }
+
+    const btn = document.getElementById('startVideoBtn');
+    const out = document.getElementById('videoOutput');
+    const txt = document.getElementById('videoResultText');
+
+    if(btn) { btn.disabled = true; btn.innerText = "Schmiede Video-Drehbücher..."; }
+    if(out) out.classList.remove('hidden');
+    if(txt) txt.innerText = "KI entwirft virale Szenenbilder und textet unschlagbare Hooks...";
+
+    try {
+        const response = await fetch('/api/video-forge', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title, price, location, notes, goal, password: savedPassword })
+        });
+        const data = await response.json();
+        
+        if (data.success) {
+            if(txt) txt.innerText = data.text;
+            if(typeof saveToHistory === "function") {
+                saveToHistory("Video-Konzept", "Ziel: " + goal, data.text.substring(0, 30) + "...");
+            }
+        } else {
+            if(txt) txt.innerText = "Fehler vom Server: " + data.error;
+        }
+    } catch (error) {
+        if(txt) txt.innerText = "Server-Fehler bei der Video-Verbindung.";
+    } finally {
+        if(btn) { btn.disabled = false; btn.innerText = "🎬 Video-Konzepte schmieden"; }
+    }
+}
 
 window.switchDashboardTab = function(tabId) {
     // 1. Alle Inhalts-Boxen unsichtbar machen
