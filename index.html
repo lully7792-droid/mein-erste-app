@@ -557,3 +557,20 @@
 
     </div> <!-- CLOSES APPSECTION -->
 </div> <!-- CLOSES CONTAINER -->
+<!-- 🎨 UNSICHTBARES LAYOUT NUR FÜR DEN PDF-DRUCK -->
+<div id="printTemplate" style="display: none;">
+    <div class="pdf-header">
+        <div>
+            <div id="pdfMainTitle" class="pdf-title">Immobilien-Exposé</div>
+            <div style="font-size: 13px; color: #64748b; font-weight: 600;">Präsentiert von ImmoFlow Premium</div>
+        </div>
+    </div>
+    <div class="pdf-meta-box">
+        <div class="pdf-meta-item"><strong>📍 Standort:</strong> <span id="pdfLocation">-</span></div>
+        <div class="pdf-meta-item"><strong>💰 Kaufpreis:</strong> <span id="pdfPrice">- EUR</span></div>
+        <div class="pdf-meta-item"><strong>🏗️ m²:</strong> <span id="pdfYear">-</span></div>
+    </div>
+    <div id="pdfDescription" class="pdf-text">Hier folgt das generierte Exposé...</div>
+</div>
+
+<script src="app.js"></script>
