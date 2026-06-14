@@ -810,6 +810,44 @@ app.post('/api/floor-tour', async (req, res) => {
         res.status(500).json({ success: false, error: "Fehler beim Grundriss-Check im Backend" });
     }
 });
+// ==========================================
+// ROUTE 20: KI-VIDEO-IDEEN-GENERATOR
+// ==========================================
+app.post('/api/video-forge', async (req, res) => {
+    const { title, price, location, notes, goal, password } = req.body;
+    if (password !== "makler-erfolg") return res.status(401).json({ success: false, error: "Nicht autorisiert" });
+
+    try {
+        const response = await openai.chat.completions.create({
+            model: "gpt-4o-mini",
+            messages: [
+                { 
+                    role: "system", 
+                    content: "Du bist ein genialer Social-Media-Regisseur und Kurzvideo-Experte (TikTok/Reels/Shorts) für internationale Immobilienunternehmen. Deine Aufgabe ist es, aus den übermittelten Objektdaten exakt 3 virale, extrem aufmerksamkeitsstarke Video-Konzepte auf Deutsch zu entwerfen. Jedes Konzept MUSS folgendes enthalten: 1. Eine fette Überschrift, 2. Einen brutalen Einstiegs-Satz [HOOK] für die ersten 3 Sekunden, 3. Genaue Regie-Anweisungen für die Kamera (Bildausschnitt, Bewegung) und 4. Ein kurzes Sprech-Skript. STRENGE REGEL: Nutze ausschließlich die vom Nutzer bereitgestellten Realdaten. Erfinde niemals Infrastrukturen, Einkaufsmeilen oder Entfernungen dazu!" 
+                },
+                { 
+                    role: "user", 
+                    content: `Titel: ${title}\nPreis: ${price} EUR\nOrt: ${location}\nDetails: ${notes || "Keine"}\nHauptziel des Videos: ${goal}`
+                }
+            ]
+        });
+
+        // 🎯 DIREKT ABSOLUT SICHER GEKAPSELT:
+        let videoText = "Video-Konzepte konnten nicht erstellt werden.";
+        if (response && response.choices && response.choices[0] && response.choices[0].message) {
+            videoText = response.choices[0].message.content;
+        }
+
+        res.json({ 
+            success: true, 
+            text: videoText 
+        });
+
+    } catch (error) {
+        console.error("Video-Forge-Fehler:", error);
+        res.status(500).json({ success: false, error: "Fehler bei der Video-Generierung im Backend" });
+    }
+});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
